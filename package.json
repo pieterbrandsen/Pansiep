@@ -15,5 +15,7 @@
   "bugs": {
     "url": "https://github.com/pieterbrandsen/PandaBot/issues"
   },
-  "homepage": "https://github.com/pieterbrandsen/PandaBot#readme"
+  "homepage": "https://github.com/pieterbrandsen/PandaBot#readme",
+  "dependencies": {},
+  "devDependencies": {}
 }
