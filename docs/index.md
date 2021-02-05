@@ -54,4 +54,5 @@ Note: Each part can be found on multiple categories and their logic does change 
 To see detailed information on a part see their category in the navigation bar.
 
 Example selecting the market from the **Global** category:
+
 ![Image explaining navigation in menu](./images/navigationInDocsMenu.jpg)
