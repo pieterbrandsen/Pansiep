@@ -9,4 +9,4 @@ Link to game: [Screeps](https://screeps.com)
 
 ## Read more about my bot
 
-[Click to read more](/docs/index.md)
+[Click to read more](https://pandabot.readthedocs.io/en/feature-docs/)
