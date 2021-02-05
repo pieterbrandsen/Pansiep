@@ -1,2 +1,6 @@
+site_name: PandaBot
+repo_url: https://github.com/pieterbrandsen/PandaBot/
+repo_name: PandaBot
+
 docs/
     index.md
