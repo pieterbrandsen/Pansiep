@@ -19,42 +19,42 @@ Note: Each part can be found on multiple categories and their logic does change 
 
 Part list:
 
-- [Config](/docs/global/config.md)
-- [Constants](/docs/global/constants.md)
-- [Stats](/docs/global/stats.md)
-- [Market](/docs/global/market.md)
-- [Room communication](/docs/global/roomCommunication.md)
-- [Memory optimization](/docs/global/memoryOptimization.md)
+- [Config](global/config.md)
+- [Constants](global/constants.md)
+- [Stats](global/stats.md)
+- [Market](global/market.md)
+- [Room communication](global/roomCommunication.md)
+- [Memory optimization](global/memoryOptimization.md)
 
 ### Room
 
 Part list:
 
-- [Config](/docs/room/config.md)
-- [Constants](/docs/room/constants.md)
-- [Stats](/docs/room/stats.md)
-- [Jobs](/docs/room/jobs.md)
-- [Market](/docs/room/market.md)
-- [Defending](/docs/room/defending.md)
+- [Config](room/config.md)
+- [Constants](room/constants.md)
+- [Stats](room/stats.md)
+- [Jobs](room/jobs.md)
+- [Market](room/market.md)
+- [Defending](room/defending.md)
 - *Communication*
-  - [Global](/docs/room/communicationGlobal.md)
-  - [Room](/docs/room/communicationRoom.md)
-  - [Structure](/docs/room/communicationStructure.md)
-  - [Creep](/docs/room/communicationCreep.md)
-- [Map reading](/docs/room/mapReading.md)
-- [Room planner](/docs/room/roomPlanner.md)
-- [Request creep](/docs/room/requestCreep.md)
-- [Structure building](/docs/room/structureBuilding.md)
+  - [Global](room/communicationGlobal.md)
+  - [Room](room/communicationRoom.md)
+  - [Structure](room/communicationStructure.md)
+  - [Creep](room/communicationCreep.md)
+- [Map reading](room/mapReading.md)
+- [Room planner](room/roomPlanner.md)
+- [Request creep](room/requestCreep.md)
+- [Structure building](room/structureBuilding.md)
 
 ### Creep
 
 Part list:
 
-- [Config](/docs/creep/config.md)
-- [Constants](/docs/creep/constants.md)
-- [Stats](/docs/creep/stats.md)
+- [Config](creep/config.md)
+- [Constants](creep/constants.md)
+- [Stats](creep/stats.md)
 - *Communication*
-  - [Creep](/docs/creep/communicationCreep.md)
-  - [Room](/docs/creep/communicationRoom.md)
-  - [Structure](/docs/creep/communicationStructure.md)
-- [Creep sayings](/docs/creep/creepSayings.md)
+  - [Creep](creep/communicationCreep.md)
+  - [Room](creep/communicationRoom.md)
+  - [Structure](creep/communicationStructure.md)
+- [Creep sayings](creep/creepSayings.md)
