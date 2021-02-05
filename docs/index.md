@@ -30,7 +30,7 @@ Part list:
 
 Part list:
 
-- [Config](room/config.md)
+- [Config](./room/config.md)
 - [Constants](room/constants.md)
 - [Stats](room/stats.md)
 - [Jobs](room/jobs.md)
