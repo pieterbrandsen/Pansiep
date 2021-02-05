@@ -17,44 +17,41 @@ Note: Each part can be found on multiple categories and their logic does change 
 
 ### Global
 
-Part list:
-
-- [Config](global/config.md)
-- [Constants](global/constants.md)
-- [Stats](global/stats.md)
-- [Market](global/market.md)
-- [Room communication](global/roomCommunication.md)
-- [Memory optimization](global/memoryOptimization.md)
+- Config
+- Constants
+- Stats
+- Market
+- Room communication
+- Memory optimization
 
 ### Room
 
-Part list:
-
-- [Config](./room/config.md)
-- [Constants](room/constants.md)
-- [Stats](room/stats.md)
-- [Jobs](room/jobs.md)
-- [Market](room/market.md)
-- [Defending](room/defending.md)
-- *Communication*
-  - [Global](room/communicationGlobal.md)
-  - [Room](room/communicationRoom.md)
-  - [Structure](room/communicationStructure.md)
-  - [Creep](room/communicationCreep.md)
-- [Map reading](room/mapReading.md)
-- [Room planner](room/roomPlanner.md)
-- [Request creep](room/requestCreep.md)
-- [Structure building](room/structureBuilding.md)
+- Config
+- Constants
+- Stats
+- Jobs
+- Market
+- Defending
+- Global communication
+- Room communication
+- Structure communication
+- Creep communication
+- Map reading
+- Room planner
+- Request creep
+- Structure building
 
 ### Creep
 
-Part list:
+- Config
+- Constants
+- Stats
+- Creep communication
+- Room communication
+- Structure communication
+- Creep sayings
 
-- [Config](creep/config.md)
-- [Constants](creep/constants.md)
-- [Stats](creep/stats.md)
-- *Communication*
-  - [Creep](creep/communicationCreep.md)
-  - [Room](creep/communicationRoom.md)
-  - [Structure](creep/communicationStructure.md)
-- [Creep sayings](creep/creepSayings.md)
+To see detailed information on a part see their category in the navigation bar.
+
+Example selecting the market from the **Global** category:
+![Image explaining navagation in menu](./images/navigationInDocsMenu.jpg)
