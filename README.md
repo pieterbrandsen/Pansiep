@@ -7,7 +7,7 @@ Find me on the Screeps Slack at **@Pandamaster**
 Link to game: [Screeps](https://screeps.com)
 **Disclaimer:** This repo does not explain the game functions completely or at all!
 
-## Read more about my bot
+## Learn more about my bot
 
 [Click to read more](https://pandabot.readthedocs.io/en/latest/)
 
