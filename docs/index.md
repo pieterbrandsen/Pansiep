@@ -2,7 +2,7 @@
 
 ## GitKraken board *(trello alternative)*
 
-**[Board](https://app.gitkraken.com/glo/board/YBu7lJOeNgARSAYG)**
+**[Board](https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw-)**
 
 ## The goal of this page is to show each part of the bot
 
