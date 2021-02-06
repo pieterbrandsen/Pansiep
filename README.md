@@ -11,4 +11,4 @@ Link to game: [Screeps](https://screeps.com)
 
 [Click to read more](https://pandabot.readthedocs.io/en/latest/)
 
-[Board](https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw-)
+[Click to view board](https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw-)
