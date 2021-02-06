@@ -1,5 +1,9 @@
 # PandaBot, an artificial intelligence bot for Screeps
 
+## GitKraken board *(trello alternative)*
+
+**[Board](https://app.gitkraken.com/glo/board/YBu7lJOeNgARSAYG)**
+
 ## The goal of this page is to show each part of the bot
 
 There are three main categories. Keep those in mind, its going to be important later on.
