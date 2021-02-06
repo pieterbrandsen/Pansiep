@@ -25,8 +25,8 @@ Note: Each part can be found on multiple categories and their logic does change 
 - Constants
 - Stats
 - Market
-- Room communication
 - Memory optimization
+- Communication
 
 ### Room
 
@@ -36,10 +36,8 @@ Note: Each part can be found on multiple categories and their logic does change 
 - Jobs
 - Market
 - Defending
-- Global communication
-- Room communication
+- Communication (Room)
 - Structure communication
-- Creep communication
 - Map reading
 - Room planner
 - Request creep
@@ -50,9 +48,7 @@ Note: Each part can be found on multiple categories and their logic does change 
 - Config
 - Constants
 - Stats
-- Creep communication
-- Room communication
-- Structure communication
+- Communication
 - Creep sayings
 
 To see detailed information on a part see their category in the navigation bar.
