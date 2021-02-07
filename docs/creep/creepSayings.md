@@ -1,6 +1,12 @@
 # Creep sayings
 
-System to send custom messages as a creep specific log system.
+When a creep does a new action the creep should say something to show the user what it is doing.
+
+The following parts will be included:
+
+- Function
+- On/off switch
+- Console log toggle
 
 ## Things a creep can say
 
@@ -11,3 +17,9 @@ System to send custom messages as a creep specific log system.
 
 | Function      | Description                |
 |---------------|:--------------------------:|
+
+## How is it going to work
+
+There we will be one single acces point to fulfill the toggle switches.
+
+When the function is off nothing gets executed and only when console logging is allowed for creep sayings the console gets used too.

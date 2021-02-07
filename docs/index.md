@@ -21,12 +21,15 @@ Note: Each part can be found on multiple categories and their logic does change 
 
 ### Global
 
+- Manager
+- Memory
 - Config
 - Constants
 - Stats
 - Market
 - Memory optimization
 - Communication
+- Console commands
 
 ### Room
 
@@ -42,6 +45,7 @@ Note: Each part can be found on multiple categories and their logic does change 
 - Room planner
 - Request creep
 - Structure building
+- Visuals
 
 ### Creep
 
