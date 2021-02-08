@@ -1,9 +1,16 @@
 Welcome to PandaBot's documentation!
 =========================================
 
-GitKraken board *(trello alternative)*
+.. note::
+   Feel free to contact me on the Screeps slack at **@pandamaster** if you have any questions.
 
-`Board <https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw->`_
+   `GitKraken Board <https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw->`_
+   
+   *To contribute to this project please open a pull request/issue or contact me on slack.*
+
+.. warning::
+   There is currently no code yet so all functions/config/constants tables are empty!
+   Expect change soon.
 
 The goal of this page is to show each part of the bot
 ---------------------------------------------------------
