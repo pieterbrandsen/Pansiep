@@ -1,7 +1,7 @@
 Data visualization
 ================
 
-To visualize stats on the room itself or visualize creep saynigs better this part will be used.
+To visualize stats on the room itself or visualize creep sayings better this part will be used.
 
 Its possible to draw text and objects on a room so all stats can be visualized too when needed.
 

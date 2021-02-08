@@ -28,6 +28,7 @@ All parts sorted by category
 
    global/manager
    global/logger
+   global/visuals
    global/config
    global/constants
    global/stats
