@@ -2,5 +2,6 @@
   "cSpell.words": [
     "pandabot",
     "pandamaster"
-  ]
+  ],
+  "restructuredtext.confPath": "${workspaceFolder}\\docs\\source"
 }

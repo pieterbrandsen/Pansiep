@@ -47,7 +47,7 @@ All parts sorted by category
    room/defending
    room/communication
    room/communicationStructure
-   room/mapReading
+   room/roomReading
    room/roomPlanner
    room/requestCreep
    room/structureBuilding
