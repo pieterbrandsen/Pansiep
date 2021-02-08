@@ -2,6 +2,7 @@ Welcome to PandaBot's documentation!
 =========================================
 
 GitKraken board *(trello alternative)*
+
 `Board <https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw->`_
 
 The goal of this page is to show each part of the bot
