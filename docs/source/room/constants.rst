@@ -1,5 +1,6 @@
+########################################################################
 Constants
-=============
+########################################################################
 
 Set specific constants that are only active for the **Room** category. These constants can't change on them self after a push.
 

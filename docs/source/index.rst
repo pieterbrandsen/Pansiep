@@ -19,7 +19,8 @@ There are three main categories. Keep those in mind, its going to be important l
 
 1. Global
 2. Room
-3. Creep
+3. Structure
+4. Creep
 
 Each of those categories execute code based on their category, they can communicate with each other but only one category up or down.
 
@@ -63,6 +64,14 @@ All parts sorted by category
 
 .. toctree::
    :maxdepth: 1
+   :caption: Structure
+
+   structure/build
+   structure/communication
+
+
+.. toctree::
+   :maxdepth: 1
    :caption: Creep
 
    creep/config
@@ -70,5 +79,3 @@ All parts sorted by category
    creep/stats
    creep/communication
    creep/creepSayings
-
-   

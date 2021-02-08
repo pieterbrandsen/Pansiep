@@ -1,5 +1,6 @@
+########################################################################
 Data visualization
-================
+########################################################################
 
 To visualize stats on the room itself or visualize creep sayings better this part will be used.
 
@@ -25,12 +26,12 @@ How is it going to work?
 ************************
 
 Visual endpoint
---------------------------------
+================================
 
 Send visual value with their placement to this endpoint to display it.
 
 Visual display level
---------------------------------
+================================
 
 Based on the following display levels requested display parts will be shown:
 - Debug

@@ -1,5 +1,7 @@
+########################################################################
 Market
-================
+########################################################################
+
 
 The market is important to get fast and easy resources, only problem is getting the credits so overflow needs to get sold when possible.
 
@@ -20,6 +22,6 @@ How is it going to work?
 ************************
 
 Algorithm explanation
-------------------------
+========================
 
 INSERT TEXT AND ALGORITHM HERE

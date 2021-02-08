@@ -1,5 +1,6 @@
+########################################################################
 Config
-=============
+########################################################################
 
 Set specific settings that are only active for the **Global** category. These settings can't change on them self after a push.
 

@@ -1,5 +1,6 @@
+########################################################################
 Logger
-================
+########################################################################
 
 Insert text and value to make a global log.
 
@@ -26,17 +27,17 @@ How is it going to work?
 ************************
 
 Basic log return
------------------
+=================
 
 Use the basic log title and value to create a basic logger.
 
 Colored text
-----------------
+================
 
 Color log text and is mainly used for the response codes.
 
 Response codes
------------------
+=================
 
 The following codes are possible:
 - None
