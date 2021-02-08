@@ -9,6 +9,6 @@ Link to game: [Screeps](https://screeps.com)
 
 ## Learn more about my bot
 
-[Click to read more](https://pandabot.readthedocs.io/en/latest/)
+[Click to read more](https://pandabot.readthedocs.io/)
 
 [Click to view board](https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw-)
