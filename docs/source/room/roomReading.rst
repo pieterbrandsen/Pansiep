@@ -45,7 +45,7 @@ Analyse map and use the functions below to get requested output.
 Get weak spots
 ^^^^^^^^^^^^^^^^^^
 
-The same analysing to get best spots for defense structures will be used too here but then inverted to get the weak spots.
+The same analyzing to get best spots for defense structures will be used too here but then inverted to get the weak spots.
 
 Like hit points and structures needed to kill to get inside the base.
 
