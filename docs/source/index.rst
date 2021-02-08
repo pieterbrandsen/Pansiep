@@ -51,7 +51,7 @@ All parts sorted by category
    room/communicationStructure
    room/roomReading
    room/roomPlanner
-   room/requestCreep
+   room/creepSpawning
    room/structureBuilding
 
 .. toctree::
