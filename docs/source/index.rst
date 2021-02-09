@@ -1,5 +1,6 @@
+####################################
 Welcome to PandaBot's documentation!
-=========================================
+####################################
 
 .. note::
    This documentation is about a game called `Screeps <https://screeps.com>`_ which is a JS based Real time MMO.
@@ -15,8 +16,9 @@ Welcome to PandaBot's documentation!
    There is currently no code yet so all functions/config/constants tables are empty!
    Expect change soon.
 
+================================================================
 The goal of this page is to show each part of the bot
----------------------------------------------------------
+================================================================
 
 There are three main categories. Keep those in mind, its going to be important later on.
 
@@ -30,8 +32,9 @@ Each of those categories execute code based on their category, they can communic
 Click on a part to see detailed information on the workings of that part
 Note: Each part can be found on multiple categories and their logic does change a little bit then.
 
+================================================================
 All parts sorted by category
------------------------------
+================================================================
 
 .. toctree::
    :maxdepth: 1
