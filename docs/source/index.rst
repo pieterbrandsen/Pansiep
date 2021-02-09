@@ -2,10 +2,13 @@ Welcome to PandaBot's documentation!
 =========================================
 
 .. note::
-   Feel free to contact me on the Screeps slack at **@pandamaster** if you have any questions.
+   This documentation is about a game called `Screeps <https://screeps.com>`_ which is a JS based Real time MMO.
+   To read more about the game go to their `Docs <https://docs.screeps.com/index.html>`_ or `API <https://docs.screeps.com/api/>`_
 
    `GitKraken Board <https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw->`_
    
+   Feel free to contact me on the Screeps slack at **@pandamaster** if you have any questions.
+
    *To contribute to this project please open a pull request/issue or contact me on slack.*
 
 .. warning::
