@@ -13,6 +13,7 @@ A room has different parts that need to be build and checked:
 The following parts will be included:
 - Road builder
 - Source structures
+- Controller structure
 - Defense
 - Base
 
@@ -36,13 +37,10 @@ A road must be able to be build in the same room or to a external room.
 
 A optimal path must be gathered using the road fatigue of a road.
 
-Source structures
-==================
+Source/controller structures 
+============================
 
-When needed the source structures are going to be placed.
-Container next to the source (1range) and Link in 2 range of the source.
-
-When the link is going to be build the container should be removed and removed from memory.
+Check at target if a structure needs to build/upgraded. If this is the case a check for optimal placement will be done to do the action.
 
 Defense
 ================
