@@ -84,4 +84,5 @@ All parts sorted by category
    creep/constants
    creep/stats
    creep/communication
+   creep/tasks
    creep/creepSayings

@@ -7,8 +7,8 @@ Run functions on a creep using creep's name.
 When the sender needs to check something with a creep, it can use this system to get a response.
 
 The following parts will be included:
-- [ ] Internal API
-- [ ] Different response models
+- Internal API
+- Different response models
 
 ********************
 Function list
