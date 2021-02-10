@@ -97,3 +97,10 @@ All parts sorted by category
    creep/communication
    creep/tasks
    creep/creepSayings
+
+.. toctree::
+   :maxdepth: 1
+   :caption: PandaBot
+
+   CONTRIBUTING
+   CODE_OF_CONDUCT
