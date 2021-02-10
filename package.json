@@ -4,7 +4,8 @@
   "description": "Screeps AI",
   "main": "nm",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "eslint": "eslint *",
+    "eslint-fix": "eslint * --fix"
   },
   "repository": {
     "type": "git",
@@ -16,6 +17,9 @@
     "url": "https://github.com/pieterbrandsen/PandaBot/issues"
   },
   "homepage": "https://github.com/pieterbrandsen/PandaBot#readme",
-  "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
+    "eslint": "^7.19.0"
+  }
 }

@@ -2,6 +2,10 @@
 Welcome to PandaBot's documentation!
 ####################################
 
+.. warning::
+   There is currently no code yet so all functions/config/constants tables are empty!
+   Expect change soon.
+
 .. note::
    This documentation is about a game called `Screeps <https://screeps.com>`_ which is a JS based Real time MMO.
    To read more about the game go to their `Docs <https://docs.screeps.com/index.html>`_ or `API <https://docs.screeps.com/api/>`_
@@ -12,24 +16,31 @@ Welcome to PandaBot's documentation!
 
    *To contribute to this project please open a pull request/issue or contact me on slack.*
 
-.. warning::
-   There is currently no code yet so all functions/config/constants tables are empty!
-   Expect change soon.
+
+================================
+Short bot description
+================================
+
+The bot is focussed on reliability and communication between the parts.
+
+To fullfil the needs of the colony there will be complete jobs in each room to be fulfilled by creeps.
+Based on the situation and job list the needed creeps get spawned or recycled.
+
+Using the communication the rooms and creeps can communicate with each to create a system where on a attack or job overflow. When the room can't manage something he can request help without much hassle.
 
 ================================================================
-The goal of this page is to show each part of the bot
+Part categories
 ================================================================
 
-There are three main categories. Keep those in mind, its going to be important later on.
+There are four categories. Keep those in mind, its going to be important later on.
 
 1. Global
 2. Room
 3. Structure
 4. Creep
 
-Each of those categories execute code based on their category, they can communicate with each other but only one category up or down.
+Each of those categories execute code based on their category, they can communicate with each other.
 
-Click on a part to see detailed information on the workings of that part
 Note: Each part can be found on multiple categories and their logic does change a little bit then.
 
 ================================================================
@@ -86,3 +97,10 @@ All parts sorted by category
    creep/communication
    creep/tasks
    creep/creepSayings
+
+.. toctree::
+   :maxdepth: 1
+   :caption: PandaBot
+
+   CONTRIBUTING
+   CODE_OF_CONDUCT
