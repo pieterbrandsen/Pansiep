@@ -4,7 +4,7 @@ Creep spawning & requesting
 
 Spawn creep based on what's needed, not to much and not too many.
 
-The following parts will be included:
+The following features will be included:
 - [ ] Next creep type
 - [ ] Parts
 - [ ] Spawns

@@ -5,7 +5,7 @@ Jobs
 A smart job managing system that sends a complete job instead of a single action that requires completion. 
 Not all jobs are multi targeted!
 
-The following parts will be included:
+The following features will be included:
 - Updating
 - Caching
 - CRUD endpoint

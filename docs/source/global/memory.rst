@@ -2,7 +2,7 @@
 Memory
 ########################################################################
 
-To use the memory as optimal as possible some parts need to be constructed:
+To use the memory as optimal as possible some features need to be constructed:
 
 - Optimization
 - Initialization

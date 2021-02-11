@@ -4,7 +4,7 @@ Stats
 
 Save stats in memory to use for analyzing later, this is really usefully to analyse how the bot is performing.
 
-The following parts will be included:
+The following features will be included:
 - [ ] Stats end point
 - [ ] Stats deletion request
 - [ ] Grafana board
