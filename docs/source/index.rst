@@ -45,7 +45,7 @@ Every tick the manager will be called to run everything that needs to be execute
 
 After a check to see if the manager is initialized, all cached rooms and Global features will be called.
 
-To be focus on lowering cpu usage all features that can be globalized will be globalized. A good example is the `Global market <./global/market>`_, this feature is included in **Room** class but there it is only to manage stored resource and not analyse the market.
+To be focus on lowering cpu usage all features that can be globalized will be globalized. A good example is the `Global market <./global/market.html>`_, this feature is included in **Room** class but there it is only to manage stored resource and not analyse the market.
 
 .. toctree::
    :maxdepth: 1
