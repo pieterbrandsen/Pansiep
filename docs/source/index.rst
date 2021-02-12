@@ -1,5 +1,5 @@
 ####################################
-Welcome to PandaBot's documentation!
+Welcome to Pansiep's documentation!
 ####################################
 
 .. warning::
@@ -10,11 +10,11 @@ Welcome to PandaBot's documentation!
    This documentation is about a game called `Screeps <https://screeps.com>`_ which is a JS based Real time MMO.
    To read more about the game go to their `Docs <https://docs.screeps.com/index.html>`_ or `API <https://docs.screeps.com/api/>`_
 
-   `GitKraken Board <https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw->`_
+   `My GitKraken Board <https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw->`_
    
    Feel free to contact me on the Screeps slack at **@pandamaster** if you have any questions.
 
-   *To contribute to this project please open a pull request/issue or contact me on slack.*
+   *To contribute to this project please see `CONTRIBUTING <./CONTRIBUTING.html>` or contact me on slack.*
 
 
 ********************
@@ -113,7 +113,7 @@ A creep should always try to fulfill jobs from the job queue. When no job is fou
 
 .. toctree::
    :maxdepth: 1
-   :caption: PandaBot
+   :caption: Pansiep
    :hidden:
 
    CONTRIBUTING

@@ -1,5 +1,5 @@
 {
-  "name": "pandabot",
+  "name": "Pansiep",
   "version": "0.0.0",
   "description": "Screeps AI",
   "main": "nm",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pieterbrandsen/PandaBot.git"
+    "url": "git+https://github.com/pieterbrandsen/Pansiep.git"
   },
   "author": "Pieter Brandsen",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/pieterbrandsen/PandaBot/issues"
+    "url": "https://github.com/pieterbrandsen/Pansiep/issues"
   },
-  "homepage": "https://github.com/pieterbrandsen/PandaBot#readme",
+  "homepage": "https://github.com/pieterbrandsen/Pansiep#readme",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.14.2",
     "@typescript-eslint/parser": "^4.14.2",

@@ -1,4 +1,4 @@
-# PandaBot, an artificial intelligence bot for Screeps
+# Pansiep, an artificial intelligence bot for Screeps
 
 ![Screeps header](https://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg)
 
@@ -9,6 +9,6 @@ Link to game: [Screeps](https://screeps.com)
 
 ## Learn more about my bot
 
-[Click to read more](https://pandabot.readthedocs.io/)
+[Click to read more](https://Pansiep.readthedocs.io/)
 
 [Click to view board](https://app.gitkraken.com/glo/board/YB7eUM0RFgBXNrw-)
