@@ -21,7 +21,7 @@ Welcome to PandaBot's documentation!
 Short bot description
 ********************
 
-The bot is focussed on reliability and communication between the parts.
+The bot is focussed on reliability and communication between the classes.
 
 To fullfil the needs of the colony there will be complete jobs in each room to be fulfilled by creeps.
 Based on the situation and job list the needed creeps get spawned or recycled.
