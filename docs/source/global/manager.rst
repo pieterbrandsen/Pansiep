@@ -9,7 +9,7 @@ The manager will control the following:
 - Structures
 - Creeps
 
-The following parts will be included:
+The following features will be included:
 
 - Console commands
 - Memory initialization

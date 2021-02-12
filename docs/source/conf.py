@@ -17,7 +17,7 @@ import sys
 
 # -- Project information -----------------------------------------------------
 
-project = 'PandaBot'
+project = 'Pansiep'
 copyright = '2021, Pieter Brandsen'
 author = 'Pieter Brandsen'
 
@@ -76,6 +76,11 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_theme_options = {
+    'logo_only': True,
+    'display_version': True,
+
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -87,6 +92,7 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_logo = './images/Logo.png'
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -102,7 +108,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PandaBot'
+htmlhelp_basename = 'Pansiep'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -129,7 +135,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'PandaBot.tex', 'PandaBot Documentation',
+    (master_doc, 'Pansiep.tex', 'Pansiep Documentation',
      'Pieter Brandsen', 'manual'),
 ]
 
@@ -139,7 +145,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'PandaBot', 'PandaBot Documentation',
+    (master_doc, 'Pansiep', 'Pansiep Documentation',
      [author], 1)
 ]
 
@@ -150,8 +156,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PandaBot', 'PandaBot Documentation',
-     author, 'PandaBot', 'One line description of project.',
+    (master_doc, 'Pansiep', 'Pansiep Documentation',
+     author, 'Pansiep', 'One line description of project.',
      'Miscellaneous'),
 ]
 

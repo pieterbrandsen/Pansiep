@@ -6,7 +6,7 @@ Insert text and value to make a global log.
 
 Extra settings can be added like color based on log type.
 
-The following parts will be included:
+The following features will be included:
 - Basic log return
 - Colored text
 - Response codes

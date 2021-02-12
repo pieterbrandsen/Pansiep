@@ -2,15 +2,15 @@
 Room planner
 ########################################################################
 
-To setup a room and build the base this part will be used.
+To setup a room and build the base this feature will be used.
 
-A room has different parts that need to be build and checked:
+A room has different features that need to be build and checked:
 - Defense
 - Source structures
 - Base
 - Roads
 
-The following parts will be included:
+The following features will be included:
 - Road builder
 - Source structures
 - Controller structure
@@ -45,9 +45,9 @@ Check at target if a structure needs to build/upgraded. If this is the case a ch
 Defense
 ================
 
-Optimal wall/rampart building to close the base from outsiders. When using a bunker the optimal placement differs from all other bases.
+Optimal wall/ramfeature building to close the base from outsiders. When using a bunker the optimal placement differs from all other bases.
 
-This is optimized based on the least amount of ramparts and closest to the base.
+This is optimized based on the least amount of ramfeatures and closest to the base.
 
 Base
 ================

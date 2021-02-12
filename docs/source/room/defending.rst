@@ -3,7 +3,7 @@ Defending
 ########################################################################
 
 .. warning:: 
-  This part is not ready to be used.
+  This feature is not ready to be used.
   Please check again later.
 
 When a room is being attacked it goes in defend mode and stops with certain functions/actions and focusses on defending the core and the rooms. Other rooms may be alerted based on circumstances.

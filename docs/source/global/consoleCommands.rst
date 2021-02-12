@@ -4,7 +4,7 @@ Console commands
 
 A user has control too over what the bot does. This need is fulfilled by using console commands.
 
-The following parts will be included:
+The following features will be included:
 
 - Help command
 - Way to view maps

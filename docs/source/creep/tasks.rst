@@ -4,7 +4,7 @@ Tasks
 
 To execute a job a creep takes it needs to use tasks to finish it.
 
-The following parts will be included:
+The following features will be included:
 - Movement
 - Work
 - Defense 

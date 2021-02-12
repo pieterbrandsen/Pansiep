@@ -4,7 +4,7 @@ Building
 
 Request to build structure. Adds job to job list for a creep to pickup.
 
-The following parts will be included:
+The following features will be included:
 - Structure building
 - Job adding
 - Creep notifying

@@ -2,9 +2,9 @@
 Room reading
 ########################################################################
 
-To get a readable map for the bot this part will be used. It will convert the map of the requested room to a more readable format.
+To get a readable map for the bot this feature will be used. It will convert the map of the requested room to a more readable format.
 
-The following parts will be included:
+The following features will be included:
 - Terrain return
 - Terrain filter
 - Analyse map
