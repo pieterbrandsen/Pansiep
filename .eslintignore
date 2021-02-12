@@ -1,4 +1,8 @@
-package.json
-package-lock.json
-.eslintrc.json
+# Folders
 node_modules
+docs
+dist
+
+# File types
+**/*.json
+**/*.md
