@@ -1,5 +1,7 @@
+# Folders
 node_modules
-
+dist
 docs/source/_build
 
+# Files
 screeps.json
