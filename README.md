@@ -3,7 +3,7 @@
 
 Master branch badges
 
-[![CircleCI](https://circleci.com/gh/pieterbrandsen/Pansiep.svg?style=svg)](https://circleci.com/gh/pieterbrandsen/pansiep)
+[![CircleCI](https://circleci.com/gh/pieterbrandsen/Pansiep.svg?style=svg)](https://circleci.com/gh/pieterbrandsen/Pansiep)
 
 ![Screeps header](https://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg)
 
