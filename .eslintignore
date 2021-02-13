@@ -1,0 +1,8 @@
+# Folders
+node_modules
+docs
+dist
+
+# File types
+**/*.json
+**/*.md
