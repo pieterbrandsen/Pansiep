@@ -10,6 +10,7 @@ Master branch badges
 ---
 Find me on the Screeps Slack at **@Pandamaster**
 Link to game: [Screeps](https://screeps.com)
+
 **Disclaimer:** This repo does not explain the game functions completely or at all!
 
 ## Learn more about my bot
