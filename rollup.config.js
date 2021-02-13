@@ -6,14 +6,14 @@ import screeps from "rollup-plugin-screeps";
 
 let cfg;
 const dest = process.env.DEST;
-const screepsDest = require("./screeps.json")[dest];
 
 if (!dest) {
   // eslint-disable-next-line no-console
   console.log(
     "No destination specified - code will be compiled but not uploaded"
   );
-} else if (screepsDest == null) {
+  // eslint-disable-next-line
+} else if (require("./screeps.json")[dest] == null) {
   throw new Error("Invalid upload destination");
 }
 
