@@ -1,6 +1,8 @@
 
 # Pansiep, an artificial intelligence bot for Screeps
 
+*Master branch badges*
+
 ![CI](https://www.travis-ci.com/pieterbrandsen/Pansiep.svg?branch=master)
 
 ![Screeps header](https://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg)
