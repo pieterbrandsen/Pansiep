@@ -2,7 +2,9 @@ version: 2.1
 orbs:
   node: circleci/node@3.0.0
 workflows:
-  node-tests:
+  node-build:
+    jobs: 
+      - npm run build
+    node-tests:
     jobs:
-      - node/build
       - node/test
