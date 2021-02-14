@@ -1,6 +1,10 @@
 import ErrorMapper from "./utils/errorMapper";
 
-function unwrappedLoop(): void {}
+/**
+ * Run the complete bot without ErrorMapper
+ */
+function unwrappedLoop(): void {
+}
 
 const loop = ErrorMapper.wrapLoop(unwrappedLoop);
 
