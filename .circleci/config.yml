@@ -15,7 +15,7 @@ jobs:
           cache-path: ~/project/node_modules
           override-ci-command: npm install
       - run: npm run test
-      - store_test_results: ~/project/coverage/clover.xml
+      - store_test_results: ~/project/coverage
 orbs:
   node: circleci/node@3.0.0
 version: 2.1
