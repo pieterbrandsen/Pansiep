@@ -1,9 +1,6 @@
 import _ from "lodash";
 import { SourceMapConsumer } from "source-map";
 
-// eslint-disable-next-line import/no-unresolved
-const mainMap = require("main.js.map");
-
 export default class {
   // Cache consumer
   private static consumer?: SourceMapConsumer;
@@ -11,7 +8,8 @@ export default class {
   public static get consumerMap(): SourceMapConsumer {
     if (this.consumer == null) {
       this.consumer = (new SourceMapConsumer(
-        mainMap
+        // eslint-disable-next-line
+        require("main.js.map")
       ) as unknown) as SourceMapConsumer;
     }
 
