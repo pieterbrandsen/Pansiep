@@ -14,7 +14,7 @@ Welcome to Pansiep's documentation!
    
    Feel free to contact me on the Screeps slack at **@pandamaster** if you have any questions.
 
-   *To contribute to this project please see `CONTRIBUTING <./CONTRIBUTING.html>` or contact me on slack.*
+   *To contribute to this project please see `CONTRIBUTING <./CONTRIBUTING.html>`_ or contact me on slack.*
 
 
 ********************
