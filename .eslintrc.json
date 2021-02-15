@@ -26,6 +26,8 @@
         "jest"
     ],
     "rules": {
+        "no-unused-vars": 0,
+        "no-console": "off",
         "import/extensions": [
             "error",
             "ignorePackages",
