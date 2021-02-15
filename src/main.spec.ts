@@ -4,7 +4,7 @@ import Initialization from "./memory/initialization";
 
 jest.mock("memory/initialization");
 
-describe("Initialization of memory", () => {
+describe("Main loop", () => {
   it("should initialize Global memory when its undefined", () => {
     mockGlobal<Game>("Game", {});
     mockGlobal<Memory>("Memory", {}, true);
