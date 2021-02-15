@@ -2,7 +2,7 @@
 Config
 ########################################################################
 
-Set specific settings that are only active for the **Structure** category.
+Set specific settings that are only active for the **Room** category.
 
 ********************
 Function list

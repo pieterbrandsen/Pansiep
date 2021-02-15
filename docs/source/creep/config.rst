@@ -2,7 +2,7 @@
 Config
 ########################################################################
 
-Set specific settings that are only active for the **Creep** category. These settings can't change on them self after a push.
+Set specific settings that are only active for the **Creep** category.
 
 ********************
 Function list
