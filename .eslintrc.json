@@ -2,12 +2,15 @@
     "env": {
         "browser": false,
         "es2021": true,
-        "screeps/screeps": true
+        "screeps/screeps": true,
+        "jest": true
     },
     "extends": [
         "airbnb-base",
         "plugin:import/typescript",
-        "plugin:prettier/recommended"
+        "plugin:prettier/recommended",
+        "plugin:jsdoc/recommended",
+        "plugin:jest/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -18,7 +21,9 @@
         "@typescript-eslint",
         "screeps",
         "import",
-        "prettier"
+        "prettier",
+        "jsdoc",
+        "jest"
     ],
     "rules": {
         "import/extensions": [
