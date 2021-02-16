@@ -1,5 +1,5 @@
 import { mockGlobal } from "screeps-jest";
-import { unwrappedLoop } from "./main";
+import { loop } from "./main";
 import Initialization from "./memory/initialization";
 
 jest.mock("memory/initialization");
@@ -9,7 +9,7 @@ describe("Main loop", () => {
     mockGlobal<Game>("Game", {});
     mockGlobal<Memory>("Memory", {}, true);
 
-    unwrappedLoop();
+    loop();
     expect(Initialization.IsGlobalMemoryInitialized).toBeCalled();
     expect(Initialization.InitializeGlobalMemory).toBeCalled();
   });
@@ -19,7 +19,7 @@ describe("Main loop", () => {
     mockGlobal<Memory>("Memory", {}, true);
     Initialization.IsGlobalMemoryInitialized = jest.fn(() => true);
 
-    unwrappedLoop();
+    loop();
     expect(Initialization.IsGlobalMemoryInitialized).toBeCalled();
     expect(Memory.powerCreeps).toBeUndefined();
   });
