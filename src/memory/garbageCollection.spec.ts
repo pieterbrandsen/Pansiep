@@ -3,6 +3,7 @@ import GarbageCollection from "./garbageCollection";
 
 describe("GarbageCollection of memory", () => {
   it("should remove creeps/structures memory on request and cleanup their linked memory", () => {
+    mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Memory>(
       "Memory",
       {
@@ -21,6 +22,7 @@ describe("GarbageCollection of memory", () => {
   });
 
   it("should remove room memory on request and clean up other linked memory", () => {
+    mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Memory>(
       "Memory",
       {
@@ -35,12 +37,13 @@ describe("GarbageCollection of memory", () => {
   });
 
   it("should remove the room but no creeps/structures when there are none", () => {
+    mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Memory>(
       "Memory",
       {
         rooms: { unclaimedRoom: {} },
         creeps: { aliveCreep: { spawnRoom: "claimedRoom" } },
-        structures: {structure: {}},
+        structures: { structure: {} },
       },
       true
     );
