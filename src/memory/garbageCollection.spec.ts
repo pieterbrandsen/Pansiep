@@ -40,7 +40,7 @@ describe("GarbageCollection of memory", () => {
       {
         rooms: { unclaimedRoom: {} },
         creeps: { aliveCreep: { spawnRoom: "claimedRoom" } },
-        structures: {structure: {}},
+        structures: { structure: {} },
       },
       true
     );
