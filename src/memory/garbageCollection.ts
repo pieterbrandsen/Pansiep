@@ -1,5 +1,5 @@
 import _ from "lodash";
-import Logger from '../utils/logger';
+import Logger from "../utils/logger";
 
 interface IGarbageCollection {}
 
@@ -7,7 +7,11 @@ export default class GarbageCollection implements IGarbageCollection {
   public static RemoveCreep(name: string): boolean {
     try {
       delete Memory.creeps[name];
-      Logger.Debug("memory/garbageCollection:RemoveCreep", "Deleted Creep memory", name);
+      Logger.Debug(
+        "memory/garbageCollection:RemoveCreep",
+        "Deleted Creep memory",
+        name
+      );
       return true;
     } catch (error) {
       Logger.Error("memory/garbageCollection:RemoveCreep", error, name);
@@ -18,7 +22,11 @@ export default class GarbageCollection implements IGarbageCollection {
   public static RemoveStructure(id: string): boolean {
     try {
       delete Memory.structures[id];
-      Logger.Debug("memory/garbageCollection:RemoveStructure", "Deleted Structure memory", id);
+      Logger.Debug(
+        "memory/garbageCollection:RemoveStructure",
+        "Deleted Structure memory",
+        id
+      );
       return true;
     } catch (error) {
       Logger.Error("memory/garbageCollection:RemoveStructure", error, id);
@@ -43,7 +51,11 @@ export default class GarbageCollection implements IGarbageCollection {
       });
 
       delete Memory.rooms[roomName];
-      Logger.Debug("memory/garbageCollection:RemoveRoom", "Deleted Room memory", roomName);
+      Logger.Debug(
+        "memory/garbageCollection:RemoveRoom",
+        "Deleted Room memory",
+        roomName
+      );
       return true;
     } catch (error) {
       Logger.Error("memory/garbageCollection:RemoveRoom", error, roomName);

@@ -15,9 +15,9 @@ export default class ConsoleCommands implements IConsoleCommands {
     string += `<br><br>Function   name: ${name}<br>Description: ${description}`;
     if (params && params.length > 0) {
       string += "<br>Params:";
-      params.forEach(
-        (param) => (string += `<br>Name = ${param.name}, Type = ${param.type}`)
-      );
+      params.forEach((param) => {
+        string += `<br>Name = ${param.name}, Type = ${param.type}`;
+      });
     }
     string +=
       "<br>----------------------------------------------------------------";

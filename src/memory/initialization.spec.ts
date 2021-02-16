@@ -52,7 +52,7 @@ describe("Initialization of memory", () => {
   it("should error when initialization", () => {
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
-    (global as any)["Memory"] = null;
+    (global as any).Memory = null;
 
     expect(Initialization.IsRoomMemoryInitialized(roomName)).toBeFalsy();
     expect(Initialization.IsStructureMemoryInitialized(id)).toBeFalsy();

@@ -1,19 +1,9 @@
 import GlobalConfig from "./config/global";
-import { LogTypes } from "./constants/global";
+import LogTypes from "./constants/global";
 
 interface LogType {
   name: string;
   color: string;
-}
-
-class LogTypesHelper {
-  public static Info: LogType = { name: "Info", color: "FloralWhite" };
-
-  public static Warn: LogType = { name: "Warn", color: "GoldenRod" };
-
-  public static Error: LogType = { name: "Error", color: "Crimson" };
-
-  public static Debug: LogType = { name: "Debug", color: "DodgerBlue" };
 }
 
 interface ILogger {}
@@ -68,7 +58,12 @@ export default class Logger implements ILogger {
     args?: any
   ): boolean {
     if (GlobalConfig.LogLevel < LogTypes.Info) return false;
-    return this.Log(LogTypesHelper.Info, fileLocation, message, args);
+    return this.Log(
+      { name: "Info", color: "FloralWhite" },
+      fileLocation,
+      message,
+      args
+    );
   }
 
   public static Warn(
@@ -77,7 +72,12 @@ export default class Logger implements ILogger {
     args?: any
   ): boolean {
     if (GlobalConfig.LogLevel < LogTypes.Warn) return false;
-    return this.Log(LogTypesHelper.Warn, fileLocation, message, args);
+    return this.Log(
+      { name: "Warn", color: "GoldenRod" },
+      fileLocation,
+      message,
+      args
+    );
   }
 
   public static Error(
@@ -90,7 +90,12 @@ export default class Logger implements ILogger {
       // If an error was in the logging function it should throw otherwise it would come back again here because it will error again otherwise.
       if (fileLocation === "Utils/logger:Log")
         throw new Error("Prevented stack overflow");
-      return this.Log(LogTypesHelper.Error, fileLocation, message, args);
+      return this.Log(
+        { name: "Error", color: "Crimson" },
+        fileLocation,
+        message,
+        args
+      );
     } catch (error) {
       // This should never happen!
       const logMessage = `<span style='color:DarkRed'>There was an error while logging an error!!!<br>Please check the following args and location: ${JSON.stringify(
@@ -108,6 +113,11 @@ export default class Logger implements ILogger {
     args?: any
   ): boolean {
     if (GlobalConfig.LogLevel < LogTypes.Debug) return false;
-    return this.Log(LogTypesHelper.Debug, fileLocation, message, args);
+    return this.Log(
+      { name: "Debug", color: "DodgerBlue" },
+      fileLocation,
+      message,
+      args
+    );
   }
 }
