@@ -18,3 +18,9 @@ interface Memory {
   structures: StringMap<StructureMemory>;
   stats: StringMap<StatsMemory>;
 }
+
+declare namespace NodeJS {
+  interface Global {
+    help(): string;
+  }
+}
