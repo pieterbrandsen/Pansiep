@@ -17,13 +17,13 @@ describe("Initialization of memory", () => {
     expect(Memory.rooms[roomName]).toBeDefined();
     expect(Initialization.InitializeRoomMemory(roomName)).toBeTruthy();
 
-    Initialization.InitializeStructureMemory(id);
+    Initialization.InitializeStructureMemory(id, roomName);
     expect(Memory.structures[id]).toBeDefined();
-    expect(Initialization.InitializeStructureMemory(id)).toBeTruthy();
+    expect(Initialization.InitializeStructureMemory(id, roomName)).toBeTruthy();
 
-    Initialization.InitializeCreepMemory(id);
+    Initialization.InitializeCreepMemory(id, roomName);
     expect(Memory.creeps[id]).toBeDefined();
-    expect(Initialization.InitializeCreepMemory(id)).toBeTruthy();
+    expect(Initialization.InitializeCreepMemory(id, roomName)).toBeTruthy();
   });
 
   it("should return correctly if memory is initialized", () => {
@@ -39,11 +39,11 @@ describe("Initialization of memory", () => {
     expect(Initialization.IsRoomMemoryInitialized(roomName)).toBeTruthy();
 
     expect(Initialization.IsStructureMemoryInitialized(id)).toBeFalsy();
-    Initialization.InitializeStructureMemory(id);
+    Initialization.InitializeStructureMemory(id, roomName);
     expect(Initialization.IsStructureMemoryInitialized(id)).toBeTruthy();
 
     expect(Initialization.IsCreepMemoryInitialized(id)).toBeFalsy();
-    Initialization.InitializeCreepMemory(id);
+    Initialization.InitializeCreepMemory(id, roomName);
     expect(Initialization.IsCreepMemoryInitialized(id)).toBeTruthy();
   });
 
@@ -58,7 +58,7 @@ describe("Initialization of memory", () => {
     expect(Initialization.IsCreepMemoryInitialized(id)).toBeFalsy();
 
     expect(Initialization.InitializeRoomMemory(roomName)).toBeFalsy();
-    expect(Initialization.InitializeStructureMemory(id)).toBeFalsy();
-    expect(Initialization.InitializeCreepMemory(id)).toBeFalsy();
+    expect(Initialization.InitializeStructureMemory(id, roomName)).toBeFalsy();
+    expect(Initialization.InitializeCreepMemory(id, roomName)).toBeFalsy();
   });
 });

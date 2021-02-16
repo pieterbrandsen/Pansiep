@@ -39,9 +39,13 @@ export default class Initialization implements IInitialization {
     }
   }
 
-  public static InitializeStructureMemory(id: string): boolean {
+  public static InitializeStructureMemory(
+    id: string,
+    roomName: string
+  ): boolean {
     try {
-      Memory.structures[id] = {};
+      // const room = Game.rooms[roomName];
+      Memory.structures[id] = { room: roomName };
       return true;
     } catch (error) {
       console.log(error);
@@ -50,9 +54,10 @@ export default class Initialization implements IInitialization {
     }
   }
 
-  public static InitializeCreepMemory(id: string): boolean {
+  public static InitializeCreepMemory(id: string, roomName: string): boolean {
     try {
-      Memory.creeps[id] = {};
+      // const room = Game.rooms[roomName];
+      Memory.creeps[id] = { spawnRoom: roomName };
       return true;
     } catch (error) {
       console.log(error);

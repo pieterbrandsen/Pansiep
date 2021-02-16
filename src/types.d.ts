@@ -1,20 +1,20 @@
-interface StringMap {
-  [key: string]: any;
+interface StringMap<T> {
+  [key: string]: T;
 }
 
-interface CreepMemory {}
+interface StatsMemory {}
 
 interface RoomMemory {}
 
-interface Memory {
-  [key: string]: any;
-  // Global: StringMap;
-  powerCreeps: StringMap;
-  rooms: StringMap;
-  structures: StringMap;
-  creeps: StringMap;
-  flags: StringMap;
-  spawns: StringMap;
+interface CreepMemory {
+  spawnRoom: string;
+}
 
-  stats: StringMap;
+interface StructureMemory {
+  room: string;
+}
+
+interface Memory {
+  structures: StringMap<StructureMemory>;
+  stats: StringMap<StatsMemory>;
 }
