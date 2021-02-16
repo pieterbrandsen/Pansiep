@@ -1,14 +1,11 @@
-import ErrorMapper from "./utils/errorMapper";
 import Initialization from "./memory/initialization";
+import Logger from "./utils/logger";
 
 /**
- * Run the complete bot without ErrorMapper
+ *
  */
-function unwrappedLoop(): void {
+// eslint-disable-next-line import/prefer-default-export
+export function loop(): void {
   if (!Initialization.IsGlobalMemoryInitialized())
     Initialization.InitializeGlobalMemory();
 }
-
-const loop = ErrorMapper.wrapLoop(unwrappedLoop);
-
-export { loop, unwrappedLoop };
