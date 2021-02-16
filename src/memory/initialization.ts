@@ -1,3 +1,5 @@
+import Logger from '../utils/logger';
+
 interface IInitialization {}
 
 export default class Initialization implements IInitialization {
@@ -25,16 +27,17 @@ export default class Initialization implements IInitialization {
     Memory.powerCreeps = {};
     Memory.creeps = {};
     Memory.stats = {};
+    Logger.Info("memory/initialization:InitializeGlobalMemory", "Initialized Global memory");
     return true;
   }
 
   public static InitializeRoomMemory(roomName: string): boolean {
     try {
       Memory.rooms[roomName] = {};
+      Logger.Info("memory/initialization:InitializeRoomMemory", "Initialized Room memory");
       return true;
     } catch (error) {
-      console.log(error);
-      Game.notify(error);
+      Logger.Error("memory/initialization:InitializeRoomMemory", error,{roomName});
       return false;
     }
   }
@@ -46,10 +49,10 @@ export default class Initialization implements IInitialization {
     try {
       // const room = Game.rooms[roomName];
       Memory.structures[id] = { room: roomName };
-      return true;
+      Logger.Info("memory/initialization:InitializeStructureMemory", "Initialized Structure memory");
+    return true;
     } catch (error) {
-      console.log(error);
-      Game.notify(error);
+      Logger.Error("memory/initialization:InitializeStructureMemory", error,{id, roomName});
       return false;
     }
   }
@@ -58,10 +61,10 @@ export default class Initialization implements IInitialization {
     try {
       // const room = Game.rooms[roomName];
       Memory.creeps[id] = { spawnRoom: roomName };
+      Logger.Info("memory/initialization:InitializeCreepMemory", "Initialized Creep memory");
       return true;
     } catch (error) {
-      console.log(error);
-      Game.notify(error);
+      Logger.Error("memory/initialization:InitializeCreepMemory", error,{id, roomName});
       return false;
     }
   }
@@ -73,8 +76,7 @@ export default class Initialization implements IInitialization {
       }
       return false;
     } catch (error) {
-      console.log(error);
-      Game.notify(error);
+      Logger.Error("memory/initialization:IsRoomMemoryInitialized", error,{ roomName});
       return false;
     }
   }
@@ -86,8 +88,7 @@ export default class Initialization implements IInitialization {
       }
       return false;
     } catch (error) {
-      console.log(error);
-      Game.notify(error);
+      Logger.Error("memory/initialization:IsStructureMemoryInitialized", error,{id});
       return false;
     }
   }
@@ -99,8 +100,7 @@ export default class Initialization implements IInitialization {
       }
       return false;
     } catch (error) {
-      console.log(error);
-      Game.notify(error);
+      Logger.Error("memory/initialization:IsCreepMemoryInitialized", error,{id});
       return false;
     }
   }

@@ -7,6 +7,7 @@ const id = "34";
 describe("Initialization of memory", () => {
   it("should initialize all required memory paths", () => {
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
+    mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Memory>("Memory", {});
 
     Initialization.InitializeGlobalMemory();
@@ -28,6 +29,7 @@ describe("Initialization of memory", () => {
 
   it("should return correctly if memory is initialized", () => {
     mockGlobal<Memory>("Memory", { powerCreeps: undefined });
+    mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
 
     expect(Initialization.IsGlobalMemoryInitialized()).toBeFalsy();
@@ -50,8 +52,7 @@ describe("Initialization of memory", () => {
   it("should error when initialization", () => {
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
-    const g = global as any;
-    g.Memory = null;
+    (global as any)["Memory"] = null;
 
     expect(Initialization.IsRoomMemoryInitialized(roomName)).toBeFalsy();
     expect(Initialization.IsStructureMemoryInitialized(id)).toBeFalsy();

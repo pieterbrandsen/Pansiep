@@ -1,4 +1,4 @@
-export class LogLevels {
+export class LogTypes {
   // Chosen log level includes all the log levels above it
   public static None = 0;
 
