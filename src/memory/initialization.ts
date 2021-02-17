@@ -71,10 +71,13 @@ export default class Initialization implements IInitialization {
     }
   }
 
-  public static InitializeCreepMemory(id: string, roomName: string): boolean {
+  public static InitializeCreepMemory(
+    creepName: string,
+    roomName: string
+  ): boolean {
     try {
       // const room = Game.rooms[roomName];
-      Memory.creeps[id] = { spawnRoom: roomName };
+      Memory.creeps[creepName] = { spawnRoom: roomName };
       Logger.Info(
         "memory/initialization:InitializeCreepMemory",
         "Initialized Creep memory"
@@ -82,7 +85,7 @@ export default class Initialization implements IInitialization {
       return true;
     } catch (error) {
       Logger.Error("memory/initialization:InitializeCreepMemory", error, {
-        id,
+        creepName,
         roomName,
       });
       return false;
