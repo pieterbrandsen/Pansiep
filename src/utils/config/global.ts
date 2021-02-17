@@ -1,7 +1,5 @@
-import LogTypes from "../constants/global";
+import { LogTypes } from "../constants/global";
 
-interface IGlobalConfig {}
-
-export default class GlobalConfig implements IGlobalConfig {
-  public static LogLevel: LogTypes = LogTypes.All;
+export default class GlobalConfig {
+  public static LogLevel: LogTypes = LogTypes.None;
 }

@@ -1,3 +1,1 @@
-interface IStructureConfig {}
-
-export default class StructureConfig implements IStructureConfig {}
+export default class StructureConfig {}

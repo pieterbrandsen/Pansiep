@@ -1,10 +1,7 @@
 import Initialization from "../memory/initialization";
 import GarbageCollection from "../memory/garbageCollection";
-import Logger from "./logger";
 
-interface IConsoleCommands {}
-
-export default class ConsoleCommands implements IConsoleCommands {
+export default class ConsoleCommands {
   public static AssignCommandsToHeap(): boolean {
     if (global.help === undefined) global.help = this.HelpCommand;
 
@@ -135,7 +132,7 @@ export default class ConsoleCommands implements IConsoleCommands {
   }
 
   public static HelpCommand(): string {
-    let helpMessage: string = "<span style='color:Cornsilk'>";
+    let helpMessage = "<span style='color:Cornsilk'>";
     helpMessage += "All functions accessible using the Console";
     helpMessage += this.DescribeFunction(
       "functionName",

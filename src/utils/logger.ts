@@ -1,19 +1,17 @@
 import GlobalConfig from "./config/global";
-import LogTypes from "./constants/global";
+import { LogTypes } from "./constants/global";
 
 interface LogType {
   name: string;
   color: string;
 }
 
-interface ILogger {}
-
-export default class Logger implements ILogger {
+export default class Logger {
   private static Log(
     logType: LogType,
     fileLocation: string,
     message: string,
-    args?: any
+    args?: unknown
   ): boolean {
     try {
       console.log(this.MessageGenerator(fileLocation, message, logType, args));
@@ -28,9 +26,9 @@ export default class Logger implements ILogger {
     fileLocation: string,
     message: string,
     logInfo: LogType,
-    args?: any
+    args?: unknown
   ): string {
-    let htmlString: string = `<span style='color:${logInfo.color}'>`;
+    let htmlString = `<span style='color:${logInfo.color}'>`;
     htmlString += `<b>${logInfo.name}</b>`;
     htmlString += `<br><b>Message: </b>${message}`;
     if (args) {
@@ -55,7 +53,7 @@ export default class Logger implements ILogger {
   public static Info(
     fileLocation: string,
     message: string,
-    args?: any
+    args?: unknown
   ): boolean {
     if (GlobalConfig.LogLevel < LogTypes.Info) return false;
     return this.Log(
@@ -69,7 +67,7 @@ export default class Logger implements ILogger {
   public static Warn(
     fileLocation: string,
     message: string,
-    args?: any
+    args?: unknown
   ): boolean {
     if (GlobalConfig.LogLevel < LogTypes.Warn) return false;
     return this.Log(
@@ -83,7 +81,7 @@ export default class Logger implements ILogger {
   public static Error(
     fileLocation: string,
     message: string,
-    args?: any
+    args?: unknown
   ): boolean {
     if (GlobalConfig.LogLevel < LogTypes.Error) return false;
     try {
@@ -110,7 +108,7 @@ export default class Logger implements ILogger {
   public static Debug(
     fileLocation: string,
     message: string,
-    args?: any
+    args?: unknown
   ): boolean {
     if (GlobalConfig.LogLevel < LogTypes.Debug) return false;
     return this.Log(

@@ -1,3 +1,1 @@
-interface ICreepConfig {}
-
-export default class CreepConfig implements ICreepConfig {}
+export default class CreepConfig {}

@@ -1,8 +1,7 @@
 import Logger from "../utils/logger";
+import UpdateCache from "./updateCache";
 
-interface IInitialization {}
-
-export default class Initialization implements IInitialization {
+export default class Initialization {
   public static IsGlobalMemoryInitialized(): boolean {
     if (
       Memory &&
@@ -27,6 +26,12 @@ export default class Initialization implements IInitialization {
     Memory.powerCreeps = {};
     Memory.creeps = {};
     Memory.stats = {};
+    Memory.cache = {
+      creeps: { data: {}, nextCheckTick: 0 },
+      structures: { data: {}, nextCheckTick: 0 },
+      rooms: { data: [], nextCheckTick: 0 },
+    };
+    if (!UpdateCache.Update()) return false;
     Logger.Info(
       "memory/initialization:InitializeGlobalMemory",
       "Initialized Global memory"
@@ -77,7 +82,7 @@ export default class Initialization implements IInitialization {
   ): boolean {
     try {
       // const room = Game.rooms[roomName];
-      Memory.creeps[creepName] = { spawnRoom: roomName };
+      Memory.creeps[creepName] = { commandRoom: roomName };
       Logger.Info(
         "memory/initialization:InitializeCreepMemory",
         "Initialized Creep memory"

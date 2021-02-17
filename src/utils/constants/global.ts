@@ -1,4 +1,4 @@
-export default class LogTypes {
+export class LogTypes {
   // Chosen log level includes all the log levels above it
   public static None = 0;
 
@@ -12,3 +12,11 @@ export default class LogTypes {
 
   public static All = 999;
 }
+
+export const Username = "PandaMaster";
+
+export const CacheNextCheckIncrement = {
+  rooms: 50,
+  structures: 50,
+  creeps: 50,
+};

@@ -1,14 +1,13 @@
 import Logger from "../utils/logger";
-import Initialization from "./initialization";
 import RoomHelper from "../room/helper";
 import { CacheNextCheckIncrement } from "../utils/constants/global";
 
 export default class UpdateCache {
-  public static UpdateCache(): boolean {
+  public static Update(): boolean {
     if (!this.UpdateRoomsCache()) return false;
     if (!this.UpdateStructuresCache()) return false;
     if (!this.UpdateCreepsCache()) return false;
-    Logger.Info("src/memory/updateCache:UpdateCache", "Updated the cache where needed");
+
     return true;
   }
 
@@ -39,21 +38,18 @@ export default class UpdateCache {
   public static UpdateStructuresCache(): boolean {
     try {
       if (Memory.cache.structures.nextCheckTick > Game.time) return true;
-      
+
       Memory.cache.structures.data = {};
       Memory.cache.structures.nextCheckTick =
         Game.time + CacheNextCheckIncrement.structures;
 
       Object.keys(Game.structures).forEach((key) => {
-        let structureMemory = Memory.structures[key];
-        if (structureMemory === undefined) {
-          const structure = Game.structures[key]; 
-          Initialization.InitializeStructureMemory(key, structure.room.name);
-          structureMemory = Memory.structures[key]
-        } 
-
-        if (Memory.cache.structures.data[structureMemory.room] === undefined) Memory.cache.structures.data[structureMemory.room] = [];
-        Memory.cache.structures.data[structureMemory.room].push(key);
+        const structureMemory = Memory.structures[key];
+        if (structureMemory !== undefined) {
+          if (Memory.cache.structures.data[structureMemory.room] === undefined)
+            Memory.cache.structures.data[structureMemory.room] = [];
+          Memory.cache.structures.data[structureMemory.room].push(key);
+        }
       });
 
       Logger.Debug(
@@ -72,18 +68,15 @@ export default class UpdateCache {
       if (Memory.cache.creeps.nextCheckTick > Game.time) return true;
 
       Memory.cache.creeps.data = {};
-      Memory.cache.rooms.nextCheckTick =
+      Memory.cache.creeps.nextCheckTick =
         Game.time + CacheNextCheckIncrement.creeps;
       Object.keys(Game.creeps).forEach((key) => {
-        let creepMemory = Memory.creeps[key];
-        if (creepMemory === undefined) {
-          const creep = Game.creeps[key];
-          Initialization.InitializeCreepMemory(key, creep.room.name);
-          creepMemory = Memory.creeps[key]
-        } 
-
-        if (Memory.cache.creeps.data[creepMemory.commandRoom] === undefined) Memory.cache.creeps.data[creepMemory.commandRoom] = [];
-        Memory.cache.creeps.data[creepMemory.commandRoom].push(key);
+        const creepMemory = Memory.creeps[key];
+        if (creepMemory !== undefined) {
+          if (Memory.cache.creeps.data[creepMemory.commandRoom] === undefined)
+            Memory.cache.creeps.data[creepMemory.commandRoom] = [];
+          Memory.cache.creeps.data[creepMemory.commandRoom].push(key);
+        }
       });
 
       Logger.Debug(

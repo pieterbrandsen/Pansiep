@@ -1,12 +1,12 @@
 import { mockGlobal } from "screeps-jest";
 import Logger from "./logger";
 import GlobalConfig from "./config/global";
-import LogTypes from "./constants/global";
+import { LogTypes } from "./constants/global";
 
-const fileLocation: string = "utils/logger:unit";
-const message: string = "A message";
-const value: number = 345;
-const smallObject: object = { anProperty: {} };
+const fileLocation = "utils/logger:unit";
+const message = "A message";
+const value = 345;
+const smallObject: Record<string, unknown> = { anProperty: {} };
 
 describe("Logging message with text", () => {
   it("should return true after the message has been logged", () => {
@@ -31,6 +31,7 @@ describe("Logging message with text", () => {
 
     expect(Logger.Error("Utils/logger:Log", message)).toBeFalsy();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).console = null;
     const originalErrorMethod = Logger.Error;
     Logger.Error = () => false;
@@ -41,8 +42,8 @@ describe("Logging message with text", () => {
   it("should make the object inputted shorter than the original object", () => {
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
-    // eslint-disable-next-line no-undef
-    const longObject: StringMap<object> = {};
+
+    const longObject: Record<string, unknown> = {};
     for (let i = 0; i < 1000; i += 1) {
       longObject[i] = smallObject;
     }
