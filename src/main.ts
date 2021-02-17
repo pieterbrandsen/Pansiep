@@ -1,5 +1,5 @@
 import Initialization from "./memory/initialization";
-import Logger from "./utils/logger";
+import ConsoleCommands from "./utils/consoleCommands";
 
 /**
  *
@@ -8,4 +8,6 @@ import Logger from "./utils/logger";
 export function loop(): void {
   if (!Initialization.IsGlobalMemoryInitialized())
     Initialization.InitializeGlobalMemory();
+
+  ConsoleCommands.AssignCommandsToHeap();
 }

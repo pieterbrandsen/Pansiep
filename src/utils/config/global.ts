@@ -1,4 +1,4 @@
-import { LogTypes } from "../constants/global";
+import LogTypes from "../constants/global";
 
 interface IGlobalConfig {}
 

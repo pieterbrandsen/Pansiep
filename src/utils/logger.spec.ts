@@ -1,61 +1,61 @@
+import { mockGlobal } from "screeps-jest";
 import Logger from "./logger";
 import GlobalConfig from "./config/global";
-import {LogTypes} from "./constants/global";
-import { mockGlobal } from "screeps-jest";
-import { debug } from "console";
+import LogTypes from "./constants/global";
 
-const fileLocation: string = "utils/logger:unit"
+const fileLocation: string = "utils/logger:unit";
 const message: string = "A message";
 const value: number = 345;
-const smallObject: object = {anProperty: {}};
+const smallObject: object = { anProperty: {} };
 
 describe("Logging message with text", () => {
   it("should return true after the message has been logged", () => {
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
-    expect(Logger.Info(fileLocation,message, value)).toBeTruthy();
-    expect(Logger.Warn(fileLocation,message)).toBeTruthy();
-    expect(Logger.Error(fileLocation,message, smallObject)).toBeTruthy();
-    expect(Logger.Debug(fileLocation,message)).toBeTruthy();
-  
+    expect(Logger.Info(fileLocation, message, value)).toBeTruthy();
+    expect(Logger.Warn(fileLocation, message)).toBeTruthy();
+    expect(Logger.Error(fileLocation, message, smallObject)).toBeTruthy();
+    expect(Logger.Debug(fileLocation, message)).toBeTruthy();
+
     GlobalConfig.LogLevel = LogTypes.Info;
-    expect(Logger.Info(fileLocation,message)).toBeTruthy();
+    expect(Logger.Info(fileLocation, message)).toBeTruthy();
     GlobalConfig.LogLevel = LogTypes.Warn;
-    expect(Logger.Warn(fileLocation,message)).toBeTruthy();
+    expect(Logger.Warn(fileLocation, message)).toBeTruthy();
     GlobalConfig.LogLevel = LogTypes.Error;
-    expect(Logger.Error(fileLocation,message)).toBeTruthy();
+    expect(Logger.Error(fileLocation, message)).toBeTruthy();
     GlobalConfig.LogLevel = LogTypes.Debug;
-    expect(Logger.Debug(fileLocation,message)).toBeTruthy();
+    expect(Logger.Debug(fileLocation, message)).toBeTruthy();
   });
 
-  it('should return false after the function returned an error', () => {
+  it("should return false after the function returned an error", () => {
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
 
-    expect(Logger.Error("Utils/logger:Log",message)).toBeFalsy();
-    
-    (global as any)["console"] = null;
+    expect(Logger.Error("Utils/logger:Log", message)).toBeFalsy();
+
+    (global as any).console = null;
     const originalErrorMethod = Logger.Error;
     Logger.Error = () => false;
-    expect(Logger.Info(fileLocation,message, value)).toBeFalsy();
+    expect(Logger.Info(fileLocation, message, value)).toBeFalsy();
     Logger.Error = originalErrorMethod;
   });
 
-  it('should make the object inputted shorter than the original object', () => {
+  it("should make the object inputted shorter than the original object", () => {
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
-    let longObject:StringMap<object> = {};
-    for (let i = 0; i < 1000; i++) {
-      longObject[i] = smallObject
+    // eslint-disable-next-line no-undef
+    const longObject: StringMap<object> = {};
+    for (let i = 0; i < 1000; i += 1) {
+      longObject[i] = smallObject;
     }
-    expect(Logger.Info(fileLocation,message, longObject)).toBeTruthy();
+    expect(Logger.Info(fileLocation, message, longObject)).toBeTruthy();
   });
 
-  it ('should not log message when logging is off or too low for that type', () => {
+  it("should not log message when logging is off or too low for that type", () => {
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     // console.log(GlobalConfig.LogLevel, LogTypes.Error);
     GlobalConfig.LogLevel = LogTypes.None;
-    expect(Logger.Info(fileLocation,message)).toBeFalsy();
-    expect(Logger.Warn(fileLocation,message)).toBeFalsy();
-    expect(Logger.Error(fileLocation,message)).toBeFalsy();
-    expect(Logger.Debug(fileLocation,message)).toBeFalsy();
+    expect(Logger.Info(fileLocation, message)).toBeFalsy();
+    expect(Logger.Warn(fileLocation, message)).toBeFalsy();
+    expect(Logger.Error(fileLocation, message)).toBeFalsy();
+    expect(Logger.Debug(fileLocation, message)).toBeFalsy();
   });
 });
