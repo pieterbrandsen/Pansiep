@@ -1,6 +1,7 @@
 import Logger from "../utils/logger";
 import RoomHelper from "../room/helper";
 import { CacheNextCheckIncrement } from "../utils/constants/global";
+import { CachedStructureTypes } from "../utils/constants/structure";
 
 export default class UpdateCache {
   public static Update(): boolean {
@@ -44,8 +45,12 @@ export default class UpdateCache {
         Game.time + CacheNextCheckIncrement.structures;
 
       Object.keys(Game.structures).forEach((key) => {
+        const structure = Game.structures[key];
         const structureMemory = Memory.structures[key];
-        if (structureMemory !== undefined) {
+        if (
+          structureMemory !== undefined &&
+          CachedStructureTypes.includes(structure.structureType)
+        ) {
           if (Memory.cache.structures.data[structureMemory.room] === undefined)
             Memory.cache.structures.data[structureMemory.room] = [];
           Memory.cache.structures.data[structureMemory.room].push(key);

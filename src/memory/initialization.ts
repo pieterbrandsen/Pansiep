@@ -114,7 +114,8 @@ export default class Initialization {
   public static IsStructureMemoryInitialized(id: string): boolean {
     try {
       if (Memory.structures && Memory.structures[id]) {
-        return true;
+        const structureMemory = Memory.structures[id];
+        if (structureMemory.room) return true;
       }
       return false;
     } catch (error) {
@@ -130,7 +131,8 @@ export default class Initialization {
   public static IsCreepMemoryInitialized(id: string): boolean {
     try {
       if (Memory.creeps && Memory.creeps[id]) {
-        return true;
+        const creepMemory = Memory.creeps[id];
+        if (creepMemory.commandRoom) return true;
       }
       return false;
     } catch (error) {

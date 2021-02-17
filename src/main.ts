@@ -1,6 +1,7 @@
 import Initialization from "./memory/initialization";
 import ConsoleCommands from "./utils/consoleCommands";
 import UpdateCache from "./memory/updateCache";
+import RoomLoop from "./room/loop";
 
 /**
  *
@@ -12,4 +13,5 @@ export function loop(): void {
 
   ConsoleCommands.AssignCommandsToHeap();
   UpdateCache.Update();
+  RoomLoop.Run();
 }

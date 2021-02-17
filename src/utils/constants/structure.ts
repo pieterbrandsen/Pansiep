@@ -1,1 +1,15 @@
-export default class StructureConstants {}
+// eslint-disable-next-line
+export const CachedStructureTypes: StructureConstant[] = [
+  STRUCTURE_CONTAINER,
+  STRUCTURE_CONTROLLER,
+  STRUCTURE_FACTORY,
+  STRUCTURE_LAB,
+  STRUCTURE_LINK,
+  STRUCTURE_NUKER,
+  STRUCTURE_OBSERVER,
+  STRUCTURE_POWER_BANK,
+  STRUCTURE_SPAWN,
+  STRUCTURE_STORAGE,
+  STRUCTURE_TERMINAL,
+  STRUCTURE_TOWER,
+];
