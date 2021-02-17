@@ -3,6 +3,8 @@ import { loop } from "./main";
 import Initialization from "./memory/initialization";
 
 jest.mock("memory/initialization");
+jest.mock("memory/updateCache");
+jest.mock("room/loop");
 
 describe("Main loop", () => {
   it("should initialize Global memory when its undefined", () => {

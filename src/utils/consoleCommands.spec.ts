@@ -6,6 +6,8 @@ import Logger from "./logger";
 
 jest.mock("./logger");
 jest.mock("../memory/initialization");
+jest.mock("../memory/updateCache");
+jest.mock("../room/loop");
 jest.mock("../memory/garbageCollection");
 
 const roomName = "room";
