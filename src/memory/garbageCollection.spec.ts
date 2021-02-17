@@ -27,7 +27,7 @@ describe("GarbageCollection of memory", () => {
       "Memory",
       {
         rooms: { unclaimedRoom: {} },
-        creeps: { deadCreep: { spawnRoom: "unclaimedRoom" } },
+        creeps: { deadCreep: { commandRoom: "unclaimedRoom" } },
         structures: { dismantledStructures: { room: "unclaimedRoom" } },
       },
       true
@@ -42,7 +42,7 @@ describe("GarbageCollection of memory", () => {
       "Memory",
       {
         rooms: { unclaimedRoom: {} },
-        creeps: { aliveCreep: { spawnRoom: "claimedRoom" } },
+        creeps: { aliveCreep: { commandRoom: "claimedRoom" } },
         structures: { structure: {} },
       },
       true

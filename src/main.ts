@@ -1,5 +1,6 @@
 import Initialization from "./memory/initialization";
 import ConsoleCommands from "./utils/consoleCommands";
+import UpdateCache from "./memory/updateCache";
 
 /**
  *
@@ -10,4 +11,5 @@ export function loop(): void {
     Initialization.InitializeGlobalMemory();
 
   ConsoleCommands.AssignCommandsToHeap();
+  UpdateCache.Update();
 }

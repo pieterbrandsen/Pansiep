@@ -6,7 +6,13 @@ const id = "34";
 
 describe("Initialization of memory", () => {
   it("should initialize all required memory paths", () => {
-    mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
+    mockGlobal<Game>("Game", {
+      notify: jest.fn(() => undefined),
+      rooms: {},
+      time: 5000,
+      structures: {},
+      creeps: {},
+    });
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
     mockGlobal<Memory>("Memory", {});
 
@@ -52,7 +58,7 @@ describe("Initialization of memory", () => {
   it("should error when initialization", () => {
     mockGlobal<Game>("Game", { notify: jest.fn(() => undefined) });
     mockGlobal<Game>("console", { log: jest.fn(() => undefined) });
-    (global as any).Memory = null;
+    (global as any).Memory = null; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     expect(Initialization.IsRoomMemoryInitialized(roomName)).toBeFalsy();
     expect(Initialization.IsStructureMemoryInitialized(id)).toBeFalsy();

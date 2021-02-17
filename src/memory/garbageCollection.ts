@@ -1,9 +1,6 @@
-import _ from "lodash";
 import Logger from "../utils/logger";
 
-interface IGarbageCollection {}
-
-export default class GarbageCollection implements IGarbageCollection {
+export default class GarbageCollection {
   public static RemoveCreep(name: string): boolean {
     try {
       delete Memory.creeps[name];
@@ -38,7 +35,7 @@ export default class GarbageCollection implements IGarbageCollection {
     try {
       Object.keys(Memory.creeps).forEach((creepName) => {
         const creep = Memory.creeps[creepName];
-        if (creep.spawnRoom === roomName) {
+        if (creep.commandRoom === roomName) {
           this.RemoveCreep(creepName);
         }
       });

@@ -1,3 +1,1 @@
-interface IRoomConfig {}
-
-export default class RoomConfig implements IRoomConfig {}
+export default class RoomConfig {}
