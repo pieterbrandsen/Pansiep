@@ -60,6 +60,6 @@
   "dependencies": {
     "lodash": "^4.17.20",
     "source-map": "^0.7.3",
-    "screeps-jest": "^1.2.0"
+    "screeps-jest": "github:eduter/screeps-jest"
   }
 }
