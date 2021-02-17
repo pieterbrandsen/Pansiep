@@ -2,7 +2,7 @@ import Logger from "../utils/logger";
 import { Username } from "../utils/constants/global";
 
 export default class RoomHelper {
-  public static GetRoomUsingName(roomName: string): Room | null {
+  public static GetRoom(roomName: string): Room | null {
     return Game.rooms[roomName];
   }
 
