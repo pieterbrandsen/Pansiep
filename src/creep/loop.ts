@@ -4,11 +4,12 @@ import Initialization from "../memory/initialization";
 export default class CreepLoop {
   public static Run(roomName: string): boolean {
     const creepNames = CreepHelper.GetAllCreepNames(roomName);
-    creepNames.forEach(name => {
+    
+    if (creepNames.length == 0) return true;
+    creepNames.forEach((name) => {
       if (Initialization.IsCreepMemoryInitialized(name)) {
         this.RunCreep(name);
-      }
-      else Initialization.InitializeCreepMemory(name, roomName); 
+      } else Initialization.InitializeCreepMemory(name, roomName);
     });
 
     return true;

@@ -3,7 +3,7 @@ export default class CreepHelper {
     return Game.creeps[creepName];
   }
 
-   public static GetAllCreepNames(roomName: string): string[] {
-    return Memory.cache.creeps.data[roomName];
+  public static GetAllCreepNames(roomName: string): string[] {
+    return Memory.cache.creeps.data[roomName] ? Memory.cache.creeps.data[roomName] : [];
   }
 }

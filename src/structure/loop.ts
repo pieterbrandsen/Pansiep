@@ -4,11 +4,12 @@ import Initialization from "../memory/initialization";
 export default class CreepLoop {
   public static Run(roomName: string): boolean {
     const structureNames = StructureHelper.GetAllStructureNames(roomName);
-    structureNames.forEach(id => {
+    
+    if (structureNames.length == 0) return true;
+    structureNames.forEach((id) => {
       if (Initialization.IsStructureMemoryInitialized(id)) {
         this.RunStructure(id);
-      }
-      else Initialization.InitializeStructureMemory(id, roomName); 
+      } else Initialization.InitializeStructureMemory(id, roomName);
     });
 
     return true;
