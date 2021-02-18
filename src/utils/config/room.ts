@@ -1,1 +1,3 @@
-export default class RoomConfig {}
+import {VisualDisplayLevels} from "../constants/room";
+
+export const VisualLevel = VisualDisplayLevels.All;
