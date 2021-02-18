@@ -20,3 +20,5 @@ export const CacheNextCheckIncrement = {
   structures: 50,
   creeps: 50,
 };
+
+export const SaveUnloadedObjectForAmountTicks = 500;

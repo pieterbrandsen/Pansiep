@@ -7,3 +7,4 @@ coverage
 # File types
 **/*.json
 **/*.md
+**/*.yml

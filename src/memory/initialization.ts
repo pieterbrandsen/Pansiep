@@ -19,6 +19,7 @@ export default class Initialization {
   }
 
   public static InitializeGlobalMemory(): boolean {
+    console.log(true);
     Memory.flags = {};
     Memory.rooms = {};
     Memory.spawns = {};
@@ -32,6 +33,7 @@ export default class Initialization {
       rooms: { data: [], nextCheckTick: 0 },
     };
     if (!UpdateCache.Update()) return false;
+    console.log(true);
     Logger.Info(
       "memory/initialization:InitializeGlobalMemory",
       "Initialized Global memory"

@@ -1,6 +1,10 @@
 import Logger from "../utils/logger";
-import RoomHelper from "../room/helper";
-import { CacheNextCheckIncrement } from "../utils/constants/global";
+import Initialization from "./initialization";
+import GarbageCollection from "./garbageCollection";
+import {
+  CacheNextCheckIncrement,
+  SaveUnloadedObjectForAmountTicks,
+} from "../utils/constants/global";
 import { CachedStructureTypes } from "../utils/constants/structure";
 
 export default class UpdateCache {
@@ -16,14 +20,36 @@ export default class UpdateCache {
     try {
       if (Memory.cache.rooms.nextCheckTick > Game.time) return true;
 
-      Memory.cache.rooms.data = [];
       Memory.cache.rooms.nextCheckTick =
         Game.time + CacheNextCheckIncrement.rooms;
+
+      const oldCache = Memory.cache.rooms.data;
+      const cache: string[] = [];
       Object.keys(Game.rooms).forEach((key) => {
-        const room = Game.rooms[key];
-        if (RoomHelper.IsMyRoom(room) || RoomHelper.IsMyReservedRoom(room))
-          Memory.cache.rooms.data.push(key);
+        const roomMemory = Memory.rooms[key];
+        if (roomMemory === undefined) {
+          Initialization.InitializeRoomMemory(key);
+        }
+        cache.push(key);
       });
+
+      Object.keys(oldCache).forEach((key) => {
+        if (Memory.rooms[key] && !cache.includes(key)) {
+          cache.push(key);
+          if (Memory.rooms[key].isNotSeenSince === undefined)
+            Memory.rooms[key].isNotSeenSince = Game.time;
+          else if (
+            (Memory.rooms[key].isNotSeenSince as number) +
+              SaveUnloadedObjectForAmountTicks * 2 <
+            Game.time
+          ) {
+            GarbageCollection.RemoveRoom(key);
+            cache.pop();
+          }
+        }
+      });
+
+      Memory.cache.rooms.data = cache;
 
       Logger.Debug(
         "src/memory/updateCache:UpdateRoomsCache",
@@ -40,22 +66,46 @@ export default class UpdateCache {
     try {
       if (Memory.cache.structures.nextCheckTick > Game.time) return true;
 
-      Memory.cache.structures.data = {};
       Memory.cache.structures.nextCheckTick =
         Game.time + CacheNextCheckIncrement.structures;
 
+      const oldCache = Memory.cache.structures.data;
+      const cache: StringMap<string[]> = {};
       Object.keys(Game.structures).forEach((key) => {
         const structure = Game.structures[key];
-        const structureMemory = Memory.structures[key];
-        if (
-          structureMemory !== undefined &&
-          CachedStructureTypes.includes(structure.structureType)
-        ) {
-          if (Memory.cache.structures.data[structureMemory.room] === undefined)
-            Memory.cache.structures.data[structureMemory.room] = [];
-          Memory.cache.structures.data[structureMemory.room].push(key);
+        let structureMemory = Memory.structures[key];
+        if (CachedStructureTypes.includes(structure.structureType)) {
+          if (structureMemory === undefined) {
+            Initialization.InitializeStructureMemory(key, structure.room.name);
+            structureMemory = Memory.structures[key];
+          }
+
+          if (!cache[structureMemory.room]) cache[structureMemory.room] = [];
+          cache[structureMemory.room].push(key);
         }
       });
+
+      Object.keys(oldCache).forEach((key) => {
+        if (!cache[key]) cache[key] = [];
+        const newStructures = cache[key];
+        oldCache[key].forEach((id) => {
+          if (Memory.structures[id] && !newStructures.includes(id)) {
+            newStructures.push(id);
+            if (Memory.structures[id].isNotSeenSince === undefined)
+              Memory.structures[id].isNotSeenSince = Game.time;
+            else if (
+              (Memory.structures[id].isNotSeenSince as number) +
+                SaveUnloadedObjectForAmountTicks <
+              Game.time
+            ) {
+              GarbageCollection.RemoveStructure(id);
+              newStructures.pop();
+            }
+          }
+        });
+      });
+
+      Memory.cache.structures.data = cache;
 
       Logger.Debug(
         "src/memory/updateCache:UpdateStructuresCache",
@@ -72,17 +122,45 @@ export default class UpdateCache {
     try {
       if (Memory.cache.creeps.nextCheckTick > Game.time) return true;
 
-      Memory.cache.creeps.data = {};
       Memory.cache.creeps.nextCheckTick =
         Game.time + CacheNextCheckIncrement.creeps;
+
+      const oldCache = Memory.cache.creeps.data;
+      const cache: StringMap<string[]> = {};
       Object.keys(Game.creeps).forEach((key) => {
-        const creepMemory = Memory.creeps[key];
-        if (creepMemory !== undefined) {
-          if (Memory.cache.creeps.data[creepMemory.commandRoom] === undefined)
-            Memory.cache.creeps.data[creepMemory.commandRoom] = [];
-          Memory.cache.creeps.data[creepMemory.commandRoom].push(key);
+        let creepMemory = Memory.creeps[key];
+        if (creepMemory === undefined) {
+          const creep = Game.creeps[key];
+          Initialization.InitializeCreepMemory(key, creep.room.name);
+          creepMemory = Memory.creeps[key];
         }
+
+        if (!cache[creepMemory.commandRoom])
+          cache[creepMemory.commandRoom] = [];
+        cache[creepMemory.commandRoom].push(key);
       });
+
+      Object.keys(oldCache).forEach((key) => {
+        if (!cache[key]) cache[key] = [];
+        const newCreeps = cache[key];
+        oldCache[key].forEach((name) => {
+          if (Memory.creeps[name] && !newCreeps.includes(name)) {
+            newCreeps.push(name);
+            if (Memory.creeps[name].isNotSeenSince === undefined)
+              Memory.creeps[name].isNotSeenSince = Game.time;
+            else if (
+              (Memory.creeps[name].isNotSeenSince as number) +
+                SaveUnloadedObjectForAmountTicks <
+              Game.time
+            ) {
+              GarbageCollection.RemoveCreep(name);
+              newCreeps.pop();
+            }
+          }
+        });
+      });
+
+      Memory.cache.creeps.data = cache;
 
       Logger.Debug(
         "src/memory/updateCache:UpdateCreepsCache",

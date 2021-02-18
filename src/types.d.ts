@@ -4,14 +4,17 @@ interface StringMap<T> {
 // eslint-disable-next-line
 interface StatsMemory {}
 
-// eslint-disable-next-line
-interface RoomMemory {}
+interface RoomMemory {
+  isNotSeenSince?: number;
+}
 
 interface CreepMemory {
+  isNotSeenSince?: number;
   commandRoom: string;
 }
 
 interface StructureMemory {
+  isNotSeenSince?: number;
   room: string;
 }
 

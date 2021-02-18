@@ -19,6 +19,7 @@ export default class GarbageCollection {
   public static RemoveStructure(id: string): boolean {
     try {
       delete Memory.structures[id];
+
       Logger.Debug(
         "memory/garbageCollection:RemoveStructure",
         "Deleted Structure memory",
