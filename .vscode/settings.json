@@ -11,6 +11,7 @@
     "codecov",
     "cond",
     "eduter",
+    "gcov",
     "memroy",
     "packrat",
     "pandamaster",
