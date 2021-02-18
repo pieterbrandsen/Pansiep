@@ -22,7 +22,7 @@ jobs:
       - node/install-packages:
           cache-path: ~/project/node_modules
           override-ci-command: npm install
-      - run: codecov --token="$CODECOV_TOKEN" --disable=gcov 
+      - run: ./node_modules/.bin/codecov --token="$CODECOV_TOKEN" --disable=gcov 
 orbs:
   node: circleci/node@3.0.0
 version: 2.1
