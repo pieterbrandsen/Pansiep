@@ -1,5 +1,6 @@
 import StructureHelper from "./helper";
 import Initialization from "../memory/initialization";
+import Stats from "../memory/stats";
 
 export default class CreepLoop {
   public static Run(roomName: string): boolean {
@@ -17,7 +18,9 @@ export default class CreepLoop {
 
   private static RunStructure(id: string): boolean {
     const structure = StructureHelper.GetStructure(id);
-    console.log(structure);
+    if (structure === null) return true;
+
+    Stats.StructureStatsPreProcessing(structure);
     return true;
   }
 }

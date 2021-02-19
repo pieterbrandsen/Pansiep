@@ -2,6 +2,7 @@ import RoomHelper from "./helper";
 import StructureLoop from "../structure/loop";
 import CreepLoop from "../creep/loop";
 import Initialization from "../memory/initialization";
+import Stats from "../memory/stats";
 
 export default class RoomLoop {
   public static Run(): boolean {
@@ -17,9 +18,13 @@ export default class RoomLoop {
 
   private static RunRoom(roomName: string): boolean {
     const room = RoomHelper.GetRoom(roomName);
+
+    if (room === null) return true;
+    Stats.RoomStatsPreProcessing(room);
     StructureLoop.Run(roomName);
     CreepLoop.Run(roomName);
-    console.log(room);
+    Stats.RoomStatsProcessing(room);
+
     return true;
   }
 }

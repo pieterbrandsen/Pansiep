@@ -1,5 +1,6 @@
 import CreepHelper from "./helper";
 import Initialization from "../memory/initialization";
+import Stats from "../memory/stats";
 
 export default class CreepLoop {
   public static Run(roomName: string): boolean {
@@ -17,7 +18,9 @@ export default class CreepLoop {
 
   private static RunCreep(name: string): boolean {
     const creep = CreepHelper.GetCreep(name);
-    console.log(creep);
+    if (creep === null) return true;
+
+    Stats.CreepStatsPreProcessing(creep);
     return true;
   }
 }

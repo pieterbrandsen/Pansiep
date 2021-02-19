@@ -22,3 +22,5 @@ export const CacheNextCheckIncrement = {
 };
 
 export const SaveUnloadedObjectForAmountTicks = 500;
+
+export const AverageValueOverAmountTicks = 100;

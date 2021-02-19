@@ -1,4 +1,5 @@
 import Logger from "../utils/logger";
+import Stats from "./stats";
 
 export default class GarbageCollection {
   public static RemoveCreep(name: string): boolean {
@@ -49,6 +50,9 @@ export default class GarbageCollection {
       });
 
       delete Memory.rooms[roomName];
+
+      Stats.ResetRoomStats(roomName);
+
       Logger.Debug(
         "memory/garbageCollection:RemoveRoom",
         "Deleted Room memory",

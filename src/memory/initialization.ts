@@ -1,5 +1,6 @@
 import Logger from "../utils/logger";
 import UpdateCache from "./updateCache";
+import Stats from "./stats";
 
 export default class Initialization {
   public static IsGlobalMemoryInitialized(): boolean {
@@ -11,7 +12,8 @@ export default class Initialization {
       Memory.spawns &&
       Memory.structures &&
       Memory.creeps &&
-      Memory.stats
+      Memory.stats &&
+      global.preProcessingStats
     ) {
       return true;
     }
@@ -19,21 +21,20 @@ export default class Initialization {
   }
 
   public static InitializeGlobalMemory(): boolean {
-    console.log(true);
     Memory.flags = {};
     Memory.rooms = {};
     Memory.spawns = {};
     Memory.structures = {};
     Memory.powerCreeps = {};
     Memory.creeps = {};
-    Memory.stats = {};
     Memory.cache = {
       creeps: { data: {}, nextCheckTick: 0 },
       structures: { data: {}, nextCheckTick: 0 },
       rooms: { data: [], nextCheckTick: 0 },
     };
+
+    Stats.ResetStats();
     if (!UpdateCache.Update()) return false;
-    console.log(true);
     Logger.Info(
       "memory/initialization:InitializeGlobalMemory",
       "Initialized Global memory"
@@ -62,9 +63,11 @@ export default class Initialization {
     roomName: string
   ): boolean {
     try {
-      // const room = Game.rooms[roomName];
+      // const structure = StructureHelper.GetStructure(id);
+      // if (structure === null) throw new Error("Structure was null!");
+
       Memory.structures[id] = { room: roomName };
-      Logger.Info(
+      Logger.Debug(
         "memory/initialization:InitializeStructureMemory",
         "Initialized Structure memory"
       );
@@ -85,7 +88,7 @@ export default class Initialization {
     try {
       // const room = Game.rooms[roomName];
       Memory.creeps[creepName] = { commandRoom: roomName };
-      Logger.Info(
+      Logger.Debug(
         "memory/initialization:InitializeCreepMemory",
         "Initialized Creep memory"
       );
