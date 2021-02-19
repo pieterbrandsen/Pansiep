@@ -1,4 +1,4 @@
-import GlobalConfig from "./config/global";
+import { LogLevel } from "./config/global";
 import { LogTypes } from "./constants/global";
 
 interface LogType {
@@ -55,7 +55,7 @@ export default class Logger {
     message: string,
     args?: unknown
   ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Info) return false;
+    if (LogLevel < LogTypes.Info) return false;
     return this.Log(
       { name: "Info", color: "FloralWhite" },
       fileLocation,
@@ -69,7 +69,7 @@ export default class Logger {
     message: string,
     args?: unknown
   ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Warn) return false;
+    if (LogLevel < LogTypes.Warn) return false;
     return this.Log(
       { name: "Warn", color: "GoldenRod" },
       fileLocation,
@@ -83,7 +83,7 @@ export default class Logger {
     message: string,
     args?: unknown
   ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Error) return false;
+    if (LogLevel < LogTypes.Error) return false;
     try {
       // If an error was in the logging function it should throw otherwise it would come back again here because it will error again otherwise.
       if (fileLocation === "Utils/logger:Log")
@@ -110,7 +110,7 @@ export default class Logger {
     message: string,
     args?: unknown
   ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Debug) return false;
+    if (LogLevel < LogTypes.Debug) return false;
     return this.Log(
       { name: "Debug", color: "DodgerBlue" },
       fileLocation,

@@ -70,7 +70,7 @@ export default class UpdateCache {
         Game.time + CacheNextCheckIncrement.structures;
 
       const oldCache = Memory.cache.structures.data;
-      const cache: StringMap<string[]> = {};
+      const cache: StringMap<StructureCache[]> = {};
       Object.keys(Game.structures).forEach((key) => {
         const structure = Game.structures[key];
         let structureMemory = Memory.structures[key];
@@ -81,24 +81,30 @@ export default class UpdateCache {
           }
 
           if (!cache[structureMemory.room]) cache[structureMemory.room] = [];
-          cache[structureMemory.room].push(key);
+          cache[structureMemory.room].push({
+            id: key,
+            structureType: structure.structureType,
+          });
         }
       });
 
       Object.keys(oldCache).forEach((key) => {
         if (!cache[key]) cache[key] = [];
         const newStructures = cache[key];
-        oldCache[key].forEach((id) => {
-          if (Memory.structures[id] && !newStructures.includes(id)) {
-            newStructures.push(id);
-            if (Memory.structures[id].isNotSeenSince === undefined)
-              Memory.structures[id].isNotSeenSince = Game.time;
+        oldCache[key].forEach((structure) => {
+          if (
+            Memory.structures[structure.id] &&
+            !newStructures.some((s) => s.id === structure.id)
+          ) {
+            newStructures.push(structure);
+            if (Memory.structures[structure.id].isNotSeenSince === undefined)
+              Memory.structures[structure.id].isNotSeenSince = Game.time;
             else if (
-              (Memory.structures[id].isNotSeenSince as number) +
+              (Memory.structures[structure.id].isNotSeenSince as number) +
                 SaveUnloadedObjectForAmountTicks <
               Game.time
             ) {
-              GarbageCollection.RemoveStructure(id);
+              GarbageCollection.RemoveStructure(structure.id);
               newStructures.pop();
             }
           }
@@ -126,7 +132,7 @@ export default class UpdateCache {
         Game.time + CacheNextCheckIncrement.creeps;
 
       const oldCache = Memory.cache.creeps.data;
-      const cache: StringMap<string[]> = {};
+      const cache: StringMap<CreepCache[]> = {};
       Object.keys(Game.creeps).forEach((key) => {
         let creepMemory = Memory.creeps[key];
         if (creepMemory === undefined) {
@@ -137,23 +143,26 @@ export default class UpdateCache {
 
         if (!cache[creepMemory.commandRoom])
           cache[creepMemory.commandRoom] = [];
-        cache[creepMemory.commandRoom].push(key);
+        cache[creepMemory.commandRoom].push({ id: key, creepType: "None" });
       });
 
       Object.keys(oldCache).forEach((key) => {
         if (!cache[key]) cache[key] = [];
         const newCreeps = cache[key];
-        oldCache[key].forEach((name) => {
-          if (Memory.creeps[name] && !newCreeps.includes(name)) {
-            newCreeps.push(name);
-            if (Memory.creeps[name].isNotSeenSince === undefined)
-              Memory.creeps[name].isNotSeenSince = Game.time;
+        oldCache[key].forEach((creep) => {
+          if (
+            Memory.creeps[creep.id] &&
+            !newCreeps.some((c) => c.id === creep.id)
+          ) {
+            newCreeps.push(creep);
+            if (Memory.creeps[creep.id].isNotSeenSince === undefined)
+              Memory.creeps[creep.id].isNotSeenSince = Game.time;
             else if (
-              (Memory.creeps[name].isNotSeenSince as number) +
+              (Memory.creeps[creep.id].isNotSeenSince as number) +
                 SaveUnloadedObjectForAmountTicks <
               Game.time
             ) {
-              GarbageCollection.RemoveCreep(name);
+              GarbageCollection.RemoveCreep(creep.id);
               newCreeps.pop();
             }
           }
