@@ -1,9 +1,47 @@
-import Logger from "../utils/logger";
-import UpdateCache from "./updateCache";
-import Stats from "./stats";
+import { Log } from "../utils/logger";
+import { Update } from "./updateCache";
+import { ResetStats, ResetPreProcessingStats } from "./stats";
+import { FuncWrapper } from "../utils/wrapper";
+import { AssignCommandsToHeap } from "../utils/consoleCommands";
+import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
 
-export default class Initialization {
-  public static IsGlobalMemoryInitialized(): boolean {
+export const AreHeapVarsValid = FuncWrapper(
+  function AreHeapVarsValid(): FunctionReturn {
+    const gbl = global;
+    if (
+      gbl.preProcessingStats &&
+      gbl.help &&
+      gbl.resetGlobalMemory &&
+      gbl.resetRoomMemory &&
+      gbl.resetStructureMemory &&
+      gbl.resetCreepMemory &&
+      gbl.deleteRoomMemory &&
+      gbl.deleteStructureMemory &&
+      gbl.deleteCreepMemory
+    ) {
+      return FunctionReturnHelper(FunctionReturnCodes.OK);
+    }
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  }
+);
+
+export const InitializeHeapVars = FuncWrapper(
+  function InitializeHeapVars(): FunctionReturn {
+    ResetPreProcessingStats();
+    AssignCommandsToHeap();
+
+    Log(
+      LogTypes.Info,
+      "memory/initialization:InitializeHeapVars",
+      "Initialized Heap vars"
+    );
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
+export const IsGlobalMemoryInitialized = FuncWrapper(
+  function IsGlobalMemoryInitialized(): FunctionReturn {
     if (
       Memory &&
       Memory.powerCreeps &&
@@ -12,15 +50,16 @@ export default class Initialization {
       Memory.spawns &&
       Memory.structures &&
       Memory.creeps &&
-      Memory.stats &&
-      global.preProcessingStats
+      Memory.stats
     ) {
-      return true;
+      return FunctionReturnHelper(FunctionReturnCodes.OK);
     }
-    return false;
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
+);
 
-  public static InitializeGlobalMemory(): boolean {
+export const InitializeGlobalMemory = FuncWrapper(
+  function InitializeGlobalMemory(): FunctionReturn {
     Memory.flags = {};
     Memory.rooms = {};
     Memory.spawns = {};
@@ -33,118 +72,99 @@ export default class Initialization {
       rooms: { data: [], nextCheckTick: 0 },
     };
 
-    Stats.ResetStats();
-    if (!UpdateCache.Update()) return false;
-    Logger.Info(
+    ResetStats();
+    Update();
+
+    Log(
+      LogTypes.Info,
       "memory/initialization:InitializeGlobalMemory",
       "Initialized Global memory"
     );
-    return true;
-  }
 
-  public static InitializeRoomMemory(roomName: string): boolean {
-    try {
-      Memory.rooms[roomName] = {};
-      Logger.Info(
-        "memory/initialization:InitializeRoomMemory",
-        "Initialized Room memory"
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("memory/initialization:InitializeRoomMemory", error, {
-        roomName,
-      });
-      return false;
-    }
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
+);
 
-  public static InitializeStructureMemory(
+export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
+  roomName: string
+): FunctionReturn {
+  Memory.rooms[roomName] = {};
+
+  Log(
+    LogTypes.Debug,
+    "memory/initialization:InitializeRoomMemory",
+    "Initialized Room memory"
+  );
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const InitializeStructureMemory = FuncWrapper(
+  function InitializeStructureMemory(
     id: string,
     roomName: string
-  ): boolean {
-    try {
-      // const structure = StructureHelper.GetStructure(id);
-      // if (structure === null) throw new Error("Structure was null!");
+  ): FunctionReturn {
+    Memory.structures[id] = { room: roomName };
 
-      Memory.structures[id] = { room: roomName };
-      Logger.Debug(
-        "memory/initialization:InitializeStructureMemory",
-        "Initialized Structure memory"
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("memory/initialization:InitializeStructureMemory", error, {
-        id,
-        roomName,
-      });
-      return false;
-    }
-  }
+    Log(
+      LogTypes.Debug,
+      "memory/initialization:InitializeStructureMemory",
+      "Initialized Structure memory"
+    );
 
-  public static InitializeCreepMemory(
-    creepName: string,
-    roomName: string
-  ): boolean {
-    try {
-      // const room = Game.rooms[roomName];
-      Memory.creeps[creepName] = { commandRoom: roomName };
-      Logger.Debug(
-        "memory/initialization:InitializeCreepMemory",
-        "Initialized Creep memory"
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("memory/initialization:InitializeCreepMemory", error, {
-        creepName,
-        roomName,
-      });
-      return false;
-    }
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
+);
 
-  public static IsRoomMemoryInitialized(roomName: string): boolean {
-    try {
-      if (Memory.rooms && Memory.rooms[roomName]) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      Logger.Error("memory/initialization:IsRoomMemoryInitialized", error, {
-        roomName,
-      });
-      return false;
-    }
-  }
+export const InitializeCreepMemory = FuncWrapper(function InitializeCreepMemory(
+  id: string,
+  roomName: string
+): FunctionReturn {
+  Memory.creeps[id] = { commandRoom: roomName };
 
-  public static IsStructureMemoryInitialized(id: string): boolean {
-    try {
-      if (Memory.structures && Memory.structures[id]) {
-        const structureMemory = Memory.structures[id];
-        if (structureMemory.room) return true;
-      }
-      return false;
-    } catch (error) {
-      Logger.Error(
-        "memory/initialization:IsStructureMemoryInitialized",
-        error,
-        { id }
-      );
-      return false;
-    }
-  }
+  Log(
+    LogTypes.Debug,
+    "memory/initialization:InitializeCreepMemory",
+    "Initialized Creep memory"
+  );
 
-  public static IsCreepMemoryInitialized(id: string): boolean {
-    try {
-      if (Memory.creeps && Memory.creeps[id]) {
-        const creepMemory = Memory.creeps[id];
-        if (creepMemory.commandRoom) return true;
-      }
-      return false;
-    } catch (error) {
-      Logger.Error("memory/initialization:IsCreepMemoryInitialized", error, {
-        id,
-      });
-      return false;
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const IsRoomMemoryInitialized = FuncWrapper(
+  function IsRoomMemoryInitialized(id: string): FunctionReturn {
+    if (
+      Memory.rooms &&
+      Memory.rooms[id] &&
+      Memory.cache.rooms.data.includes(id)
+    ) {
+      return FunctionReturnHelper(FunctionReturnCodes.OK);
     }
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
-}
+);
+
+export const IsStructureMemoryInitialized = FuncWrapper(
+  function IsStructureMemoryInitialized(id: string): FunctionReturn {
+    if (Memory.structures && Memory.structures[id]) {
+      const strMem = Memory.structures[id];
+      if (
+        strMem.room &&
+        Memory.cache.structures.data[strMem.room].map((s) => s.id).includes(id)
+      )
+        return FunctionReturnHelper(FunctionReturnCodes.OK);
+    }
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  }
+);
+
+export const IsCreepMemoryInitialized = FuncWrapper(
+  function IsCreepMemoryInitialized(id: string): FunctionReturn {
+    if (Memory.creeps && Memory.creeps[id]) {
+      const crpMem = Memory.creeps[id];
+      if (crpMem.commandRoom)
+        return FunctionReturnHelper(FunctionReturnCodes.OK);
+    }
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  }
+);

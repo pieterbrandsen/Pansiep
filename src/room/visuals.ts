@@ -1,263 +1,143 @@
 import { VisualLevel } from "../utils/config/room";
-import Logger from "../utils/logger";
+import { FunctionReturnCodes } from "../utils/constants/global";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FuncWrapper } from "../utils/wrapper";
 
-export default class RoomVisuals {
-  public static ShouldVisualsBeDisplayed(visualLevel: number): boolean {
-    if (visualLevel <= VisualLevel) return true;
-    return false;
+export const ShouldVisualsBeDisplayed = FuncWrapper(
+  function ShouldVisualsBeDisplayed(visualLevel: number): FunctionReturn {
+    return FunctionReturnHelper(
+      FunctionReturnCodes.OK,
+      visualLevel <= VisualLevel
+    );
   }
+);
 
-  public static AddLineWPos(
-    room: Room,
-    pos1: RoomPosition,
-    pos2: RoomPosition,
-    visualLevel: number,
-    style?: LineStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddLineWPos = FuncWrapper(function AddLineWPos(
+  room: Room,
+  pos1: RoomPosition,
+  pos2: RoomPosition,
+  visualLevel: number,
+  style?: LineStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.line(pos1, pos2, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddLineWPos", error, {
-        room,
-        pos1,
-        pos2,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.line(pos1, pos2, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddLineWCoords(
-    room: Room,
-    x1: number,
-    x2: number,
-    y1: number,
-    y2: number,
-    visualLevel: number,
-    style?: LineStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddLineWCoords = FuncWrapper(function AddLineWCoords(
+  room: Room,
+  x1: number,
+  x2: number,
+  y1: number,
+  y2: number,
+  visualLevel: number,
+  style?: LineStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.line(x1, x2, y1, y2, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddLineWCoords", error, {
-        room,
-        x1,
-        x2,
-        y1,
-        y2,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.line(x1, x2, y1, y2, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddCircleWPos(
-    room: Room,
-    pos: RoomPosition,
-    visualLevel: number,
-    style?: CircleStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddCircleWPos = FuncWrapper(function AddCircleWPos(
+  room: Room,
+  pos: RoomPosition,
+  visualLevel: number,
+  style?: CircleStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.circle(pos, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddCircleWPos", error, {
-        room,
-        pos,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.circle(pos, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddCircleWCoords(
-    room: Room,
-    x: number,
-    y: number,
-    visualLevel: number,
-    style?: CircleStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddCircleWCoords = FuncWrapper(function AddCircleWCoords(
+  room: Room,
+  x: number,
+  y: number,
+  visualLevel: number,
+  style?: CircleStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.circle(x, y, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddCircleWCoords", error, {
-        room,
-        x,
-        y,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.circle(x, y, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddRectWPos(
-    room: Room,
-    topLeftPos: RoomPosition,
-    width: number,
-    height: number,
-    visualLevel: number,
-    style?: PolyStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddRectWPos = FuncWrapper(function AddRectWPos(
+  room: Room,
+  topLeftPos: RoomPosition,
+  width: number,
+  height: number,
+  visualLevel: number,
+  style?: PolyStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.rect(topLeftPos, width, height, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddRectWPos", error, {
-        room,
-        topLeftPos,
-        width,
-        height,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.rect(topLeftPos, width, height, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddRectWCoords(
-    room: Room,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    visualLevel: number,
-    style?: PolyStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddRectWCoords = FuncWrapper(function AddRectWCoords(
+  room: Room,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  visualLevel: number,
+  style?: PolyStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.rect(x, y, width, height, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddRectWCoords", error, {
-        room,
-        x,
-        y,
-        width,
-        height,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.rect(x, y, width, height, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddPolyWPos(
-    room: Room,
-    topLeftPos: RoomPosition,
-    width: number,
-    height: number,
-    visualLevel: number,
-    style?: PolyStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddPoly = FuncWrapper(function AddPoly(
+  room: Room,
+  points: Array<[number, number] | RoomPosition>,
+  visualLevel: number,
+  style?: PolyStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.rect(topLeftPos, width, height, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddPolyWPos", error, {
-        room,
-        topLeftPos,
-        width,
-        height,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.poly(points, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddPolyWCoords(
-    room: Room,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    visualLevel: number,
-    style?: PolyStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddTextWPos = FuncWrapper(function AddTextWPos(
+  room: Room,
+  text: string,
+  pos: RoomPosition,
+  visualLevel: number,
+  style?: TextStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.rect(x, y, width, height, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddPolyWCoords", error, {
-        room,
-        x,
-        y,
-        width,
-        height,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
+  room.visual.text(text, pos, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static AddTextWPos(
-    room: Room,
-    text: string,
-    pos: RoomPosition,
-    visualLevel: number,
-    style?: TextStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
+export const AddTextWCoords = FuncWrapper(function AddTextWCoords(
+  room: Room,
+  text: string,
+  x: number,
+  y: number,
+  visualLevel: number,
+  style?: TextStyle
+): FunctionReturn {
+  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-      room.visual.text(text, pos, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddTextWPos", error, {
-        room,
-        pos,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
-
-  public static AddTextWCoords(
-    room: Room,
-    text: string,
-    x: number,
-    y: number,
-    visualLevel: number,
-    style?: TextStyle
-  ): boolean {
-    try {
-      if (!this.ShouldVisualsBeDisplayed(visualLevel)) return true;
-
-      room.visual.text(text, x, y, style);
-      return true;
-    } catch (error) {
-      Logger.Error("src/room/visuals:AddTextWCoords", error, {
-        room,
-        x,
-        y,
-        visualLevel,
-        style,
-      });
-      return false;
-    }
-  }
-}
+  room.visual.text(text, x, y, style);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});

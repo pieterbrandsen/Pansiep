@@ -1,11 +1,24 @@
-export default class StructureHelper {
-  public static GetStructure(id: string): Structure | null {
-    return Game.structures[id] !== undefined ? Game.structures[id] : null;
-  }
+import _ from "lodash";
+import { FunctionReturnCodes } from "../utils/constants/global";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FuncWrapper } from "../utils/wrapper";
 
-  public static GetAllStructureNames(roomName: string): string[] {
-    return Memory.cache.structures.data[roomName]
-      ? Memory.cache.structures.data[roomName].map((s) => s.id)
-      : [];
-  }
-}
+export const GetStructure = FuncWrapper(function GetStructure(
+  id: string
+): FunctionReturn {
+  const structure: Structure | null = Game.structures[id];
+  if (_.isNull(structure))
+    return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
+  return FunctionReturnHelper<Structure>(FunctionReturnCodes.OK, structure);
+});
+
+export const GetAllStructureNames = FuncWrapper(function GetAllStructureNames(
+  id: string
+): FunctionReturn {
+  const structureIds: string[] | undefined = Memory.cache.structures.data[id]
+    ? Memory.cache.structures.data[id].map((c) => c.id)
+    : undefined;
+  if (!_.isUndefined(structureIds))
+    return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
+  return FunctionReturnHelper(FunctionReturnCodes.OK, structureIds);
+});

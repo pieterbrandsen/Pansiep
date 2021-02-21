@@ -1,184 +1,211 @@
-import Logger from "../utils/logger";
-import Initialization from "./initialization";
-import GarbageCollection from "./garbageCollection";
+import _ from "lodash";
+import { Log } from "../utils/logger";
+import {
+  InitializeCreepMemory,
+  InitializeRoomMemory,
+  InitializeStructureMemory,
+  IsCreepMemoryInitialized,
+  IsRoomMemoryInitialized,
+  IsStructureMemoryInitialized,
+} from "./initialization";
 import {
   CacheNextCheckIncrement,
+  FunctionReturnCodes,
+  LogTypes,
   SaveUnloadedObjectForAmountTicks,
 } from "../utils/constants/global";
 import { CachedStructureTypes } from "../utils/constants/structure";
+import { FuncWrapper } from "../utils/wrapper";
+import { RemoveCreep, RemoveRoom, RemoveStructure } from "./garbageCollection";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
 
-export default class UpdateCache {
-  public static Update(): boolean {
-    if (!this.UpdateRoomsCache()) return false;
-    if (!this.UpdateStructuresCache()) return false;
-    if (!this.UpdateCreepsCache()) return false;
-
-    return true;
-  }
-
-  public static UpdateRoomsCache(): boolean {
-    try {
-      if (Memory.cache.rooms.nextCheckTick > Game.time) return true;
-
-      Memory.cache.rooms.nextCheckTick =
-        Game.time + CacheNextCheckIncrement.rooms;
-
-      const oldCache = Memory.cache.rooms.data;
-      const cache: string[] = [];
-      Object.keys(Game.rooms).forEach((key) => {
-        const roomMemory = Memory.rooms[key];
-        if (roomMemory === undefined) {
-          Initialization.InitializeRoomMemory(key);
+type RoomObjTypes = StringMap<StructureCache[]> | StringMap<CreepCache[]>;
+export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
+  currentCache: RoomObjTypes,
+  newCache: RoomObjTypes,
+  roomObject: StringMap<StructureMemory> | StringMap<CreepMemory>
+): FunctionReturn {
+  const returnCache = newCache;
+  Object.keys(currentCache).forEach((key) => {
+    if (!returnCache[key]) returnCache[key] = [];
+    const newCacheArr = returnCache[key];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _.forEach(currentCache[key], (obj: any) => {
+      if (
+        roomObject[obj.id] &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        !newCacheArr.some((c: any) => c.id === obj.id)
+      ) {
+        newCacheArr.push(obj);
+        if (_.isUndefined(roomObject[obj.id].isNotSeenSince))
+          // eslint-disable-next-line no-param-reassign
+          roomObject[obj.id].isNotSeenSince = Game.time;
+        else if (
+          (roomObject[obj.id].isNotSeenSince as number) +
+            SaveUnloadedObjectForAmountTicks <
+          Game.time
+        ) {
+          if ((roomObject[obj.id] as StructureMemory).room !== undefined)
+            RemoveStructure(obj.id, key);
+          else RemoveCreep(obj.id, key);
+          newCacheArr.pop();
         }
+      } else if (
+        roomObject[obj.id] &&
+        roomObject[obj.id].isNotSeenSince !== undefined
+      )
+        // eslint-disable-next-line no-param-reassign
+        delete roomObject[obj.id].isNotSeenSince;
+    });
+  });
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK, newCache);
+});
+
+export const UpdateRoomsCache = FuncWrapper(
+  function UpdateRoomsCache(): FunctionReturn {
+    if (Memory.cache.rooms.nextCheckTick > Game.time)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+      );
+
+    Memory.cache.rooms.nextCheckTick =
+      Game.time + CacheNextCheckIncrement.rooms;
+
+    const savedCache = Memory.cache.rooms.data;
+    const cache: string[] = [];
+    _.forEach(Object.keys(Game.rooms), (key: string) => {
+      if (!IsRoomMemoryInitialized(key)) InitializeRoomMemory(key);
+      cache.push(key);
+    });
+
+    _.forEach(Object.keys(savedCache), (key: string) => {
+      if (Memory.rooms[key] && !cache.includes(key)) {
         cache.push(key);
-      });
 
-      Object.keys(oldCache).forEach((key) => {
-        if (Memory.rooms[key] && !cache.includes(key)) {
-          cache.push(key);
-          if (Memory.rooms[key].isNotSeenSince === undefined)
-            Memory.rooms[key].isNotSeenSince = Game.time;
-          else if (
-            (Memory.rooms[key].isNotSeenSince as number) +
-              SaveUnloadedObjectForAmountTicks * 2 <
-            Game.time
-          ) {
-            GarbageCollection.RemoveRoom(key);
-            cache.pop();
-          }
+        const roomMem: RoomMemory = Memory.rooms[key];
+        if (_.isUndefined(roomMem.isNotSeenSince))
+          roomMem.isNotSeenSince = Game.time;
+        else if (
+          (roomMem.isNotSeenSince as number) +
+            SaveUnloadedObjectForAmountTicks * 2 <
+          Game.time
+        ) {
+          RemoveRoom(key);
+          cache.pop();
         }
-      });
+      } else if (
+        Memory.rooms[key] &&
+        Memory.rooms[key].isNotSeenSince !== undefined
+      )
+        delete Memory.rooms[key].isNotSeenSince;
+    });
 
-      Memory.cache.rooms.data = cache;
+    Memory.cache.rooms.data = cache;
 
-      Logger.Debug(
-        "src/memory/updateCache:UpdateRoomsCache",
-        "Updated the Rooms cache"
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("src/memory/updateCache:UpdateRoomsCache", error);
-      return false;
-    }
+    Log(
+      LogTypes.Debug,
+      "src/memory/updateCache:UpdateRoomsCache",
+      "Updated the Rooms cache"
+    );
+
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
+);
 
-  public static UpdateStructuresCache(): boolean {
-    try {
-      if (Memory.cache.structures.nextCheckTick > Game.time) return true;
+export const UpdateStructuresCache = FuncWrapper(
+  function UpdateStructuresCache(): FunctionReturn {
+    if (Memory.cache.structures.nextCheckTick > Game.time)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+      );
 
-      Memory.cache.structures.nextCheckTick =
-        Game.time + CacheNextCheckIncrement.structures;
+    Memory.cache.structures.nextCheckTick =
+      Game.time + CacheNextCheckIncrement.structures;
 
-      const oldCache = Memory.cache.structures.data;
-      const cache: StringMap<StructureCache[]> = {};
-      Object.keys(Game.structures).forEach((key) => {
-        const structure = Game.structures[key];
-        let structureMemory = Memory.structures[key];
-        if (CachedStructureTypes.includes(structure.structureType)) {
-          if (structureMemory === undefined) {
-            Initialization.InitializeStructureMemory(key, structure.room.name);
-            structureMemory = Memory.structures[key];
-          }
-
-          if (!cache[structureMemory.room]) cache[structureMemory.room] = [];
-          cache[structureMemory.room].push({
-            id: key,
-            structureType: structure.structureType,
-          });
+    const cache: StringMap<StructureCache[]> = {};
+    _.forOwn(Game.structures, (str: Structure, key: string) => {
+      let strMem = Memory.structures[key];
+      if (CachedStructureTypes.includes(str.structureType)) {
+        if (!IsStructureMemoryInitialized(key)) {
+          InitializeStructureMemory(key, str.room.name);
+          strMem = Memory.structures[key];
         }
-      });
 
-      Object.keys(oldCache).forEach((key) => {
-        if (!cache[key]) cache[key] = [];
-        const newStructures = cache[key];
-        oldCache[key].forEach((structure) => {
-          if (
-            Memory.structures[structure.id] &&
-            !newStructures.some((s) => s.id === structure.id)
-          ) {
-            newStructures.push(structure);
-            if (Memory.structures[structure.id].isNotSeenSince === undefined)
-              Memory.structures[structure.id].isNotSeenSince = Game.time;
-            else if (
-              (Memory.structures[structure.id].isNotSeenSince as number) +
-                SaveUnloadedObjectForAmountTicks <
-              Game.time
-            ) {
-              GarbageCollection.RemoveStructure(structure.id);
-              newStructures.pop();
-            }
-          }
+        if (!cache[strMem.room]) cache[strMem.room] = [];
+        cache[strMem.room].push({
+          id: key,
+          structureType: str.structureType,
         });
-      });
+      }
+    });
 
-      Memory.cache.structures.data = cache;
+    const returnCompleteCache = ReturnCompleteCache(
+      Memory.cache.structures.data,
+      cache,
+      Memory.structures
+    );
 
-      Logger.Debug(
-        "src/memory/updateCache:UpdateStructuresCache",
-        "Updated the Structures cache"
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("src/memory/updateCache:UpdateStructuresCache", error);
-      return false;
-    }
+    Memory.cache.structures.data = returnCompleteCache.response as StringMap<
+      StructureCache[]
+    >;
+
+    Log(
+      LogTypes.Debug,
+      "src/memory/updateCache:UpdateStructuresCache",
+      "Updated the Structures cache"
+    );
+
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
+);
 
-  public static UpdateCreepsCache(): boolean {
-    try {
-      if (Memory.cache.creeps.nextCheckTick > Game.time) return true;
-
-      Memory.cache.creeps.nextCheckTick =
-        Game.time + CacheNextCheckIncrement.creeps;
-
-      const oldCache = Memory.cache.creeps.data;
-      const cache: StringMap<CreepCache[]> = {};
-      Object.keys(Game.creeps).forEach((key) => {
-        let creepMemory = Memory.creeps[key];
-        if (creepMemory === undefined) {
-          const creep = Game.creeps[key];
-          Initialization.InitializeCreepMemory(key, creep.room.name);
-          creepMemory = Memory.creeps[key];
-        }
-
-        if (!cache[creepMemory.commandRoom])
-          cache[creepMemory.commandRoom] = [];
-        cache[creepMemory.commandRoom].push({ id: key, creepType: "None" });
-      });
-
-      Object.keys(oldCache).forEach((key) => {
-        if (!cache[key]) cache[key] = [];
-        const newCreeps = cache[key];
-        oldCache[key].forEach((creep) => {
-          if (
-            Memory.creeps[creep.id] &&
-            !newCreeps.some((c) => c.id === creep.id)
-          ) {
-            newCreeps.push(creep);
-            if (Memory.creeps[creep.id].isNotSeenSince === undefined)
-              Memory.creeps[creep.id].isNotSeenSince = Game.time;
-            else if (
-              (Memory.creeps[creep.id].isNotSeenSince as number) +
-                SaveUnloadedObjectForAmountTicks <
-              Game.time
-            ) {
-              GarbageCollection.RemoveCreep(creep.id);
-              newCreeps.pop();
-            }
-          }
-        });
-      });
-
-      Memory.cache.creeps.data = cache;
-
-      Logger.Debug(
-        "src/memory/updateCache:UpdateCreepsCache",
-        "Updated the Creeps cache"
+export const UpdateCreepsCache = FuncWrapper(
+  function UpdateCreepsCache(): FunctionReturn {
+    if (Memory.cache.creeps.nextCheckTick > Game.time)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
       );
-      return true;
-    } catch (error) {
-      Logger.Error("src/memory/updateCache:UpdateCreepsCache", error);
-      return false;
-    }
+
+    Memory.cache.creeps.nextCheckTick =
+      Game.time + CacheNextCheckIncrement.creeps;
+
+    const cache: StringMap<CreepCache[]> = {};
+    _.forOwn(Game.creeps, (creep: Creep, key: string) => {
+      let creepMemory = Memory.creeps[key];
+      if (!IsCreepMemoryInitialized(key)) {
+        InitializeCreepMemory(key, creep.room.name);
+        creepMemory = Memory.creeps[key];
+      }
+
+      if (!cache[creepMemory.commandRoom]) cache[creepMemory.commandRoom] = [];
+      cache[creepMemory.commandRoom].push({ id: key, creepType: "None" });
+    });
+
+    const returnCompleteCache = ReturnCompleteCache(
+      Memory.cache.creeps.data,
+      cache,
+      Memory.creeps
+    );
+
+    Memory.cache.creeps.data = returnCompleteCache.response as StringMap<
+      CreepCache[]
+    >;
+
+    Log(
+      LogTypes.Debug,
+      "src/memory/updateCache:UpdateCreepsCache",
+      "Updated the Creeps cache"
+    );
+
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
-}
+);
+
+export const Update = FuncWrapper(function Update() {
+  UpdateRoomsCache();
+  UpdateStructuresCache();
+  UpdateCreepsCache();
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});

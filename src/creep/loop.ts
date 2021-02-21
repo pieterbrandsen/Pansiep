@@ -1,26 +1,33 @@
-import CreepHelper from "./helper";
-import Initialization from "../memory/initialization";
-import Stats from "../memory/stats";
+import _ from "lodash";
+import { GetAllCreepNames, GetCreep } from "./helper";
+import { IsCreepMemoryInitialized } from "../memory/initialization";
+import { CreepStatsPreProcessing } from "../memory/stats";
+import { FuncWrapper } from "../utils/wrapper";
+import { FunctionReturnCodes } from "../utils/constants/global";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
 
-export default class CreepLoop {
-  public static Run(roomName: string): boolean {
-    const creepNames = CreepHelper.GetAllCreepNames(roomName);
+export const RunCreep = FuncWrapper(function RunCreep(
+  id: string
+): FunctionReturn {
+  const getCreep = GetCreep(id);
+  const creep = getCreep.response as Creep;
+  if (getCreep.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
 
-    if (creepNames.length === 0) return true;
-    creepNames.forEach((name) => {
-      if (Initialization.IsCreepMemoryInitialized(name)) {
-        this.RunCreep(name);
-      } else Initialization.InitializeCreepMemory(name, roomName);
-    });
+  CreepStatsPreProcessing(creep);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-    return true;
-  }
+export const Run = FuncWrapper(function RunCreeps(
+  roomName: string
+): FunctionReturn {
+  const getCreepNames = GetAllCreepNames(roomName);
+  if (getCreepNames.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  _.forEach(getCreepNames.response, (key: string) => {
+    const isCreepMemoryInitialized = IsCreepMemoryInitialized(key);
+    if (isCreepMemoryInitialized.code === FunctionReturnCodes.OK) RunCreep(key);
+  });
 
-  private static RunCreep(name: string): boolean {
-    const creep = CreepHelper.GetCreep(name);
-    if (creep === null) return true;
-
-    Stats.CreepStatsPreProcessing(creep);
-    return true;
-  }
-}
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});

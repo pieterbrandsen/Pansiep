@@ -29,6 +29,7 @@
     "rules": {
         "no-unused-vars": 0,
         "no-console": "off",
+        "import/no-cycle": 0,
         "import/extensions": [
             "error",
             "ignorePackages",

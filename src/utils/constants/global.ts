@@ -1,17 +1,25 @@
-export class LogTypes {
+export const LogTypes: StringMap<LogType> = {
   // Chosen log level includes all the log levels above it
-  public static None = 0;
+  None: { code: 0, value: { name: "None", color: "None" } },
+  Info: { code: 1, value: { name: "Info", color: "FloralWhite" } },
+  Warn: { code: 250, value: { name: "Warn", color: "GoldenRod" } },
+  Error: { code: 500, value: { name: "Error", color: "Crimson" } },
+  Debug: { code: 750, value: { name: "Debug", color: "DodgerBlue" } },
+  All: { code: 999, value: { name: "All", color: "None" } },
+};
 
-  public static Info = 1;
-
-  public static Warn = 250;
-
-  public static Error = 500;
-
-  public static Debug = 750;
-
-  public static All = 999;
-}
+export const FunctionReturnCodes = {
+  OK: 200,
+  CREATED: 201,
+  ACCEPTED: 202,
+  TARGET_IS_ON_DELAY_OR_OFF: 203,
+  NO_CONTENT: 204,
+  NOT_MODIFIED: 304,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+  LOOP_DETECTED: 508,
+};
 
 export const Username = "PandaMaster";
 
@@ -23,4 +31,7 @@ export const CacheNextCheckIncrement = {
 
 export const SaveUnloadedObjectForAmountTicks = 500;
 
-export const AverageValueOverAmountTicks = 100;
+export const AverageValueOverAmountTicks = 1000;
+
+export const StatsDigitCount =
+  5 + AverageValueOverAmountTicks.toString().length;

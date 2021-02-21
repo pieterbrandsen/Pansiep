@@ -1,67 +1,78 @@
-import Logger from "../utils/logger";
-import Stats from "./stats";
+import _ from "lodash";
+import { Log } from "../utils/logger";
+import { ResetRoomStats } from "./stats";
+import { FuncWrapper } from "../utils/wrapper";
+import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
 
-export default class GarbageCollection {
-  public static RemoveCreep(name: string): boolean {
-    try {
-      delete Memory.creeps[name];
-      Logger.Debug(
-        "memory/garbageCollection:RemoveCreep",
-        "Deleted Creep memory",
-        name
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("memory/garbageCollection:RemoveCreep", error, name);
-      return false;
+export const RemoveCreep = FuncWrapper(function RemoveCreep(
+  id: string,
+  roomName: string
+): FunctionReturn {
+  delete Memory.creeps[id];
+  Memory.cache.creeps.data[roomName] = _.remove(
+    Memory.cache.creeps.data[roomName],
+    (c) => c.id
+  );
+
+  Log(
+    LogTypes.Debug,
+    "memory/garbageCollection:RemoveCreep",
+    "Deleted Creep memory",
+    id
+  );
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const RemoveStructure = FuncWrapper(function RemoveStructure(
+  id: string,
+  roomName: string
+): FunctionReturn {
+  delete Memory.structures[id];
+  Memory.cache.structures.data[roomName] = _.remove(
+    Memory.cache.structures.data[roomName],
+    (s) => s.id
+  );
+
+  Log(
+    LogTypes.Debug,
+    "memory/garbageCollection:RemoveStructure",
+    "Deleted Structure memory",
+    id
+  );
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const RemoveRoom = FuncWrapper(function RemoveRoom(
+  roomName: string
+): FunctionReturn {
+  _.forOwn(Memory.structures, (str: StructureMemory, key: string) => {
+    if (str.room === roomName) {
+      RemoveStructure(key, roomName);
     }
-  }
-
-  public static RemoveStructure(id: string): boolean {
-    try {
-      delete Memory.structures[id];
-
-      Logger.Debug(
-        "memory/garbageCollection:RemoveStructure",
-        "Deleted Structure memory",
-        id
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("memory/garbageCollection:RemoveStructure", error, id);
-      return false;
+  });
+  _.forOwn(Memory.creeps, (crp: CreepMemory, key: string) => {
+    if (crp.commandRoom === roomName) {
+      RemoveCreep(key, roomName);
     }
-  }
+  });
 
-  public static RemoveRoom(roomName: string): boolean {
-    try {
-      Object.keys(Memory.creeps).forEach((creepName) => {
-        const creep = Memory.creeps[creepName];
-        if (creep.commandRoom === roomName) {
-          this.RemoveCreep(creepName);
-        }
-      });
+  delete Memory.rooms[roomName];
+  Memory.cache.rooms.data = _.remove(
+    Memory.cache.rooms.data,
+    (s) => s === roomName
+  );
 
-      Object.keys(Memory.structures).forEach((id) => {
-        const structure = Memory.structures[id];
-        if (structure.room === roomName) {
-          this.RemoveStructure(id);
-        }
-      });
+  ResetRoomStats(roomName);
 
-      delete Memory.rooms[roomName];
+  Log(
+    LogTypes.Debug,
+    "memory/garbageCollection:RemoveRoom",
+    "Deleted Room memory",
+    roomName
+  );
 
-      Stats.ResetRoomStats(roomName);
-
-      Logger.Debug(
-        "memory/garbageCollection:RemoveRoom",
-        "Deleted Room memory",
-        roomName
-      );
-      return true;
-    } catch (error) {
-      Logger.Error("memory/garbageCollection:RemoveRoom", error, roomName);
-      return false;
-    }
-  }
-}
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});

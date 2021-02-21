@@ -1,141 +1,202 @@
 import _ from "lodash";
-import { AverageValueOverAmountTicks } from "../utils/constants/global";
+import {
+  AverageValueOverAmountTicks,
+  FunctionReturnCodes,
+  StatsDigitCount,
+} from "../utils/constants/global";
 import { SaveStats } from "../utils/config/global";
-import Logger from "../utils/logger";
+import { FuncWrapper } from "../utils/wrapper";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
 
-export default class Stats {
-  public static ResetPreStats(): void {
+export const ResetPreProcessingStats = FuncWrapper(
+  function ResetPreProcessingStats(): FunctionReturn {
     global.preProcessingStats = {
       calls: {},
       rooms: {},
       ticksStatsCollecting: 0,
     };
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
+);
 
-  public static ResetStats(): void {
-    Memory.stats = {
-      calls: {},
-      rooms: {},
-      ticksStatsCollecting: 0,
-    };
-  }
+export const ResetStats = FuncWrapper(function ResetStats(): FunctionReturn {
+  Memory.stats = {
+    calls: {},
+    rooms: {},
+    ticksStatsCollecting: 0,
+  };
 
-  public static ResetPreRoomStats(roomName: string): void {
-    global.preProcessingStats.rooms[roomName] = {
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const ResetPreProcessingRoomStats = FuncWrapper(
+  function ResetPreProcessingRoomStats(id: string): FunctionReturn {
+    global.preProcessingStats.rooms[id] = {
       creepCount: 0,
       structureCount: 0,
     };
+
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
+export const ResetRoomStats = FuncWrapper(function ResetRoomStats(
+  id: string
+): FunctionReturn {
+  Memory.stats.rooms[id] = {
+    creepCount: 0,
+    structureCount: 0,
+  };
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const GetAveragedValue = FuncWrapper(function GetAveragedValue(
+  current: number,
+  num: number
+): FunctionReturn {
+  const currentPercentage = (1 / AverageValueOverAmountTicks) * -1 + 1;
+  const numPercentage = 1 / AverageValueOverAmountTicks;
+  const newValue = parseFloat(
+    (current * currentPercentage + num * numPercentage).toFixed(StatsDigitCount)
+  );
+
+  return FunctionReturnHelper<number>(FunctionReturnCodes.OK, newValue);
+});
+
+export const RoomStatsPreProcessing = FuncWrapper(
+  function RoomStatsPreProcessing(room: Room): FunctionReturn {
+    if (!SaveStats)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+      );
+
+    ResetPreProcessingRoomStats(room.name);
+
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
+export const RoomStats = FuncWrapper(function RoomStats(
+  room: Room
+): FunctionReturn {
+  if (!SaveStats)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
+
+  let preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
+  let roomStats = Memory.stats.rooms[room.name];
+
+  if (preProcessingRoomStats === undefined) {
+    ResetPreProcessingRoomStats(room.name);
+    preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
   }
 
-  public static ResetRoomStats(roomName: string): void {
-    this.ResetPreRoomStats(roomName);
-    Memory.stats.rooms[roomName] = {
-      creepCount: 0,
-      structureCount: 0,
-    };
+  if (roomStats === undefined) {
+    ResetRoomStats(room.name);
+    roomStats = Memory.stats.rooms[room.name];
   }
 
-  public static GetAveragedValue(current: number, num: number): number {
-    const currentPercentage = (1 / AverageValueOverAmountTicks) * -1 + 1;
-    const numPercentage = 1 / AverageValueOverAmountTicks;
+  const creepCount = GetAveragedValue(
+    roomStats.creepCount,
+    preProcessingRoomStats.creepCount
+  );
+  const structureCount = GetAveragedValue(
+    roomStats.structureCount,
+    preProcessingRoomStats.structureCount
+  );
+  Memory.stats.rooms[room.name] = {
+    creepCount:
+      creepCount.code === FunctionReturnCodes.OK ? creepCount.response : 0,
+    structureCount:
+      structureCount.code === FunctionReturnCodes.OK
+        ? structureCount.response
+        : 0,
+  };
 
-    const notRounded: number =
-      current * currentPercentage + num * numPercentage;
-    return parseFloat(notRounded.toFixed(5));
-  }
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  public static RoomStatsPreProcessing(room: Room): boolean {
-    if (!SaveStats) return true;
-
-    this.ResetPreRoomStats(room.name);
-
-    return true;
-  }
-
-  public static RoomStatsProcessing(room: Room): boolean {
-    const preRoomStats = global.preProcessingStats.rooms[room.name];
-    let roomStats = Memory.stats.rooms[room.name];
-    if (roomStats === undefined) {
-      this.ResetRoomStats(room.name);
-      roomStats = Memory.stats.rooms[room.name];
-    }
-
-    Memory.stats.rooms[room.name] = {
-      creepCount: this.GetAveragedValue(
-        roomStats.creepCount,
-        preRoomStats.creepCount
-      ),
-      structureCount: this.GetAveragedValue(
-        roomStats.structureCount,
-        preRoomStats.structureCount
-      ),
-    };
-    return true;
-  }
-
-  public static StructureStatsPreProcessing(structure: Structure): boolean {
-    if (!SaveStats) return true;
+export const StructureStatsPreProcessing = FuncWrapper(
+  function StructureStatsPreProcessing(structure: Structure): FunctionReturn {
+    if (!SaveStats)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+      );
 
     const roomStats = global.preProcessingStats.rooms[structure.room.name];
     roomStats.structureCount += 1;
-    return true;
-  }
 
-  public static CreepStatsPreProcessing(creep: Creep): boolean {
-    if (!SaveStats) return true;
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
+export const CreepStatsPreProcessing = FuncWrapper(
+  function CreepStatsPreProcessing(creep: Creep): FunctionReturn {
+    if (!SaveStats)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+      );
 
     const roomStats = global.preProcessingStats.rooms[creep.room.name];
     roomStats.creepCount += 1;
-    return true;
+
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
+);
 
-  public static GlobalStatsPreProcessing(): boolean {
-    try {
-      if (!SaveStats) return true;
+export const GlobalStatsPreProcessing = FuncWrapper(
+  function GlobalStatsPreProcessing(): FunctionReturn {
+    if (!SaveStats)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+      );
 
-      this.ResetPreStats();
-      return true;
-    } catch (error) {
-      Logger.Error("memory/stats:GlobalStatsPreProcessing", error);
-      return false;
-    }
+    ResetPreProcessingStats();
+
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
+);
 
-  public static GlobalStatsProcessing(): boolean {
-    if (!SaveStats) return true;
+export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
+  if (!SaveStats)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-    Memory.stats.ticksStatsCollecting += 1;
-    const averagedCallsList: StringMap<{
-      callCount: number;
-      cpuUsed: number;
-    }> = {};
+  Memory.stats.ticksStatsCollecting += 1;
+  const averagedCallsList: StringMap<{
+    callCount: number;
+    cpuUsed: number;
+  }> = {};
 
-    _.union(
-      Object.keys(Memory.stats.calls),
-      Object.keys(global.preProcessingStats.calls)
-    ).forEach((name: string) => {
-      const currentCallCount =
-        Memory.stats.calls[name] !== undefined
-          ? Memory.stats.calls[name].callCount
-          : 0;
-      const newCallCount =
-        global.preProcessingStats.calls[name] !== undefined
-          ? global.preProcessingStats.calls[name].callCount
-          : 0;
-      const currentCpuUsed =
-        Memory.stats.calls[name] !== undefined
-          ? Memory.stats.calls[name].cpuUsed
-          : 0;
-      const newCpuUsed =
-        global.preProcessingStats.calls[name] !== undefined
-          ? global.preProcessingStats.calls[name].cpuUsed
-          : 0;
-      averagedCallsList[name] = {
-        callCount: this.GetAveragedValue(currentCallCount, newCallCount),
-        cpuUsed: this.GetAveragedValue(currentCpuUsed, newCpuUsed),
-      };
-    });
-    Memory.stats.calls = averagedCallsList;
-    return true;
-  }
-}
+  _.union(
+    Object.keys(Memory.stats.calls),
+    Object.keys(global.preProcessingStats.calls)
+  ).forEach((name: string) => {
+    const currentCallCount =
+      Memory.stats.calls[name] !== undefined
+        ? Memory.stats.calls[name].callCount
+        : 0;
+    const newCallCount =
+      global.preProcessingStats.calls[name] !== undefined
+        ? global.preProcessingStats.calls[name].callCount
+        : 0;
+    const currentCpuUsed =
+      Memory.stats.calls[name] !== undefined
+        ? Memory.stats.calls[name].cpuUsed
+        : 0;
+    const newCpuUsed =
+      global.preProcessingStats.calls[name] !== undefined
+        ? global.preProcessingStats.calls[name].cpuUsed
+        : 0;
+
+    const callCount = GetAveragedValue(currentCallCount, newCallCount);
+    const cpuUsed = GetAveragedValue(currentCpuUsed, newCpuUsed);
+    averagedCallsList[name] = {
+      callCount:
+        callCount.code === FunctionReturnCodes.OK ? callCount.response : 0,
+      cpuUsed: cpuUsed.code === FunctionReturnCodes.OK ? cpuUsed.response : 0,
+    };
+  });
+  Memory.stats.calls = averagedCallsList;
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});

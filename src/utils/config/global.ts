@@ -1,4 +1,4 @@
 import { LogTypes } from "../constants/global";
 
-export const LogLevel: LogTypes = LogTypes.None;
+export const LogLevel: LogType = LogTypes.All;
 export const SaveStats = true;

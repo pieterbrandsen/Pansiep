@@ -2,6 +2,20 @@ interface StringMap<T> {
   [key: string]: T;
 }
 
+interface LogType {
+  code: number;
+  value: {
+    name: string;
+    color: string;
+  };
+}
+
+interface FunctionReturn {
+  code: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  response?: any;
+}
+
 interface RoomStats {
   creepCount: number;
   structureCount: number;
@@ -70,8 +84,8 @@ declare namespace NodeJS {
     resetCreepMemory(creepName: string, roomName: string): string;
 
     deleteRoomMemory(roomName: string): string;
-    deleteStructureMemory(id: string): string;
-    deleteCreepMemory(creepName: string): string;
+    deleteStructureMemory(id: string, roomName: string): string;
+    deleteCreepMemory(creepName: string, roomName: string): string;
     // showAllMyRooms(): string;
   }
 }
