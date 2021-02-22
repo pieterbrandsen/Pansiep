@@ -1,25 +1,39 @@
-import RoomHelper from "./helper";
-import StructureLoop from "../structure/loop";
-import CreepLoop from "../creep/loop";
-import Initialization from "../memory/initialization";
+import _ from "lodash";
+import { GetRoomNames, GetRoom } from "./helper";
+import { Run as RunStructures } from "../structure/loop";
+import { Run as RunCreeps } from "../creep/loop";
+import { IsRoomMemoryInitialized } from "../memory/initialization";
+import { RoomStatsPreProcessing, RoomStats } from "../memory/stats";
+import { FuncWrapper } from "../utils/wrapper";
+import { FunctionReturnCodes } from "../utils/constants/global";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
 
-export default class RoomLoop {
-  public static Run(): boolean {
-    const roomNames = RoomHelper.GetAllRoomNames();
-    roomNames.forEach((roomName) => {
-      if (Initialization.IsRoomMemoryInitialized(roomName)) {
-        this.RunRoom(roomName);
-      } else Initialization.InitializeRoomMemory(roomName);
-    });
+export const RunRoom = FuncWrapper(function RunRoom(
+  id: string
+): FunctionReturn {
+  const getRoom = GetRoom(id);
 
-    return true;
-  }
+  if (getRoom.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  const room = getRoom.response;
 
-  private static RunRoom(roomName: string): boolean {
-    const room = RoomHelper.GetRoom(roomName);
-    StructureLoop.Run(roomName);
-    CreepLoop.Run(roomName);
-    console.log(room);
-    return true;
-  }
-}
+  RoomStatsPreProcessing(room);
+  RunStructures(id);
+  RunCreeps(id);
+  RoomStats(room);
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const Run = FuncWrapper(function RunRooms(): FunctionReturn {
+  const getRoomNames = GetRoomNames();
+
+  if (getRoomNames.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  _.forEach(getRoomNames.response, (key: string) => {
+    const isRoomMemoryInitialized = IsRoomMemoryInitialized(key);
+    if (isRoomMemoryInitialized.code === FunctionReturnCodes.OK) RunRoom(key);
+  });
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});

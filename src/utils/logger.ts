@@ -1,121 +1,65 @@
-import GlobalConfig from "./config/global";
-import { LogTypes } from "./constants/global";
+import _ from "lodash";
+import { LogLevel } from "./config/global";
+import { FunctionReturnCodes } from "./constants/global";
+import { FuncWrapper } from "./wrapper";
+import { FunctionReturnHelper } from "./statusGenerator";
 
-interface LogType {
-  name: string;
-  color: string;
-}
-
-export default class Logger {
-  private static Log(
-    logType: LogType,
-    fileLocation: string,
-    message: string,
-    args?: unknown
-  ): boolean {
-    try {
-      console.log(this.MessageGenerator(fileLocation, message, logType, args));
-      return true;
-    } catch (error) {
-      this.Error("Utils/logger:Log", error, { fileLocation, message, args });
-      return false;
-    }
+export const MessageGenerator = FuncWrapper(function MessageGenerator(
+  fileLocation: string,
+  message: string,
+  logInfo: LogType,
+  args?: unknown
+): FunctionReturn {
+  let htmlString = `<span style='color:${logInfo.value.color}'>`;
+  htmlString += `<b>${logInfo.value.name}</b>`;
+  htmlString += `<br><b>Message: </b>${message}`;
+  if (args) {
+    if (_.isObject(args)) {
+      let objectString = JSON.stringify(args);
+      if (objectString.length > 2500) {
+        objectString = `${objectString
+          .substring(0, 2500)
+          .replace(
+            /(.{1,80})/g,
+            "$1<br/>"
+          )}..... Max length of 2500 chars reached!`;
+      }
+      htmlString += `<br><b>Args: </b>${objectString}`;
+    } else htmlString += `<br><b>Value: </b>${args}`;
   }
+  htmlString += `<br><b>Log location: </b>${fileLocation}`;
+  htmlString += "</span><br>";
+  return FunctionReturnHelper(FunctionReturnCodes.OK, htmlString);
+});
 
-  private static MessageGenerator(
-    fileLocation: string,
-    message: string,
-    logInfo: LogType,
-    args?: unknown
-  ): string {
-    let htmlString = `<span style='color:${logInfo.color}'>`;
-    htmlString += `<b>${logInfo.name}</b>`;
-    htmlString += `<br><b>Message: </b>${message}`;
-    if (args) {
-      if (typeof args === "object") {
-        let objectString = JSON.stringify(args);
-        if (objectString.length > 2500) {
-          objectString = `${objectString
-            .substring(0, 2500)
-            .replace(
-              /(.{1,80})/g,
-              "$1<br/>"
-            )}..... Max length of 2500 chars reached!`;
-        }
-        htmlString += `<br><b>Args: </b>${objectString}`;
-      } else htmlString += `<br><b>Value: </b>${args}`;
-    }
-    htmlString += `<br><b>Log location: </b>${fileLocation}`;
-    htmlString += "</span><br>";
-    return htmlString;
-  }
+export const ShouldLog = FuncWrapper(function ShouldLog(
+  currLogLvl: number,
+  reqLogLevel: number
+): FunctionReturn {
+  return FunctionReturnHelper(
+    FunctionReturnCodes.OK,
+    currLogLvl >= reqLogLevel
+  );
+});
 
-  public static Info(
-    fileLocation: string,
-    message: string,
-    args?: unknown
-  ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Info) return false;
-    return this.Log(
-      { name: "Info", color: "FloralWhite" },
-      fileLocation,
-      message,
-      args
-    );
-  }
+export const Log = FuncWrapper(function Log(
+  logType: LogType,
+  fileLocation: string,
+  message: string,
+  args?: unknown
+): FunctionReturn {
+  if (!ShouldLog(LogLevel.code, logType.code).response)
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-  public static Warn(
-    fileLocation: string,
-    message: string,
-    args?: unknown
-  ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Warn) return false;
-    return this.Log(
-      { name: "Warn", color: "GoldenRod" },
-      fileLocation,
-      message,
-      args
-    );
-  }
+  const messageGenerator = MessageGenerator(
+    fileLocation,
+    message,
+    logType,
+    args
+  );
+  if (messageGenerator.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  console.log(messageGenerator.response);
 
-  public static Error(
-    fileLocation: string,
-    message: string,
-    args?: unknown
-  ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Error) return false;
-    try {
-      // If an error was in the logging function it should throw otherwise it would come back again here because it will error again otherwise.
-      if (fileLocation === "Utils/logger:Log")
-        throw new Error("Prevented stack overflow");
-      return this.Log(
-        { name: "Error", color: "Crimson" },
-        fileLocation,
-        message,
-        args
-      );
-    } catch (error) {
-      // This should never happen!
-      const logMessage = `<span style='color:DarkRed'>There was an error while logging an error!!!<br>Please check the following args and location: ${JSON.stringify(
-        { fileLocation, message, args }
-      )}<br>Error: ${error}</span`;
-      console.log(logMessage);
-      Game.notify(logMessage);
-      return false;
-    }
-  }
-
-  public static Debug(
-    fileLocation: string,
-    message: string,
-    args?: unknown
-  ): boolean {
-    if (GlobalConfig.LogLevel < LogTypes.Debug) return false;
-    return this.Log(
-      { name: "Debug", color: "DodgerBlue" },
-      fileLocation,
-      message,
-      args
-    );
-  }
-}
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});

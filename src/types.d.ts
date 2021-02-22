@@ -1,8 +1,47 @@
 interface StringMap<T> {
   [key: string]: T;
 }
-// eslint-disable-next-line
-interface StatsMemory {}
+
+interface LogType {
+  code: number;
+  value: {
+    name: string;
+    color: string;
+  };
+}
+
+interface Room {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  command: Function;
+}
+
+interface Structure {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  command: Function;
+}
+
+interface Creep {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  command: Function;
+}
+
+interface FunctionReturn {
+  code: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  response?: any;
+}
+
+interface RoomStats {
+  creepCount: number;
+  structureCount: number;
+}
+
+interface StatsMemory {
+  intentCalls: StringMap<{ callCount: number; cpuUsed: number }>;
+  funcCalls: StringMap<{ callCount: number; cpuUsed: number }>;
+  ticksStatsCollecting: number;
+  rooms: StringMap<RoomStats>;
+}
 
 interface RoomMemory {
   isNotSeenSince?: number;
@@ -18,30 +57,41 @@ interface StructureMemory {
   room: string;
 }
 
-interface CacheObjectWArray {
-  nextCheckTick: number;
-  data: string[];
+interface StructureCache {
+  structureType: StructureConstant;
+  id: string;
 }
 
-interface CacheObjectWObject {
-  nextCheckTick: number;
-  data: StringMap<string[]>;
+interface CreepCache {
+  creepType: string;
+  id: string;
 }
 
 interface Cache {
-  structures: CacheObjectWObject;
-  creeps: CacheObjectWObject;
-  rooms: CacheObjectWArray;
+  rooms: {
+    nextCheckTick: number;
+    data: string[];
+  };
+  structures: {
+    nextCheckTick: number;
+    data: StringMap<StructureCache[]>;
+  };
+  creeps: {
+    nextCheckTick: number;
+    data: StringMap<CreepCache[]>;
+  };
 }
 
 interface Memory {
   structures: StringMap<StructureMemory>;
-  stats: StringMap<StatsMemory>;
+  stats: StatsMemory;
   cache: Cache;
 }
 
 declare namespace NodeJS {
   interface Global {
+    preProcessingStats: StatsMemory;
+
     help(): string;
 
     resetGlobalMemory(): string;
@@ -50,8 +100,8 @@ declare namespace NodeJS {
     resetCreepMemory(creepName: string, roomName: string): string;
 
     deleteRoomMemory(roomName: string): string;
-    deleteStructureMemory(id: string): string;
-    deleteCreepMemory(creepName: string): string;
+    deleteStructureMemory(id: string, roomName: string): string;
+    deleteCreepMemory(creepName: string, roomName: string): string;
     // showAllMyRooms(): string;
   }
 }

@@ -1,23 +1,34 @@
-import CreepHelper from "./helper";
-import Initialization from "../memory/initialization";
+import _ from "lodash";
+import { GetAllCreepNames, GetCreep } from "./helper";
+import { IsCreepMemoryInitialized } from "../memory/initialization";
+import { CreepStatsPreProcessing } from "../memory/stats";
+import { FuncWrapper } from "../utils/wrapper";
+import { FunctionReturnCodes } from "../utils/constants/global";
+import { FunctionReturnHelper } from "../utils/statusGenerator";
 
-export default class CreepLoop {
-  public static Run(roomName: string): boolean {
-    const creepNames = CreepHelper.GetAllCreepNames(roomName);
+export const RunCreep = FuncWrapper(function RunCreep(
+  id: string
+): FunctionReturn {
+  const getCreep = GetCreep(id);
+  if (getCreep.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  const creep = getCreep.response as Creep;
 
-    if (creepNames.length === 0) return true;
-    creepNames.forEach((name) => {
-      if (Initialization.IsCreepMemoryInitialized(name)) {
-        this.RunCreep(name);
-      } else Initialization.InitializeCreepMemory(name, roomName);
-    });
+  CreepStatsPreProcessing(creep);
 
-    return true;
-  }
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
-  private static RunCreep(name: string): boolean {
-    const creep = CreepHelper.GetCreep(name);
-    console.log(creep);
-    return true;
-  }
-}
+export const Run = FuncWrapper(function RunCreeps(
+  roomName: string
+): FunctionReturn {
+  const getCreepNames = GetAllCreepNames(roomName);
+  if (getCreepNames.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  _.forEach(getCreepNames.response, (key: string) => {
+    const isCreepMemoryInitialized = IsCreepMemoryInitialized(key);
+    if (isCreepMemoryInitialized.code === FunctionReturnCodes.OK) RunCreep(key);
+  });
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
