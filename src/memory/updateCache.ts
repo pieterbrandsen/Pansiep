@@ -32,6 +32,7 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _.forEach(currentCache[key], (obj: any) => {
       if (
+        obj &&
         roomObject[obj.id] &&
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         !newCacheArr.some((c: any) => c.id === obj.id)
@@ -75,7 +76,8 @@ export const UpdateRoomsCache = FuncWrapper(
     const savedCache = Memory.cache.rooms.data;
     const cache: string[] = [];
     _.forEach(Object.keys(Game.rooms), (key: string) => {
-      if (!IsRoomMemoryInitialized(key)) InitializeRoomMemory(key);
+      if (IsRoomMemoryInitialized(key).code !== FunctionReturnCodes.OK)
+        InitializeRoomMemory(key);
       cache.push(key);
     });
 
@@ -127,7 +129,7 @@ export const UpdateStructuresCache = FuncWrapper(
     _.forOwn(Game.structures, (str: Structure, key: string) => {
       let strMem = Memory.structures[key];
       if (CachedStructureTypes.includes(str.structureType)) {
-        if (!IsStructureMemoryInitialized(key)) {
+        if (IsStructureMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
           InitializeStructureMemory(key, str.room.name);
           strMem = Memory.structures[key];
         }
@@ -173,7 +175,7 @@ export const UpdateCreepsCache = FuncWrapper(
     const cache: StringMap<CreepCache[]> = {};
     _.forOwn(Game.creeps, (creep: Creep, key: string) => {
       let creepMemory = Memory.creeps[key];
-      if (!IsCreepMemoryInitialized(key)) {
+      if (IsCreepMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
         InitializeCreepMemory(key, creep.room.name);
         creepMemory = Memory.creeps[key];
       }

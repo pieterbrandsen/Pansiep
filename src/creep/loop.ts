@@ -10,11 +10,12 @@ export const RunCreep = FuncWrapper(function RunCreep(
   id: string
 ): FunctionReturn {
   const getCreep = GetCreep(id);
-  const creep = getCreep.response as Creep;
   if (getCreep.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  const creep = getCreep.response as Creep;
 
   CreepStatsPreProcessing(creep);
+
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 

@@ -11,7 +11,8 @@ import { FunctionReturnHelper } from "../utils/statusGenerator";
 export const ResetPreProcessingStats = FuncWrapper(
   function ResetPreProcessingStats(): FunctionReturn {
     global.preProcessingStats = {
-      calls: {},
+      intentCalls: {},
+      funcCalls: {},
       rooms: {},
       ticksStatsCollecting: 0,
     };
@@ -21,7 +22,8 @@ export const ResetPreProcessingStats = FuncWrapper(
 
 export const ResetStats = FuncWrapper(function ResetStats(): FunctionReturn {
   Memory.stats = {
-    calls: {},
+    intentCalls: {},
+    funcCalls: {},
     rooms: {},
     ticksStatsCollecting: 0,
   };
@@ -162,41 +164,79 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   Memory.stats.ticksStatsCollecting += 1;
-  const averagedCallsList: StringMap<{
+
+  const averagedIntentCallsList: StringMap<{
     callCount: number;
     cpuUsed: number;
   }> = {};
 
   _.union(
-    Object.keys(Memory.stats.calls),
-    Object.keys(global.preProcessingStats.calls)
+    Object.keys(Memory.stats.intentCalls),
+    Object.keys(global.preProcessingStats.intentCalls)
   ).forEach((name: string) => {
     const currentCallCount =
-      Memory.stats.calls[name] !== undefined
-        ? Memory.stats.calls[name].callCount
+      Memory.stats.intentCalls[name] !== undefined
+        ? Memory.stats.intentCalls[name].callCount
         : 0;
     const newCallCount =
-      global.preProcessingStats.calls[name] !== undefined
-        ? global.preProcessingStats.calls[name].callCount
+      global.preProcessingStats.intentCalls[name] !== undefined
+        ? global.preProcessingStats.intentCalls[name].callCount
         : 0;
     const currentCpuUsed =
-      Memory.stats.calls[name] !== undefined
-        ? Memory.stats.calls[name].cpuUsed
+      Memory.stats.intentCalls[name] !== undefined
+        ? Memory.stats.intentCalls[name].cpuUsed
         : 0;
     const newCpuUsed =
-      global.preProcessingStats.calls[name] !== undefined
-        ? global.preProcessingStats.calls[name].cpuUsed
+      global.preProcessingStats.intentCalls[name] !== undefined
+        ? global.preProcessingStats.intentCalls[name].cpuUsed
         : 0;
 
     const callCount = GetAveragedValue(currentCallCount, newCallCount);
     const cpuUsed = GetAveragedValue(currentCpuUsed, newCpuUsed);
-    averagedCallsList[name] = {
+    averagedIntentCallsList[name] = {
       callCount:
         callCount.code === FunctionReturnCodes.OK ? callCount.response : 0,
       cpuUsed: cpuUsed.code === FunctionReturnCodes.OK ? cpuUsed.response : 0,
     };
   });
-  Memory.stats.calls = averagedCallsList;
+
+  Memory.stats.intentCalls = averagedIntentCallsList;
+
+  const averagedFuncCallsList: StringMap<{
+    callCount: number;
+    cpuUsed: number;
+  }> = {};
+
+  _.union(
+    Object.keys(Memory.stats.funcCalls),
+    Object.keys(global.preProcessingStats.funcCalls)
+  ).forEach((name: string) => {
+    const currentCallCount =
+      Memory.stats.funcCalls[name] !== undefined
+        ? Memory.stats.funcCalls[name].callCount
+        : 0;
+    const newCallCount =
+      global.preProcessingStats.funcCalls[name] !== undefined
+        ? global.preProcessingStats.funcCalls[name].callCount
+        : 0;
+    const currentCpuUsed =
+      Memory.stats.funcCalls[name] !== undefined
+        ? Memory.stats.funcCalls[name].cpuUsed
+        : 0;
+    const newCpuUsed =
+      global.preProcessingStats.funcCalls[name] !== undefined
+        ? global.preProcessingStats.funcCalls[name].cpuUsed
+        : 0;
+
+    const callCount = GetAveragedValue(currentCallCount, newCallCount);
+    const cpuUsed = GetAveragedValue(currentCpuUsed, newCpuUsed);
+    averagedFuncCallsList[name] = {
+      callCount:
+        callCount.code === FunctionReturnCodes.OK ? callCount.response : 0,
+      cpuUsed: cpuUsed.code === FunctionReturnCodes.OK ? cpuUsed.response : 0,
+    };
+  });
+  Memory.stats.funcCalls = averagedFuncCallsList;
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

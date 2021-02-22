@@ -38,7 +38,7 @@ export const ShouldLog = FuncWrapper(function ShouldLog(
 ): FunctionReturn {
   return FunctionReturnHelper(
     FunctionReturnCodes.OK,
-    currLogLvl <= reqLogLevel
+    currLogLvl >= reqLogLevel
   );
 });
 

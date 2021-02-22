@@ -6,8 +6,8 @@ import { FuncWrapper } from "../utils/wrapper";
 export const GetRoom = FuncWrapper(function GetRoom(
   id: string
 ): FunctionReturn {
-  const room = Game.rooms[id] !== undefined ? Game.rooms[id] : null;
-  if (_.isNull(room))
+  const room = Game.rooms[id];
+  if (_.isUndefined(room))
     return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
   return FunctionReturnHelper<Room>(FunctionReturnCodes.OK, room);
 });
@@ -46,7 +46,7 @@ export const IsMyReservedRoom = FuncWrapper(function IsMyReservedRoom(
 export const GetRoomNames = FuncWrapper(
   function GetRoomNames(): FunctionReturn {
     const roomNames: string[] | undefined = Memory.cache.rooms.data;
-    if (!_.isUndefined(roomNames))
+    if (_.isUndefined(roomNames))
       return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
     return FunctionReturnHelper(FunctionReturnCodes.OK, roomNames);
   }

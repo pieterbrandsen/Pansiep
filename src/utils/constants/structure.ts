@@ -1,4 +1,3 @@
-// eslint-disable-next-line
 export const CachedStructureTypes: StructureConstant[] = [
   STRUCTURE_CONTROLLER,
   STRUCTURE_FACTORY,
@@ -11,3 +10,5 @@ export const CachedStructureTypes: StructureConstant[] = [
   STRUCTURE_TERMINAL,
   STRUCTURE_TOWER,
 ];
+
+export const TrackedIntents = ["destroy"];

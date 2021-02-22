@@ -1,10 +1,14 @@
+import _ from "lodash";
 import { Log } from "../utils/logger";
 import { Update } from "./updateCache";
 import { ResetStats, ResetPreProcessingStats } from "./stats";
-import { FuncWrapper } from "../utils/wrapper";
+import { FuncWrapper, IntentWrapper } from "../utils/wrapper";
 import { AssignCommandsToHeap } from "../utils/consoleCommands";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { TrackedIntents as TrackedRoomIntents } from "../utils/constants/room";
+import { TrackedIntents as TrackedStructureIntents } from "../utils/constants/structure";
+import { TrackedIntents as TrackedCreepIntents } from "../utils/constants/creep";
 
 export const AreHeapVarsValid = FuncWrapper(
   function AreHeapVarsValid(): FunctionReturn {
@@ -36,6 +40,49 @@ export const InitializeHeapVars = FuncWrapper(
       "memory/initialization:InitializeHeapVars",
       "Initialized Heap vars"
     );
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
+export const AreCustomPrototypesInitialized = FuncWrapper(
+  function AreCustomPrototypesInitialized(): FunctionReturn {
+    if (Creep.prototype.command) {
+      return FunctionReturnHelper(FunctionReturnCodes.OK);
+    }
+    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  }
+);
+
+export const InitializeCustomPrototypes = FuncWrapper(
+  function InitializeCustomPrototypes(): FunctionReturn {
+    _.forEach(TrackedRoomIntents, (key: string) => {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      Room.prototype.command = ((Room.prototype as unknown) as StringMap<Function>)[
+        key
+      ];
+      IntentWrapper(Room.prototype, key, Room.prototype.command);
+    });
+    _.forEach(TrackedStructureIntents, (key: string) => {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      Structure.prototype.command = ((Structure.prototype as unknown) as StringMap<Function>)[
+        key
+      ];
+      IntentWrapper(Structure.prototype, key, Structure.prototype.command);
+    });
+    _.forEach(TrackedCreepIntents, (key: string) => {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      Creep.prototype.command = ((Creep.prototype as unknown) as StringMap<Function>)[
+        key
+      ];
+      IntentWrapper(Creep.prototype, key, Creep.prototype.command);
+    });
+
+    Log(
+      LogTypes.Info,
+      "memory/initialization:InitializeHeapVars",
+      "Initialized custom prototypes"
+    );
+
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
 );

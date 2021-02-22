@@ -10,6 +10,21 @@ interface LogType {
   };
 }
 
+interface Room {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  command: Function;
+}
+
+interface Structure {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  command: Function;
+}
+
+interface Creep {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  command: Function;
+}
+
 interface FunctionReturn {
   code: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,7 +37,8 @@ interface RoomStats {
 }
 
 interface StatsMemory {
-  calls: StringMap<{ callCount: number; cpuUsed: number }>;
+  intentCalls: StringMap<{ callCount: number; cpuUsed: number }>;
+  funcCalls: StringMap<{ callCount: number; cpuUsed: number }>;
   ticksStatsCollecting: number;
   rooms: StringMap<RoomStats>;
 }
