@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { forEach } from 'lodash';
 import { GetRoomNames, GetRoom } from "./helper";
 import { Run as RunStructures } from "../structure/loop";
 import { Run as RunCreeps } from "../creep/loop";
@@ -30,7 +30,7 @@ export const Run = FuncWrapper(function RunRooms(): FunctionReturn {
 
   if (getRoomNames.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  _.forEach(getRoomNames.response, (key: string) => {
+  forEach(getRoomNames.response, (key: string) => {
     const isRoomMemoryInitialized = IsRoomMemoryInitialized(key);
     if (isRoomMemoryInitialized.code === FunctionReturnCodes.OK) RunRoom(key);
   });

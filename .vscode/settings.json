@@ -15,7 +15,8 @@
     "memroy",
     "packrat",
     "pandamaster",
-    "socio"
+    "socio",
+    "unmock"
   ],
   "restructuredtext.confPath": "${workspaceFolder}\\docs\\source"
 }

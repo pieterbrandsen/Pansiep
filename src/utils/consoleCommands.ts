@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { forEach } from 'lodash';
 import {
   InitializeCreepMemory,
   InitializeGlobalMemory,
@@ -23,7 +23,7 @@ export const DescribeFunction = FuncWrapper(function DescribeFunction(
   let message = `<br><br>Function name: ${name}<br>Description: ${description}`;
   if (params && params.length > 0) {
     message += "<br>Params:";
-    _.forEach(params, (param: Param) => {
+    forEach(params, (param: Param) => {
       message += `<br>Name = ${param.name}, Type = ${param.type}`;
     });
   }

@@ -11,10 +11,10 @@
     "push-pserver": "rollup -c --environment DEST:pserver",
     "push-sim": "rollup -c --environment DEST:sim",
     "push-seasonal": "rollup -c --environment DEST:seasonal",
-    "test": "jest --passWithNoTests",
-    "test-watch": "jest --watch",
+    "test": "jest --verbose",
+    "test-watch": "jest --watch --verbose",
     "test-cov": "jest --coverage",
-    "test-only": "bash -c 'jest --watch --coverage --verbose --collectCoverageFrom=\"**/*$1*\" $1' -- ",
+    "test-only": "jest --watch --coverage --verbose",
     "watch-main": "rollup -cw --environment DEST:main",
     "watch-pserver": "rollup -cw --environment DEST:pserver",
     "watch-sim": "rollup -cw --environment DEST:sim",
@@ -61,7 +61,7 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "lodash": "3.10.1",
+    "lodash": "^3.10.1",
     "screeps-jest": "github:eduter/screeps-jest",
     "source-map": "^0.7.3"
   }
