@@ -1,46 +1,43 @@
-import _ from "lodash";
+import { isUndefined } from 'lodash';
 import { Log } from "./logger";
 import { LogTypes } from "./constants/global";
 
 /**
  * @param func
- * @param inputFuncName
  * @returns {F} Function
  */
 // eslint-disable-next-line
-export function FuncWrapper<F extends (...a: any[]) => any>(
-  func: F,
-  inputFuncName?: string
+export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
+  func: F
 ): F {
   return ((...args: Parameters<F>) => {
-    const funcName = _.isString(inputFuncName) ? inputFuncName : func.name;
     const preProcessingCpu = Game.cpu.getUsed();
     let statsPath = { callCount: 0, cpuUsed: 0 };
 
     if (global.preProcessingStats) {
-      statsPath = global.preProcessingStats.funcCalls[funcName];
-      if (_.isUndefined(statsPath)) {
-        global.preProcessingStats.funcCalls[funcName] = {
+      statsPath = global.preProcessingStats.funcCalls[func.name];
+      if (isUndefined(statsPath)) {
+        global.preProcessingStats.funcCalls[func.name] = {
           callCount: 0,
           cpuUsed: 0,
         };
-        statsPath = global.preProcessingStats.funcCalls[funcName];
+        statsPath = global.preProcessingStats.funcCalls[func.name];
       }
     }
 
     try {
       return func(...args);
     } catch (error) {
-      Log(LogTypes.Error, funcName, error, {
+      Log(LogTypes.Error, func.name, error, {
         ...args,
       });
-      return { code: 500, response: {} };
+      return { code: 500 };
     } finally {
       statsPath.callCount += 1;
       statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
     }
   }) as F;
-}
+};
 
 /**
  * @param functions
@@ -78,7 +75,7 @@ this: any,
   ) {
     const preProcessingCpu = Game.cpu.getUsed();
     let statsPath = global.preProcessingStats.intentCalls[funcName];
-    if (_.isUndefined(statsPath)) {
+    if (isUndefined(statsPath)) {
       global.preProcessingStats.intentCalls[funcName] = {
         callCount: 0,
         cpuUsed: 0,

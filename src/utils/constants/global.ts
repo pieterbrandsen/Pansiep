@@ -31,7 +31,7 @@ export const CacheNextCheckIncrement = {
 
 export const SaveUnloadedObjectForAmountTicks = 500;
 
-export const AverageValueOverAmountTicks = 1000;
+export const AverageValueOverAmountTicks = 10000;
 
 export const StatsDigitCount =
   5 + AverageValueOverAmountTicks.toString().length;

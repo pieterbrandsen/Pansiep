@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { union } from "lodash";
 import {
   AverageValueOverAmountTicks,
   FunctionReturnCodes,
@@ -170,7 +170,7 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
     cpuUsed: number;
   }> = {};
 
-  _.union(
+  union(
     Object.keys(Memory.stats.intentCalls),
     Object.keys(global.preProcessingStats.intentCalls)
   ).forEach((name: string) => {
@@ -207,7 +207,7 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
     cpuUsed: number;
   }> = {};
 
-  _.union(
+  union(
     Object.keys(Memory.stats.funcCalls),
     Object.keys(global.preProcessingStats.funcCalls)
   ).forEach((name: string) => {

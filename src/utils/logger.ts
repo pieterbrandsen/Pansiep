@@ -1,10 +1,9 @@
-import _ from "lodash";
+import { isObject } from "lodash";
 import { LogLevel } from "./config/global";
 import { FunctionReturnCodes } from "./constants/global";
-import { FuncWrapper } from "./wrapper";
 import { FunctionReturnHelper } from "./statusGenerator";
 
-export const MessageGenerator = FuncWrapper(function MessageGenerator(
+export const MessageGenerator = function MessageGenerator(
   fileLocation: string,
   message: string,
   logInfo: LogType,
@@ -14,7 +13,7 @@ export const MessageGenerator = FuncWrapper(function MessageGenerator(
   htmlString += `<b>${logInfo.value.name}</b>`;
   htmlString += `<br><b>Message: </b>${message}`;
   if (args) {
-    if (_.isObject(args)) {
+    if (isObject(args)) {
       let objectString = JSON.stringify(args);
       if (objectString.length > 2500) {
         objectString = `${objectString
@@ -30,9 +29,9 @@ export const MessageGenerator = FuncWrapper(function MessageGenerator(
   htmlString += `<br><b>Log location: </b>${fileLocation}`;
   htmlString += "</span><br>";
   return FunctionReturnHelper(FunctionReturnCodes.OK, htmlString);
-});
+};
 
-export const ShouldLog = FuncWrapper(function ShouldLog(
+export const ShouldLog = function ShouldLog(
   currLogLvl: number,
   reqLogLevel: number
 ): FunctionReturn {
@@ -40,9 +39,9 @@ export const ShouldLog = FuncWrapper(function ShouldLog(
     FunctionReturnCodes.OK,
     currLogLvl >= reqLogLevel
   );
-});
+};
 
-export const Log = FuncWrapper(function Log(
+export const Log = function Log(
   logType: LogType,
   fileLocation: string,
   message: string,
@@ -62,4 +61,4 @@ export const Log = FuncWrapper(function Log(
   console.log(messageGenerator.response);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+};

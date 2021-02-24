@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { forEach } from "lodash";
 import { Log } from "../utils/logger";
 import { Update } from "./updateCache";
 import { ResetStats, ResetPreProcessingStats } from "./stats";
@@ -55,21 +55,21 @@ export const AreCustomPrototypesInitialized = FuncWrapper(
 
 export const InitializeCustomPrototypes = FuncWrapper(
   function InitializeCustomPrototypes(): FunctionReturn {
-    _.forEach(TrackedRoomIntents, (key: string) => {
+    forEach(TrackedRoomIntents, (key: string) => {
       // eslint-disable-next-line @typescript-eslint/ban-types
       Room.prototype.command = ((Room.prototype as unknown) as StringMap<Function>)[
         key
       ];
       IntentWrapper(Room.prototype, key, Room.prototype.command);
     });
-    _.forEach(TrackedStructureIntents, (key: string) => {
+    forEach(TrackedStructureIntents, (key: string) => {
       // eslint-disable-next-line @typescript-eslint/ban-types
       Structure.prototype.command = ((Structure.prototype as unknown) as StringMap<Function>)[
         key
       ];
       IntentWrapper(Structure.prototype, key, Structure.prototype.command);
     });
-    _.forEach(TrackedCreepIntents, (key: string) => {
+    forEach(TrackedCreepIntents, (key: string) => {
       // eslint-disable-next-line @typescript-eslint/ban-types
       Creep.prototype.command = ((Creep.prototype as unknown) as StringMap<Function>)[
         key

@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { forEach } from "lodash";
 import { GetAllStructureNames, GetStructure } from "./helper";
 import { IsStructureMemoryInitialized } from "../memory/initialization";
 import { StructureStatsPreProcessing } from "../memory/stats";
@@ -24,7 +24,7 @@ export const Run = FuncWrapper(function RunStructures(
   const getStructureNames = GetAllStructureNames(id);
   if (getStructureNames.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  _.forEach(getStructureNames.response, (key: string) => {
+  forEach(getStructureNames.response, (key: string) => {
     const isStructureMemoryInitialized = IsStructureMemoryInitialized(key);
     if (isStructureMemoryInitialized.code === FunctionReturnCodes.OK)
       RunStructure(key);
