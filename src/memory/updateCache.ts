@@ -90,17 +90,15 @@ export const UpdateRoomsCache = FuncWrapper(
         const roomMem: RoomMemory = Memory.rooms[key];
         if (isUndefined(roomMem.isNotSeenSince)) {
           roomMem.isNotSeenSince = Game.time;
-        }
-        else if (
-          (roomMem.isNotSeenSince as number +
-          SaveUnloadedObjectForAmountTicks * 2) 
-          <
-          Game.time
-          ) {
-            RemoveRoom(key);
-            cache.pop();
-          }
         } else if (
+          (roomMem.isNotSeenSince as number) +
+            SaveUnloadedObjectForAmountTicks * 2 <
+          Game.time
+        ) {
+          RemoveRoom(key);
+          cache.pop();
+        }
+      } else if (
         Memory.rooms[key] &&
         Memory.rooms[key].isNotSeenSince !== undefined
       )
