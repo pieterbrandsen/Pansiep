@@ -12,7 +12,7 @@ export const GetStructure = FuncWrapper(function GetStructure(
   return FunctionReturnHelper<Structure>(FunctionReturnCodes.OK, structure);
 });
 
-export const GetAllStructureNames = FuncWrapper(function GetAllStructureNames(
+export const GetAllStructureIds = FuncWrapper(function GetAllStructureIds(
   id: string
 ): FunctionReturn {
   const structureIds: string[] | undefined = Memory.cache.structures.data[id]

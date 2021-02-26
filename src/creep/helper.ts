@@ -12,13 +12,13 @@ export const GetCreep = FuncWrapper(function GetCreep(
   return FunctionReturnHelper<Creep>(FunctionReturnCodes.OK, creep);
 });
 
-export const GetAllCreepNames = FuncWrapper(function GetAllCreepNames(
+export const GetAllCreepIds = FuncWrapper(function GetAllCreepIds(
   id: string
 ): FunctionReturn {
-  const creepNames: string[] | undefined = Memory.cache.creeps.data[id]
+  const creepIds: string[] | undefined = Memory.cache.creeps.data[id]
     ? Memory.cache.creeps.data[id].map((c) => c.id)
     : undefined;
-  if (isUndefined(creepNames))
+  if (isUndefined(creepIds))
     return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
-  return FunctionReturnHelper(FunctionReturnCodes.OK, creepNames);
+  return FunctionReturnHelper(FunctionReturnCodes.OK, creepIds);
 });

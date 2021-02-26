@@ -1,5 +1,3 @@
-import { FuncWrapper } from "./wrapper";
-
 // eslint-disable-next-line
 export const FunctionReturnHelper = function FunctionReturnHelper<
   T

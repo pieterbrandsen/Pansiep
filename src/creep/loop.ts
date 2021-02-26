@@ -1,5 +1,5 @@
 import { forEach } from "lodash";
-import { GetAllCreepNames, GetCreep } from "./helper";
+import { GetAllCreepIds, GetCreep } from "./helper";
 import { IsCreepMemoryInitialized } from "../memory/initialization";
 import { CreepStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
@@ -22,12 +22,13 @@ export const RunCreep = FuncWrapper(function RunCreep(
 export const Run = FuncWrapper(function RunCreeps(
   roomName: string
 ): FunctionReturn {
-  const getCreepNames = GetAllCreepNames(roomName);
-  if (getCreepNames.code !== FunctionReturnCodes.OK)
+  const getCreepIds = GetAllCreepIds(roomName);
+  if (getCreepIds.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  forEach(getCreepNames.response, (value: string) => {
+  forEach(getCreepIds.response, (value: string) => {
     const isCreepMemoryInitialized = IsCreepMemoryInitialized(value);
-    if (isCreepMemoryInitialized.code === FunctionReturnCodes.OK) RunCreep(value);
+    if (isCreepMemoryInitialized.code === FunctionReturnCodes.OK)
+      RunCreep(value);
   });
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);

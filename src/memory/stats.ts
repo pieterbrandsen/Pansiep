@@ -4,7 +4,7 @@ import {
   FunctionReturnCodes,
   StatsDigitCount,
 } from "../utils/constants/global";
-import { SaveStats } from "../utils/config/global";
+import { GetUpdateStatsVar } from "../utils/config/global";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 
@@ -54,8 +54,8 @@ export const ResetRoomStats = FuncWrapper(function ResetRoomStats(
 });
 
 export const GetAveragedValue = FuncWrapper(function GetAveragedValue(
-  current: number,
-  num: number
+  current = 0,
+  num = 0
 ): FunctionReturn {
   const currentPercentage = (1 / AverageValueOverAmountTicks) * -1 + 1;
   const numPercentage = 1 / AverageValueOverAmountTicks;
@@ -68,7 +68,7 @@ export const GetAveragedValue = FuncWrapper(function GetAveragedValue(
 
 export const RoomStatsPreProcessing = FuncWrapper(
   function RoomStatsPreProcessing(room: Room): FunctionReturn {
-    if (!SaveStats)
+    if (!GetUpdateStatsVar())
       return FunctionReturnHelper(
         FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
       );
@@ -82,7 +82,7 @@ export const RoomStatsPreProcessing = FuncWrapper(
 export const RoomStats = FuncWrapper(function RoomStats(
   room: Room
 ): FunctionReturn {
-  if (!SaveStats)
+  if (!GetUpdateStatsVar())
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   let preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
@@ -106,13 +106,10 @@ export const RoomStats = FuncWrapper(function RoomStats(
     roomStats.structureCount,
     preProcessingRoomStats.structureCount
   );
+
   Memory.stats.rooms[room.name] = {
-    creepCount:
-      creepCount.code === FunctionReturnCodes.OK ? creepCount.response : 0,
-    structureCount:
-      structureCount.code === FunctionReturnCodes.OK
-        ? structureCount.response
-        : 0,
+    creepCount: creepCount.response,
+    structureCount: structureCount.response,
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -120,7 +117,7 @@ export const RoomStats = FuncWrapper(function RoomStats(
 
 export const StructureStatsPreProcessing = FuncWrapper(
   function StructureStatsPreProcessing(structure: Structure): FunctionReturn {
-    if (!SaveStats)
+    if (!GetUpdateStatsVar())
       return FunctionReturnHelper(
         FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
       );
@@ -134,7 +131,7 @@ export const StructureStatsPreProcessing = FuncWrapper(
 
 export const CreepStatsPreProcessing = FuncWrapper(
   function CreepStatsPreProcessing(creep: Creep): FunctionReturn {
-    if (!SaveStats)
+    if (!GetUpdateStatsVar())
       return FunctionReturnHelper(
         FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
       );
@@ -148,7 +145,7 @@ export const CreepStatsPreProcessing = FuncWrapper(
 
 export const GlobalStatsPreProcessing = FuncWrapper(
   function GlobalStatsPreProcessing(): FunctionReturn {
-    if (!SaveStats)
+    if (!GetUpdateStatsVar())
       return FunctionReturnHelper(
         FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
       );
@@ -160,7 +157,7 @@ export const GlobalStatsPreProcessing = FuncWrapper(
 );
 
 export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
-  if (!SaveStats)
+  if (!GetUpdateStatsVar())
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   Memory.stats.ticksStatsCollecting += 1;
@@ -194,9 +191,8 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
     const callCount = GetAveragedValue(currentCallCount, newCallCount);
     const cpuUsed = GetAveragedValue(currentCpuUsed, newCpuUsed);
     averagedIntentCallsList[name] = {
-      callCount:
-        callCount.code === FunctionReturnCodes.OK ? callCount.response : 0,
-      cpuUsed: cpuUsed.code === FunctionReturnCodes.OK ? cpuUsed.response : 0,
+      callCount: callCount.response,
+      cpuUsed: cpuUsed.response,
     };
   });
 
@@ -231,9 +227,8 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
     const callCount = GetAveragedValue(currentCallCount, newCallCount);
     const cpuUsed = GetAveragedValue(currentCpuUsed, newCpuUsed);
     averagedFuncCallsList[name] = {
-      callCount:
-        callCount.code === FunctionReturnCodes.OK ? callCount.response : 0,
-      cpuUsed: cpuUsed.code === FunctionReturnCodes.OK ? cpuUsed.response : 0,
+      callCount: callCount.response,
+      cpuUsed: cpuUsed.response,
     };
   });
   Memory.stats.funcCalls = averagedFuncCallsList;

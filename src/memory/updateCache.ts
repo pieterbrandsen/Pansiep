@@ -38,6 +38,7 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
         !newCacheArr.some((c: any) => c.id === obj.id)
       ) {
         newCacheArr.push(obj);
+
         if (isUndefined(roomObject[obj.id].isNotSeenSince))
           // eslint-disable-next-line no-param-reassign
           roomObject[obj.id].isNotSeenSince = Game.time;
@@ -54,9 +55,10 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
       } else if (
         roomObject[obj.id] &&
         roomObject[obj.id].isNotSeenSince !== undefined
-      )
+      ) {
         // eslint-disable-next-line no-param-reassign
         delete roomObject[obj.id].isNotSeenSince;
+      }
     });
   });
 
@@ -81,22 +83,24 @@ export const UpdateRoomsCache = FuncWrapper(
       cache.push(key);
     });
 
-    forEach(Object.keys(savedCache), (key: string) => {
+    forEach(savedCache, (key: string) => {
       if (Memory.rooms[key] && !cache.includes(key)) {
         cache.push(key);
 
         const roomMem: RoomMemory = Memory.rooms[key];
-        if (isUndefined(roomMem.isNotSeenSince))
+        if (isUndefined(roomMem.isNotSeenSince)) {
           roomMem.isNotSeenSince = Game.time;
-        else if (
-          (roomMem.isNotSeenSince as number) +
-            SaveUnloadedObjectForAmountTicks * 2 <
-          Game.time
-        ) {
-          RemoveRoom(key);
-          cache.pop();
         }
-      } else if (
+        else if (
+          (roomMem.isNotSeenSince as number +
+          SaveUnloadedObjectForAmountTicks * 2) 
+          <
+          Game.time
+          ) {
+            RemoveRoom(key);
+            cache.pop();
+          }
+        } else if (
         Memory.rooms[key] &&
         Memory.rooms[key].isNotSeenSince !== undefined
       )

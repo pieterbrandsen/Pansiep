@@ -32,13 +32,12 @@ export const MessageGenerator = function MessageGenerator(
 };
 
 export const ShouldLog = function ShouldLog(
-  currLogLvl: number,
   reqLogLevel: number
 ): FunctionReturn {
-  return FunctionReturnHelper(
-    FunctionReturnCodes.OK,
-    currLogLvl >= reqLogLevel
-  );
+  if (reqLogLevel <= LogLevel.code) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+  return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 };
 
 export const Log = function Log(
@@ -47,7 +46,10 @@ export const Log = function Log(
   message: string,
   args?: unknown
 ): FunctionReturn {
-  if (!ShouldLog(LogLevel.code, logType.code).response)
+  if (
+    ShouldLog(logType.code).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   const messageGenerator = MessageGenerator(
@@ -56,8 +58,6 @@ export const Log = function Log(
     logType,
     args
   );
-  if (messageGenerator.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   console.log(messageGenerator.response);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);

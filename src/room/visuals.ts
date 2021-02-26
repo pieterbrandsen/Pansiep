@@ -5,10 +5,9 @@ import { FuncWrapper } from "../utils/wrapper";
 
 export const ShouldVisualsBeDisplayed = FuncWrapper(
   function ShouldVisualsBeDisplayed(visualLevel: number): FunctionReturn {
-    return FunctionReturnHelper(
-      FunctionReturnCodes.OK,
-      visualLevel <= VisualLevel
-    );
+    if (visualLevel <= VisualLevel)
+      return FunctionReturnHelper(FunctionReturnCodes.OK);
+    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
   }
 );
 
@@ -19,7 +18,10 @@ export const AddLineWPos = FuncWrapper(function AddLineWPos(
   visualLevel: number,
   style?: LineStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.line(pos1, pos2, style);
@@ -35,7 +37,10 @@ export const AddLineWCoords = FuncWrapper(function AddLineWCoords(
   visualLevel: number,
   style?: LineStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.line(x1, x2, y1, y2, style);
@@ -48,7 +53,10 @@ export const AddCircleWPos = FuncWrapper(function AddCircleWPos(
   visualLevel: number,
   style?: CircleStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.circle(pos, style);
@@ -62,7 +70,10 @@ export const AddCircleWCoords = FuncWrapper(function AddCircleWCoords(
   visualLevel: number,
   style?: CircleStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.circle(x, y, style);
@@ -77,7 +88,10 @@ export const AddRectWPos = FuncWrapper(function AddRectWPos(
   visualLevel: number,
   style?: PolyStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.rect(topLeftPos, width, height, style);
@@ -93,7 +107,10 @@ export const AddRectWCoords = FuncWrapper(function AddRectWCoords(
   visualLevel: number,
   style?: PolyStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.rect(x, y, width, height, style);
@@ -106,7 +123,10 @@ export const AddPoly = FuncWrapper(function AddPoly(
   visualLevel: number,
   style?: PolyStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.poly(points, style);
@@ -120,7 +140,10 @@ export const AddTextWPos = FuncWrapper(function AddTextWPos(
   visualLevel: number,
   style?: TextStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.text(text, pos, style);
@@ -135,7 +158,10 @@ export const AddTextWCoords = FuncWrapper(function AddTextWCoords(
   visualLevel: number,
   style?: TextStyle
 ): FunctionReturn {
-  if (!ShouldVisualsBeDisplayed(visualLevel).response)
+  if (
+    ShouldVisualsBeDisplayed(visualLevel).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   room.visual.text(text, x, y, style);

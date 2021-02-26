@@ -1,22 +1,23 @@
 import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { isUndefined } from "lodash";
-import { GetCreep, GetAllCreepNames } from "./helper";
+import { GetCreep, GetAllCreepIds } from "./helper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-
-mockGlobal<Game>(
-  "Game",
-  {
-    cpu: {
-      getUsed: () => {
-        return 1;
-      },
-    },
-  },
-  true
-);
 
 describe("Creep helper", () => {
   describe("GetCreep method", () => {
+    beforeEach(() => {
+      mockGlobal<Game>(
+        "Game",
+        {
+          cpu: {
+            getUsed: () => {
+              return 1;
+            },
+          },
+        },
+        true
+      );
+    });
     it("should return OK", () => {
       const creep = mockInstanceOf<Creep>({ memory: {} });
       Game.creeps = { creep };
@@ -34,35 +35,34 @@ describe("Creep helper", () => {
     });
   });
 
-  describe("GetAllCreepNames method", () => {
+  describe("GetAllCreepIds method", () => {
     const roomName = "roomName";
 
     it("should return a string[]", () => {
       mockGlobal<Memory>("Memory", { cache: { creeps: { data: {} } } });
-      const creepArray = [
+      const creeps = [
         { creepType: "None", id: "0" },
         { creepType: "None", id: "1" },
         { creepType: "None", id: "2" },
       ];
-      Memory.cache.creeps.data = { roomName: creepArray };
+      Memory.cache.creeps.data = { roomName: creeps };
 
-      let getAllCreepNames = GetAllCreepNames(roomName);
-      expect(getAllCreepNames.code === FunctionReturnCodes.OK).toBeTruthy();
-      expect(getAllCreepNames.response).toHaveLength(3);
+      let getAllCreepIds = GetAllCreepIds(roomName);
+      expect(getAllCreepIds.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAllCreepIds.response).toHaveLength(3);
 
       Memory.cache.creeps.data = { roomName: [] };
-      getAllCreepNames = GetAllCreepNames(roomName);
-      expect(getAllCreepNames.code === FunctionReturnCodes.OK).toBeTruthy();
-      expect(getAllCreepNames.response).toHaveLength(0);
+      getAllCreepIds = GetAllCreepIds(roomName);
+      expect(getAllCreepIds.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAllCreepIds.response).toHaveLength(0);
     });
     it("should return NOT_FOUND", () => {
       mockGlobal<Memory>("Memory", { cache: { creeps: { data: {} } } }, true);
 
-      const getAllCreepNames = GetAllCreepNames(roomName);
+      const getAllCreepIds = GetAllCreepIds(roomName);
       expect(
-        getAllCreepNames.code === FunctionReturnCodes.NOT_FOUND
+        getAllCreepIds.code === FunctionReturnCodes.NOT_FOUND
       ).toBeTruthy();
-      expect(isUndefined(getAllCreepNames.response)).toBeTruthy();
     });
   });
 });

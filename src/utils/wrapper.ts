@@ -1,4 +1,4 @@
-import { isUndefined } from 'lodash';
+import { isUndefined } from "lodash";
 import { Log } from "./logger";
 import { LogTypes } from "./constants/global";
 
@@ -14,7 +14,7 @@ export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
     const preProcessingCpu = Game.cpu.getUsed();
     let statsPath = { callCount: 0, cpuUsed: 0 };
 
-    if (global.preProcessingStats) {
+    if (global.preProcessingStats && global.preProcessingStats.funcCalls) {
       statsPath = global.preProcessingStats.funcCalls[func.name];
       if (isUndefined(statsPath)) {
         global.preProcessingStats.funcCalls[func.name] = {

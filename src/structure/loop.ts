@@ -1,5 +1,5 @@
 import { forEach } from "lodash";
-import { GetAllStructureNames, GetStructure } from "./helper";
+import { GetAllStructureIds, GetStructure } from "./helper";
 import { IsStructureMemoryInitialized } from "../memory/initialization";
 import { StructureStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
@@ -21,10 +21,11 @@ export const RunStructure = FuncWrapper(function RunStructure(
 export const Run = FuncWrapper(function RunStructures(
   id: string
 ): FunctionReturn {
-  const getStructureNames = GetAllStructureNames(id);
-  if (getStructureNames.code !== FunctionReturnCodes.OK)
+  const getStructureIds = GetAllStructureIds(id);
+  if (getStructureIds.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  forEach(getStructureNames.response, (key: string) => {
+
+  forEach(getStructureIds.response, (key: string) => {
     const isStructureMemoryInitialized = IsStructureMemoryInitialized(key);
     if (isStructureMemoryInitialized.code === FunctionReturnCodes.OK)
       RunStructure(key);

@@ -46,7 +46,11 @@ export const InitializeHeapVars = FuncWrapper(
 
 export const AreCustomPrototypesInitialized = FuncWrapper(
   function AreCustomPrototypesInitialized(): FunctionReturn {
-    if (Creep.prototype.command) {
+    if (
+      Room.prototype.command &&
+      Structure.prototype.command &&
+      Creep.prototype.command
+    ) {
       return FunctionReturnHelper(FunctionReturnCodes.OK);
     }
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
@@ -79,7 +83,7 @@ export const InitializeCustomPrototypes = FuncWrapper(
 
     Log(
       LogTypes.Info,
-      "memory/initialization:InitializeHeapVars",
+      "memory/initialization:InitializeCustomPrototypes",
       "Initialized custom prototypes"
     );
 
@@ -193,7 +197,7 @@ export const IsRoomMemoryInitialized = FuncWrapper(
 
 export const IsStructureMemoryInitialized = FuncWrapper(
   function IsStructureMemoryInitialized(id: string): FunctionReturn {
-    if (Memory.structures && Memory.structures[id]) {
+    if (Memory.structures[id]) {
       const strMem = Memory.structures[id];
       if (
         strMem.room &&
@@ -207,7 +211,7 @@ export const IsStructureMemoryInitialized = FuncWrapper(
 
 export const IsCreepMemoryInitialized = FuncWrapper(
   function IsCreepMemoryInitialized(id: string): FunctionReturn {
-    if (Memory.creeps && Memory.creeps[id]) {
+    if (Memory.creeps[id]) {
       const crpMem = Memory.creeps[id];
       if (crpMem.commandRoom)
         return FunctionReturnHelper(FunctionReturnCodes.OK);
