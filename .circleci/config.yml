@@ -23,9 +23,12 @@ jobs:
           cache-path: ~/project/node_modules
           override-ci-command: npm install
       - run: npm run test-cov
-      - run: ./node_modules/.bin/codecov --token="$CODECOV_TOKEN" --disable=gcov 
+      - run: ./node_modules/.bin/codecov --token="$CODECOV_TOKEN" --disable=gcov
+      - coveralls/upload 
+      
 orbs:
   node: circleci/node@3.0.0
+  coveralls: coveralls/coveralls@1.0.6
 version: 2.1
 workflows:
   testing:

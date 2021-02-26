@@ -105,14 +105,21 @@ describe("Update cache", () => {
       const room = mockInstanceOf<Room>({});
       const room3 = mockInstanceOf<Room>({});
       const room5 = mockInstanceOf<Room>({});
-      Game.rooms = { room, room3,room5 };
+      Game.rooms = { room, room3, room5 };
       Memory.cache.rooms.nextCheckTick = 0;
-      Memory.cache.rooms.data = ["room", "room2", "room3", "room4","room5","room6"];
+      Memory.cache.rooms.data = [
+        "room",
+        "room2",
+        "room3",
+        "room4",
+        "room5",
+        "room6",
+      ];
       Memory.rooms.room = { isNotSeenSince: 600 };
       Memory.rooms.room2 = { isNotSeenSince: -500 };
       Memory.rooms.room4 = {};
       Memory.rooms.room5 = {};
-      Memory.rooms.room6 = {isNotSeenSince: 900};
+      Memory.rooms.room6 = { isNotSeenSince: 900 };
 
       const updateRoomsCache = UpdateRoomsCache();
       expect(updateRoomsCache.code === FunctionReturnCodes.OK).toBeTruthy();
@@ -143,7 +150,7 @@ describe("Update cache", () => {
         structureType: STRUCTURE_CONTAINER,
         room: { name: "room2" },
       });
-      Game.structures = { structure, structure2, structure3,structure4 };
+      Game.structures = { structure, structure2, structure3, structure4 };
       Memory.structures.structure = { room: "room" };
       Memory.structures.structure2 = { room: "room" };
       Memory.cache.structures.data = {
