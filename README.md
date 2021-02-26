@@ -4,6 +4,7 @@
 Master branch badges
 
 [![CircleCI](https://circleci.com/gh/pieterbrandsen/Pansiep.svg?style=svg)](https://circleci.com/gh/pieterbrandsen/Pansiep)
+[![codecov](https://codecov.io/gh/pieterbrandsen/Pansiep/branch/master/graph/badge.svg?token=N8HZ9YUDTL)](https://codecov.io/gh/pieterbrandsen/Pansiep)
 
 ![Screeps header](https://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg)
 

@@ -14,7 +14,7 @@ Welcome to Pansiep's documentation!
    
    Feel free to contact me on the Screeps slack at **@pandamaster** if you have any questions.
 
-   *To contribute to this project please see `CONTRIBUTING <./CONTRIBUTING.html>` or contact me on slack.*
+   *To contribute to this project please see `CONTRIBUTING <https://pansiep.readthedocs.io/CONTRIBUTING.html>`_ or contact me on slack.*
 
 
 ********************
@@ -26,7 +26,7 @@ The bot is focussed on reliability and communication between the classes.
 To fullfil the needs of the colony there will be complete jobs in each room to be fulfilled by creeps.
 Based on the situation and job list the needed creeps get spawned or recycled.
 
-Using the communication the rooms and creeps can communicate with each to create a system where on a attack or job overflow. When the room can't manage something he can request help without much hassle.
+Using the communication the rooms and creeps can communicate with each other. This will create a system where on an attack or job count overflow, a room can request help without much hassle.
 
 ********************
 Framework overview
