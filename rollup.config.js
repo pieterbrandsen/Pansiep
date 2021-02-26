@@ -1,8 +1,9 @@
 import clear from "rollup-plugin-clear";
-import resolve from "@rollup/plugin-node-resolve";
+import nodeResolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import screeps from "rollup-plugin-screeps";
+import nodePolyfills from "rollup-plugin-node-polyfills";
 
 let cfg;
 const dest = process.env.DEST;
@@ -13,7 +14,7 @@ if (!dest) {
     "No destination specified - code will be compiled but not uploaded"
   );
   // eslint-disable-next-line
-} else if (require("./screeps.json")[dest] == null) {
+} else if ((cfg = require("./screeps.json")[dest]) == null) {
   throw new Error("Invalid upload destination");
 }
 
@@ -22,13 +23,13 @@ export default {
   output: {
     file: "dist/main.js",
     format: "cjs",
-    sourcemap: true,
+    sourcemap: false,
   },
-
   plugins: [
     clear({ targets: ["dist"] }),
-    resolve(),
     commonjs(),
+    nodePolyfills(),
+    nodeResolve({ preferBuiltins: false }),
     typescript({ tsconfig: "./tsconfig.json" }),
     screeps({ config: cfg, dryRun: cfg == null }),
   ],

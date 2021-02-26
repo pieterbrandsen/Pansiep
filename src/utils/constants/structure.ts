@@ -1,0 +1,14 @@
+export const CachedStructureTypes: StructureConstant[] = [
+  STRUCTURE_CONTROLLER,
+  STRUCTURE_FACTORY,
+  STRUCTURE_LAB,
+  STRUCTURE_LINK,
+  STRUCTURE_NUKER,
+  STRUCTURE_OBSERVER,
+  STRUCTURE_SPAWN,
+  STRUCTURE_STORAGE,
+  STRUCTURE_TERMINAL,
+  STRUCTURE_TOWER,
+];
+
+export const TrackedIntents = ["destroy"];

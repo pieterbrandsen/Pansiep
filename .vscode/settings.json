@@ -1,10 +1,22 @@
 {
   "cSpell.words": [
-    "choosed",
+    "Coord",
+    "Cornsilk",
+    "NUKER",
+    "Overmind",
+    "PERMACACHE",
     "Pansiep",
+    "builtins",
+    "choosed",
+    "codecov",
     "cond",
+    "eduter",
+    "gcov",
+    "memroy",
+    "packrat",
     "pandamaster",
-    "socio"
+    "socio",
+    "unmock"
   ],
   "restructuredtext.confPath": "${workspaceFolder}\\docs\\source"
 }

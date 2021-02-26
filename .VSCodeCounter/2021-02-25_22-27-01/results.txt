@@ -1,0 +1,73 @@
+Date : 2021-02-25 22:27:01
+Directory : c:\Users\piete\Source\repos\Pansiep\src
+Total : 41 files,  3396 codes, 218 comments, 424 blanks, all 4038 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |         41 |      3,396 |        218 |        424 |      4,038 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                     | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                        |         41 |      3,396 |        218 |        424 |      4,038 |
+| creep                                                                    |          4 |        178 |          0 |         29 |        207 |
+| memory                                                                   |          8 |      1,254 |          9 |        149 |      1,412 |
+| room                                                                     |          6 |        675 |          0 |         71 |        746 |
+| structure                                                                |          4 |        186 |          0 |         29 |        215 |
+| utils                                                                    |         16 |        910 |        201 |        117 |      1,228 |
+| utils\config                                                             |          3 |         19 |          1 |          6 |         26 |
+| utils\constants                                                          |          4 |         64 |          1 |         11 |         76 |
+| utils\external                                                           |          1 |        201 |        176 |         33 |        410 |
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                 | language   | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\piete\Source\repos\Pansiep\src\creep\helper.spec.ts             | TypeScript |         60 |          0 |          9 |         69 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\helper.ts                  | TypeScript |         22 |          0 |          3 |         25 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\loop.spec.ts               | TypeScript |         66 |          0 |         11 |         77 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\loop.ts                    | TypeScript |         30 |          0 |          6 |         36 |
+| c:\Users\piete\Source\repos\Pansiep\src\main.spec.ts                     | TypeScript |         69 |          0 |          6 |         75 |
+| c:\Users\piete\Source\repos\Pansiep\src\main.ts                          | TypeScript |         40 |          4 |          4 |         48 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\garbageCollection.spec.ts | TypeScript |         82 |          1 |         12 |         95 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\garbageCollection.ts      | TypeScript |         67 |          0 |         12 |         79 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\initialization.spec.ts    | TypeScript |        211 |          0 |          9 |        220 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\initialization.ts         | TypeScript |        194 |          3 |         25 |        222 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\stats.spec.ts             | TypeScript |        232 |          0 |         16 |        248 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\stats.ts                  | TypeScript |        199 |          0 |         39 |        238 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\updateCache.spec.ts       | TypeScript |         87 |          1 |          6 |         94 |
+| c:\Users\piete\Source\repos\Pansiep\src\memory\updateCache.ts            | TypeScript |        182 |          4 |         30 |        216 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\helper.spec.ts              | TypeScript |        129 |          0 |         14 |        143 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\helper.ts                   | TypeScript |         44 |          0 |          7 |         51 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\loop.spec.ts                | TypeScript |         58 |          0 |          7 |         65 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\loop.ts                     | TypeScript |         30 |          0 |          8 |         38 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals.spec.ts             | TypeScript |        264 |          0 |         15 |        279 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals.ts                  | TypeScript |        150 |          0 |         20 |        170 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\helper.spec.ts         | TypeScript |         64 |          0 |          9 |         73 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\helper.ts              | TypeScript |         22 |          0 |          3 |         25 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\loop.spec.ts           | TypeScript |         70 |          0 |         11 |         81 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\loop.ts                | TypeScript |         30 |          0 |          6 |         36 |
+| c:\Users\piete\Source\repos\Pansiep\src\types.d.ts                       | TypeScript |         84 |          4 |         19 |        107 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\config\global.ts           | TypeScript |         11 |          0 |          2 |         13 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\config\room.spec.ts        | TypeScript |          6 |          0 |          2 |          8 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\config\room.ts             | TypeScript |          2 |          1 |          2 |          5 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\consoleCommands.spec.ts    | TypeScript |        138 |          0 |         13 |        151 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\consoleCommands.ts         | TypeScript |        145 |          0 |         15 |        160 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\constants\creep.ts         | TypeScript |          1 |          1 |          0 |          2 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\constants\global.ts        | TypeScript |         31 |          0 |          7 |         38 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\constants\room.ts          | TypeScript |         19 |          0 |          2 |         21 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\constants\structure.ts     | TypeScript |         13 |          0 |          2 |         15 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\external\packrat.ts        | TypeScript |        201 |        176 |         33 |        410 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\logger.spec.ts             | TypeScript |         93 |          0 |         12 |        105 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\logger.ts                  | TypeScript |         59 |          0 |          6 |         65 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\statusGenerator.spec.ts    | TypeScript |         44 |          0 |          5 |         49 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\statusGenerator.ts         | TypeScript |          5 |          1 |          1 |          7 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\wrapper.spec.ts            | TypeScript |         79 |          0 |          6 |         85 |
+| c:\Users\piete\Source\repos\Pansiep\src\utils\wrapper.ts                 | TypeScript |         63 |         22 |          9 |         94 |
+| Total                                                                    |            |      3,396 |        218 |        424 |      4,038 |
++--------------------------------------------------------------------------+------------+------------+------------+------------+------------+
