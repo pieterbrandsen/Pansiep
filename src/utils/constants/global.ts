@@ -1,9 +1,8 @@
 export const LogTypes: StringMap<LogType> = {
-  // Chosen log level includes all the log levels above it
   None: { code: 0, value: { name: "None", color: "None" } },
-  Info: { code: 1, value: { name: "Info", color: "FloralWhite" } },
+  Error: { code: 10, value: { name: "Error", color: "Crimson" } },
   Warn: { code: 250, value: { name: "Warn", color: "GoldenRod" } },
-  Error: { code: 500, value: { name: "Error", color: "Crimson" } },
+  Info: { code: 500, value: { name: "Info", color: "FloralWhite" } },
   Debug: { code: 750, value: { name: "Debug", color: "DodgerBlue" } },
   All: { code: 999, value: { name: "All", color: "None" } },
 };
@@ -14,7 +13,8 @@ export const FunctionReturnCodes = {
   ACCEPTED: 202,
   TARGET_IS_ON_DELAY_OR_OFF: 203,
   NO_CONTENT: 204,
-  NOT_MODIFIED: 304,
+  NOT_MODIFIED: 205,
+  NOT_MY_ROOM: 206,
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
@@ -31,7 +31,7 @@ export const CacheNextCheckIncrement = {
 
 export const SaveUnloadedObjectForAmountTicks = 500;
 
-export const AverageValueOverAmountTicks = 1000;
+export const AverageValueOverAmountTicks = 10000;
 
 export const StatsDigitCount =
   5 + AverageValueOverAmountTicks.toString().length;

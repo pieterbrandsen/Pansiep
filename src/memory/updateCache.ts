@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { forEach, forOwn, isUndefined } from "lodash";
 import { Log } from "../utils/logger";
 import {
   InitializeCreepMemory,
@@ -30,7 +30,7 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
     if (!returnCache[key]) returnCache[key] = [];
     const newCacheArr = returnCache[key];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _.forEach(currentCache[key], (obj: any) => {
+    forEach(currentCache[key], (obj: any) => {
       if (
         obj &&
         roomObject[obj.id] &&
@@ -38,7 +38,8 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
         !newCacheArr.some((c: any) => c.id === obj.id)
       ) {
         newCacheArr.push(obj);
-        if (_.isUndefined(roomObject[obj.id].isNotSeenSince))
+
+        if (isUndefined(roomObject[obj.id].isNotSeenSince))
           // eslint-disable-next-line no-param-reassign
           roomObject[obj.id].isNotSeenSince = Game.time;
         else if (
@@ -54,9 +55,10 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
       } else if (
         roomObject[obj.id] &&
         roomObject[obj.id].isNotSeenSince !== undefined
-      )
+      ) {
         // eslint-disable-next-line no-param-reassign
         delete roomObject[obj.id].isNotSeenSince;
+      }
     });
   });
 
@@ -75,28 +77,30 @@ export const UpdateRoomsCache = FuncWrapper(
 
     const savedCache = Memory.cache.rooms.data;
     const cache: string[] = [];
-    _.forEach(Object.keys(Game.rooms), (key: string) => {
+    forEach(Object.keys(Game.rooms), (key: string) => {
       if (IsRoomMemoryInitialized(key).code !== FunctionReturnCodes.OK)
         InitializeRoomMemory(key);
       cache.push(key);
     });
 
-    _.forEach(Object.keys(savedCache), (key: string) => {
+    forEach(savedCache, (key: string) => {
       if (Memory.rooms[key] && !cache.includes(key)) {
         cache.push(key);
 
         const roomMem: RoomMemory = Memory.rooms[key];
-        if (_.isUndefined(roomMem.isNotSeenSince))
+        if (isUndefined(roomMem.isNotSeenSince)) {
           roomMem.isNotSeenSince = Game.time;
-        else if (
-          (roomMem.isNotSeenSince as number) +
-            SaveUnloadedObjectForAmountTicks * 2 <
-          Game.time
-        ) {
-          RemoveRoom(key);
-          cache.pop();
         }
-      } else if (
+        else if (
+          (roomMem.isNotSeenSince as number +
+          SaveUnloadedObjectForAmountTicks * 2) 
+          <
+          Game.time
+          ) {
+            RemoveRoom(key);
+            cache.pop();
+          }
+        } else if (
         Memory.rooms[key] &&
         Memory.rooms[key].isNotSeenSince !== undefined
       )
@@ -126,7 +130,7 @@ export const UpdateStructuresCache = FuncWrapper(
       Game.time + CacheNextCheckIncrement.structures;
 
     const cache: StringMap<StructureCache[]> = {};
-    _.forOwn(Game.structures, (str: Structure, key: string) => {
+    forOwn(Game.structures, (str: Structure, key: string) => {
       let strMem = Memory.structures[key];
       if (CachedStructureTypes.includes(str.structureType)) {
         if (IsStructureMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
@@ -173,7 +177,7 @@ export const UpdateCreepsCache = FuncWrapper(
       Game.time + CacheNextCheckIncrement.creeps;
 
     const cache: StringMap<CreepCache[]> = {};
-    _.forOwn(Game.creeps, (creep: Creep, key: string) => {
+    forOwn(Game.creeps, (creep: Creep, key: string) => {
       let creepMemory = Memory.creeps[key];
       if (IsCreepMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
         InitializeCreepMemory(key, creep.room.name);

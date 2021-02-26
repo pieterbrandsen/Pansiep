@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { forEach } from "lodash";
 import {
   InitializeCreepMemory,
   InitializeGlobalMemory,
@@ -23,61 +23,66 @@ export const DescribeFunction = FuncWrapper(function DescribeFunction(
   let message = `<br><br>Function name: ${name}<br>Description: ${description}`;
   if (params && params.length > 0) {
     message += "<br>Params:";
-    _.forEach(params, (param: Param) => {
+    forEach(params, (param: Param) => {
       message += `<br>Name = ${param.name}, Type = ${param.type}`;
     });
   }
   message +=
     "<br>----------------------------------------------------------------";
-  return FunctionReturnHelper(FunctionReturnCodes.ACCEPTED, message);
+  return FunctionReturnHelper(FunctionReturnCodes.OK, message);
 });
 
 export const ResetGlobalMemoryCommand = FuncWrapper(
-  function ResetGlobalMemoryCommand(): string {
-    InitializeGlobalMemory();
-    return "Executed";
+  function ResetGlobalMemoryCommand(): FunctionReturn {
+    return InitializeGlobalMemory();
   }
 );
 
 export const ResetRoomMemoryCommand = FuncWrapper(
-  function ResetRoomMemoryCommand(id: string): string {
-    InitializeRoomMemory(id);
-    return "Executed";
+  function ResetRoomMemoryCommand(id: string): FunctionReturn {
+    return InitializeRoomMemory(id);
   }
 );
 
 export const ResetStructureMemoryCommand = FuncWrapper(
-  function ResetStructureMemoryCommand(id: string, roomName: string): string {
-    InitializeStructureMemory(id, roomName);
-    return "Executed";
+  function ResetStructureMemoryCommand(
+    id: string,
+    roomName: string
+  ): FunctionReturn {
+    return InitializeStructureMemory(id, roomName);
   }
 );
 
 export const ResetCreepMemoryCommand = FuncWrapper(
-  function ResetCreepMemoryCommand(id: string, roomName: string): string {
-    InitializeCreepMemory(id, roomName);
-    return "Executed";
+  function ResetCreepMemoryCommand(
+    id: string,
+    roomName: string
+  ): FunctionReturn {
+    return InitializeCreepMemory(id, roomName);
   }
 );
 
 export const DeleteRoomMemoryCommand = FuncWrapper(
-  function DeleteRoomMemoryCommand(id: string): string {
-    RemoveRoom(id);
-    return "Executed";
+  function DeleteRoomMemoryCommand(id: string): FunctionReturn {
+    return RemoveRoom(id);
   }
 );
 
 export const DeleteStructureMemoryCommand = FuncWrapper(
-  function DeleteStructureMemoryCommand(id: string, roomName: string): string {
-    RemoveStructure(id, roomName);
-    return "Executed";
+  function DeleteStructureMemoryCommand(
+    id: string,
+    roomName: string
+  ): FunctionReturn {
+    return RemoveStructure(id, roomName);
   }
 );
 
 export const DeleteCreepMemoryCommand = FuncWrapper(
-  function DeleteCreepMemoryCommand(id: string, roomName: string): string {
-    RemoveCreep(id, roomName);
-    return "Executed";
+  function DeleteCreepMemoryCommand(
+    id: string,
+    roomName: string
+  ): FunctionReturn {
+    return RemoveCreep(id, roomName);
   }
 );
 

@@ -94,14 +94,13 @@ declare namespace NodeJS {
 
     help(): string;
 
-    resetGlobalMemory(): string;
-    resetRoomMemory(roomName: string): string;
-    resetStructureMemory(id: string, roomName: string): string;
-    resetCreepMemory(creepName: string, roomName: string): string;
+    resetGlobalMemory(): FunctionReturn;
+    resetRoomMemory(roomName: string): FunctionReturn;
+    resetStructureMemory(id: string, roomName: string): FunctionReturn;
+    resetCreepMemory(creepName: string, roomName: string): FunctionReturn;
 
-    deleteRoomMemory(roomName: string): string;
-    deleteStructureMemory(id: string, roomName: string): string;
-    deleteCreepMemory(creepName: string, roomName: string): string;
-    // showAllMyRooms(): string;
+    deleteRoomMemory(roomName: string): FunctionReturn;
+    deleteStructureMemory(id: string, roomName: string): FunctionReturn;
+    deleteCreepMemory(creepName: string, roomName: string): FunctionReturn;
   }
 }

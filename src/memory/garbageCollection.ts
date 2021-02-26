@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { forOwn, remove } from "lodash";
 import { Log } from "../utils/logger";
 import { ResetRoomStats } from "./stats";
 import { FuncWrapper } from "../utils/wrapper";
@@ -10,7 +10,7 @@ export const RemoveCreep = FuncWrapper(function RemoveCreep(
   roomName: string
 ): FunctionReturn {
   delete Memory.creeps[id];
-  Memory.cache.creeps.data[roomName] = _.remove(
+  Memory.cache.creeps.data[roomName] = remove(
     Memory.cache.creeps.data[roomName],
     (c) => c.id
   );
@@ -30,7 +30,7 @@ export const RemoveStructure = FuncWrapper(function RemoveStructure(
   roomName: string
 ): FunctionReturn {
   delete Memory.structures[id];
-  Memory.cache.structures.data[roomName] = _.remove(
+  Memory.cache.structures.data[roomName] = remove(
     Memory.cache.structures.data[roomName],
     (s) => s.id
   );
@@ -48,19 +48,19 @@ export const RemoveStructure = FuncWrapper(function RemoveStructure(
 export const RemoveRoom = FuncWrapper(function RemoveRoom(
   roomName: string
 ): FunctionReturn {
-  _.forOwn(Memory.structures, (str: StructureMemory, key: string) => {
+  forOwn(Memory.structures, (str: StructureMemory, key: string) => {
     if (str.room === roomName) {
       RemoveStructure(key, roomName);
     }
   });
-  _.forOwn(Memory.creeps, (crp: CreepMemory, key: string) => {
+  forOwn(Memory.creeps, (crp: CreepMemory, key: string) => {
     if (crp.commandRoom === roomName) {
       RemoveCreep(key, roomName);
     }
   });
 
   delete Memory.rooms[roomName];
-  Memory.cache.rooms.data = _.remove(
+  Memory.cache.rooms.data = remove(
     Memory.cache.rooms.data,
     (s) => s === roomName
   );

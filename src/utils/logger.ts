@@ -1,10 +1,9 @@
-import _ from "lodash";
+import { isObject } from "lodash";
 import { LogLevel } from "./config/global";
 import { FunctionReturnCodes } from "./constants/global";
-import { FuncWrapper } from "./wrapper";
 import { FunctionReturnHelper } from "./statusGenerator";
 
-export const MessageGenerator = FuncWrapper(function MessageGenerator(
+export const MessageGenerator = function MessageGenerator(
   fileLocation: string,
   message: string,
   logInfo: LogType,
@@ -14,7 +13,7 @@ export const MessageGenerator = FuncWrapper(function MessageGenerator(
   htmlString += `<b>${logInfo.value.name}</b>`;
   htmlString += `<br><b>Message: </b>${message}`;
   if (args) {
-    if (_.isObject(args)) {
+    if (isObject(args)) {
       let objectString = JSON.stringify(args);
       if (objectString.length > 2500) {
         objectString = `${objectString
@@ -30,25 +29,27 @@ export const MessageGenerator = FuncWrapper(function MessageGenerator(
   htmlString += `<br><b>Log location: </b>${fileLocation}`;
   htmlString += "</span><br>";
   return FunctionReturnHelper(FunctionReturnCodes.OK, htmlString);
-});
+};
 
-export const ShouldLog = FuncWrapper(function ShouldLog(
-  currLogLvl: number,
+export const ShouldLog = function ShouldLog(
   reqLogLevel: number
 ): FunctionReturn {
-  return FunctionReturnHelper(
-    FunctionReturnCodes.OK,
-    currLogLvl >= reqLogLevel
-  );
-});
+  if (reqLogLevel <= LogLevel.code) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+  return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
+};
 
-export const Log = FuncWrapper(function Log(
+export const Log = function Log(
   logType: LogType,
   fileLocation: string,
   message: string,
   args?: unknown
 ): FunctionReturn {
-  if (!ShouldLog(LogLevel.code, logType.code).response)
+  if (
+    ShouldLog(logType.code).code ===
+    FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+  )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   const messageGenerator = MessageGenerator(
@@ -57,9 +58,7 @@ export const Log = FuncWrapper(function Log(
     logType,
     args
   );
-  if (messageGenerator.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   console.log(messageGenerator.response);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+};

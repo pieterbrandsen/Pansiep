@@ -17,19 +17,24 @@ import { FunctionReturnHelper } from "./utils/statusGenerator";
  */
 // eslint-disable-next-line import/prefer-default-export
 export function loop(): FunctionReturn {
-  if (AreCustomPrototypesInitialized().code !== FunctionReturnCodes.OK) {
-    const initializeCustomPrototypes = InitializeCustomPrototypes();
-    if (initializeCustomPrototypes.code !== FunctionReturnCodes.NOT_MODIFIED)
+  if (
+    AreCustomPrototypesInitialized().code === FunctionReturnCodes.NO_CONTENT
+  ) {
+    InitializeCustomPrototypes();
+    const areCustomPrototypesInitialized = AreCustomPrototypesInitialized();
+    if (areCustomPrototypesInitialized.code === FunctionReturnCodes.NO_CONTENT)
       return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
-  if (AreHeapVarsValid().code !== FunctionReturnCodes.OK) {
-    const initializeHeapVars = InitializeHeapVars();
-    if (initializeHeapVars.code !== FunctionReturnCodes.NOT_MODIFIED)
+  if (AreHeapVarsValid().code === FunctionReturnCodes.NO_CONTENT) {
+    InitializeHeapVars();
+    const areHeapVarsValid = AreHeapVarsValid();
+    if (areHeapVarsValid.code === FunctionReturnCodes.NO_CONTENT)
       return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
-  if (IsGlobalMemoryInitialized().code !== FunctionReturnCodes.OK) {
-    const initializeGlobalMemory = InitializeGlobalMemory();
-    if (initializeGlobalMemory.code !== FunctionReturnCodes.NOT_MODIFIED)
+  if (IsGlobalMemoryInitialized().code === FunctionReturnCodes.NO_CONTENT) {
+    InitializeGlobalMemory();
+    const isGlobalMemoryInitialized = IsGlobalMemoryInitialized();
+    if (isGlobalMemoryInitialized.code === FunctionReturnCodes.NO_CONTENT)
       return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
 
