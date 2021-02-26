@@ -62,7 +62,7 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.19",
     "screeps-jest": "github:eduter/screeps-jest",
     "source-map": "^0.7.3"
   }
