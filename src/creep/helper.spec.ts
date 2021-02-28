@@ -2,24 +2,34 @@ import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { isUndefined } from "lodash";
 import { GetCreep, GetAllCreepIds } from "./helper";
 import { FunctionReturnCodes } from "../utils/constants/global";
+import {
+  ResetPreProcessingRoomStats,
+  ResetPreProcessingStats,
+} from "../memory/stats";
+
+beforeAll(() => {
+  mockGlobal<Game>(
+    "Game",
+    {
+      cpu: {
+        getUsed: () => {
+          return 1;
+        },
+      },
+    },
+    true
+  );
+  ResetPreProcessingStats();
+});
 
 describe("Creep helper", () => {
   describe("GetCreep method", () => {
-    beforeEach(() => {
-      mockGlobal<Game>(
-        "Game",
-        {
-          cpu: {
-            getUsed: () => {
-              return 1;
-            },
-          },
-        },
-        true
-      );
-    });
     it("should return OK", () => {
-      const creep = mockInstanceOf<Creep>({ memory: {} });
+      const creep = mockInstanceOf<Creep>({
+        memory: {},
+        room: { name: "room" },
+      });
+      ResetPreProcessingRoomStats(creep.room.name);
       Game.creeps = { creep };
 
       const getCreep = GetCreep("creep");
