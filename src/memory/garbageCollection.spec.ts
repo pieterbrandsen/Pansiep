@@ -1,10 +1,11 @@
 import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { RemoveCreep, RemoveRoom, RemoveStructure } from "./garbageCollection";
-import { ResetPreProcessingStats, ResetStats } from "./stats";
 import { InitializeGlobalMemory } from "./initialization";
 
-// jest.mock("./stats");
+JSON.stringify = jest.fn(() => {
+  return "stringify";
+});
 
 beforeAll(() => {
   mockGlobal<Memory>("Memory", {});

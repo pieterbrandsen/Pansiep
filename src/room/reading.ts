@@ -1,4 +1,4 @@
-import { first, forEach, maxBy, union } from "lodash";
+import { first, forEach, union } from "lodash";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
@@ -183,7 +183,12 @@ export const HasPositionEnergyStructures = FuncWrapper(
     if (structures.length > 1) {
       return FunctionReturnHelper(
         FunctionReturnCodes.OK,
-        maxBy(structures, (s) => s.store.energy)
+        Math.max.apply(
+          Math,
+          structures.map((s) => {
+            return s.store.energy;
+          })
+        )
       );
     }
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
