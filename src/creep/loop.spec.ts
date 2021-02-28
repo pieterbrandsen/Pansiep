@@ -39,12 +39,12 @@ describe("Creep loop", () => {
       Game.creeps = { creep };
 
       const runCreep = RunCreep("creep");
-      expect(runCreep.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(runCreep.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return NO_CONTENT", () => {
       Game.creeps = {};
       const runCreep = RunCreep("noCreep");
-      expect(runCreep.code === FunctionReturnCodes.NO_CONTENT).toBeTruthy();
+      expect(runCreep.code).toBe(FunctionReturnCodes.NO_CONTENT);
     });
   });
   describe("Run method", () => {
@@ -52,7 +52,7 @@ describe("Creep loop", () => {
       mockGlobal<Memory>("Memory", { cache: { creeps: { data: {} } } }, true);
 
       const runCreep = Run("room");
-      expect(runCreep.code === FunctionReturnCodes.NO_CONTENT).toBeTruthy();
+      expect(runCreep.code).toBe(FunctionReturnCodes.NO_CONTENT);
     });
 
     it("should return OK", () => {
@@ -66,11 +66,11 @@ describe("Creep loop", () => {
       Memory.cache.creeps.data = { roomName: creeps };
 
       let run = Run("roomName");
-      expect(run.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(run.code).toBe(FunctionReturnCodes.OK);
 
       Memory.cache.creeps.data = { roomName: [] };
       run = Run("roomName");
-      expect(run.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(run.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });

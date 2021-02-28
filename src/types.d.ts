@@ -34,12 +34,14 @@ interface FunctionReturn {
 interface RoomStats {
   creepCount: number;
   structureCount: number;
+  rcl: GlobalControlLevel;
 }
 
 interface StatsMemory {
   intentCalls: StringMap<{ callCount: number; cpuUsed: number }>;
   funcCalls: StringMap<{ callCount: number; cpuUsed: number }>;
   ticksStatsCollecting: number;
+  gcl: GlobalControlLevel;
   rooms: StringMap<RoomStats>;
 }
 
@@ -94,13 +96,13 @@ declare namespace NodeJS {
 
     help(): string;
 
-    resetGlobalMemory(): FunctionReturn;
-    resetRoomMemory(roomName: string): FunctionReturn;
-    resetStructureMemory(id: string, roomName: string): FunctionReturn;
-    resetCreepMemory(creepName: string, roomName: string): FunctionReturn;
+    resetGlobalMemory(): number;
+    resetRoomMemory(roomName: string): number;
+    resetStructureMemory(id: string, roomName: string): number;
+    resetCreepMemory(creepName: string, roomName: string): number;
 
-    deleteRoomMemory(roomName: string): FunctionReturn;
-    deleteStructureMemory(id: string, roomName: string): FunctionReturn;
-    deleteCreepMemory(creepName: string, roomName: string): FunctionReturn;
+    deleteRoomMemory(roomName: string): number;
+    deleteStructureMemory(id: string, roomName: string): number;
+    deleteCreepMemory(creepName: string, roomName: string): number;
   }
 }

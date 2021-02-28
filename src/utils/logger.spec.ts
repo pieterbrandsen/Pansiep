@@ -28,22 +28,22 @@ describe("Logger", () => {
   describe("MessageGenerator methods", () => {
     it("should return OK and a string", () => {
       let messageGenerator = MessageGenerator(fileLoc, msg, LogTypes.Debug);
-      expect(messageGenerator.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(messageGenerator.code).toBe(FunctionReturnCodes.OK);
 
       messageGenerator = MessageGenerator(fileLoc, msg, LogTypes.Debug, "a");
-      expect(messageGenerator.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(messageGenerator.code).toBe(FunctionReturnCodes.OK);
 
       messageGenerator = MessageGenerator(fileLoc, msg, LogTypes.Debug, [
         "a",
         "b",
       ]);
-      expect(messageGenerator.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(messageGenerator.code).toBe(FunctionReturnCodes.OK);
 
       messageGenerator = MessageGenerator(fileLoc, msg, LogTypes.Debug, {
         0: "a",
         1: "b",
       });
-      expect(messageGenerator.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(messageGenerator.code).toBe(FunctionReturnCodes.OK);
 
       const longObj: StringMap<number> = {};
       for (let i = 0; i < 1000; i += 1) {
@@ -55,19 +55,19 @@ describe("Logger", () => {
         LogTypes.Debug,
         longObj
       );
-      expect(messageGenerator.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(messageGenerator.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("ShouldLog method", () => {
     it("should return OK", () => {
       let shouldLog = ShouldLog(LogTypes.None.code);
-      expect(shouldLog.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(shouldLog.code).toBe(FunctionReturnCodes.OK);
 
       shouldLog = ShouldLog(LogTypes.Error.code);
-      expect(shouldLog.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(shouldLog.code).toBe(FunctionReturnCodes.OK);
 
       shouldLog = ShouldLog(LogTypes.Warn.code);
-      expect(shouldLog.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(shouldLog.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       let shouldLog = ShouldLog(LogTypes.Info.code);
@@ -92,7 +92,7 @@ describe("Logger", () => {
       console.log = jest.fn();
       const log = Log(LogTypes.Error, fileLoc, msg);
       console.log = baseConsoleLog;
-      expect(log.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(log.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       const log = Log(LogTypes.All, fileLoc, msg);

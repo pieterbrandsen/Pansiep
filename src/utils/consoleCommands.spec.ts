@@ -47,31 +47,27 @@ describe("Console commands", () => {
   describe("DescribeFunction method", () => {
     it("should return OK", () => {
       let describeFunction = DescribeFunction("funcName", "funcDescription");
-      expect(describeFunction.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(describeFunction.code).toBe(FunctionReturnCodes.OK);
 
       describeFunction = DescribeFunction("funcName", "funcDescription", [
         { name: "a", type: "number" },
         { name: "b", type: "string" },
       ]);
-      expect(describeFunction.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(describeFunction.code).toBe(FunctionReturnCodes.OK);
     });
   });
 
   describe("ResetGlobalMemoryCommand method", () => {
     it("should return OK", () => {
       const resetGlobalMemoryCommand = ResetGlobalMemoryCommand();
-      expect(
-        resetGlobalMemoryCommand.code === FunctionReturnCodes.OK
-      ).toBeTruthy();
+      expect(resetGlobalMemoryCommand === FunctionReturnCodes.OK).toBeTruthy();
     });
   });
 
   describe("ResetRoomMemoryCommand method", () => {
     it("should return OK", () => {
       const resetRoomMemoryCommand = ResetRoomMemoryCommand("roomName");
-      expect(
-        resetRoomMemoryCommand.code === FunctionReturnCodes.OK
-      ).toBeTruthy();
+      expect(resetRoomMemoryCommand === FunctionReturnCodes.OK).toBeTruthy();
     });
   });
 
@@ -82,7 +78,7 @@ describe("Console commands", () => {
         "roomName"
       );
       expect(
-        resetStructureMemoryCommand.code === FunctionReturnCodes.OK
+        resetStructureMemoryCommand === FunctionReturnCodes.OK
       ).toBeTruthy();
     });
   });
@@ -90,18 +86,14 @@ describe("Console commands", () => {
   describe("ResetCreepMemoryCommand method", () => {
     it("should return OK", () => {
       const resetCreepMemoryCommand = ResetCreepMemoryCommand("id", "roomName");
-      expect(
-        resetCreepMemoryCommand.code === FunctionReturnCodes.OK
-      ).toBeTruthy();
+      expect(resetCreepMemoryCommand === FunctionReturnCodes.OK).toBeTruthy();
     });
   });
 
   describe("DeleteRoomMemoryCommand method", () => {
     it("should return OK", () => {
       const deleteRoomMemoryCommand = DeleteRoomMemoryCommand("id");
-      expect(
-        deleteRoomMemoryCommand.code === FunctionReturnCodes.OK
-      ).toBeTruthy();
+      expect(deleteRoomMemoryCommand === FunctionReturnCodes.OK).toBeTruthy();
     });
   });
 
@@ -112,7 +104,7 @@ describe("Console commands", () => {
         "roomName"
       );
       expect(
-        deleteStructureMemoryCommand.code === FunctionReturnCodes.OK
+        deleteStructureMemoryCommand === FunctionReturnCodes.OK
       ).toBeTruthy();
     });
   });
@@ -123,9 +115,7 @@ describe("Console commands", () => {
         "id",
         "roomName"
       );
-      expect(
-        deleteCreepMemoryCommand.code === FunctionReturnCodes.OK
-      ).toBeTruthy();
+      expect(deleteCreepMemoryCommand === FunctionReturnCodes.OK).toBeTruthy();
     });
   });
   describe("HelpCommand method", () => {
@@ -137,7 +127,7 @@ describe("Console commands", () => {
   describe("AssignCommandsToHeap", () => {
     it("should return OK and have methods assigned to heap", () => {
       const assignCommandsToHeap = AssignCommandsToHeap();
-      expect(assignCommandsToHeap.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(assignCommandsToHeap.code).toBe(FunctionReturnCodes.OK);
 
       expect(global.help).toBeTruthy();
       expect(global.resetGlobalMemory).toBeTruthy();

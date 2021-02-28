@@ -15,6 +15,7 @@ export const ResetPreProcessingStats = FuncWrapper(
       funcCalls: {},
       rooms: {},
       ticksStatsCollecting: 0,
+      gcl: Game.gcl,
     };
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
@@ -26,6 +27,7 @@ export const ResetStats = FuncWrapper(function ResetStats(): FunctionReturn {
     funcCalls: {},
     rooms: {},
     ticksStatsCollecting: 0,
+    gcl: { progress: 0, progressTotal: 0, level: 0 },
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -36,6 +38,7 @@ export const ResetPreProcessingRoomStats = FuncWrapper(
     global.preProcessingStats.rooms[id] = {
       creepCount: 0,
       structureCount: 0,
+      rcl: { progress: 0, progressTotal: 0, level: 0 },
     };
 
     return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -48,6 +51,7 @@ export const ResetRoomStats = FuncWrapper(function ResetRoomStats(
   Memory.stats.rooms[id] = {
     creepCount: 0,
     structureCount: 0,
+    rcl: { progress: 0, progressTotal: 0, level: 0 },
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -110,6 +114,13 @@ export const RoomStats = FuncWrapper(function RoomStats(
   Memory.stats.rooms[room.name] = {
     creepCount: creepCount.response,
     structureCount: structureCount.response,
+    rcl: room.controller
+      ? {
+          progress: room.controller.progress,
+          progressTotal: room.controller.progressTotal,
+          level: room.controller.level,
+        }
+      : { progress: 0, progressTotal: 0, level: 0 },
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -161,6 +172,7 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   Memory.stats.ticksStatsCollecting += 1;
+  Memory.stats.gcl = Game.gcl;
 
   const averagedIntentCallsList: StringMap<{
     callCount: number;

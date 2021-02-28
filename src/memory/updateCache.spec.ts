@@ -67,7 +67,7 @@ describe("Update cache", () => {
         creepNewCache,
         creepRoomObject
       );
-      expect(returnCompleteCache.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(returnCompleteCache.code).toBe(FunctionReturnCodes.OK);
       expect(typeof returnCompleteCache.response).toBe("object");
 
       // Structure
@@ -96,7 +96,7 @@ describe("Update cache", () => {
         structureNewCache,
         structureRoomObject
       );
-      expect(returnCompleteCache.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(returnCompleteCache.code).toBe(FunctionReturnCodes.OK);
       expect(typeof returnCompleteCache.response).toBe("object");
     });
   });
@@ -122,7 +122,7 @@ describe("Update cache", () => {
       Memory.rooms.room6 = { isNotSeenSince: 900 };
 
       const updateRoomsCache = UpdateRoomsCache();
-      expect(updateRoomsCache.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(updateRoomsCache.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       Memory.cache.rooms.nextCheckTick = 1500;
@@ -194,7 +194,7 @@ describe("Update cache", () => {
 
       Memory.cache.creeps.nextCheckTick = 10;
       const updateCreepsCache = UpdateCreepsCache();
-      expect(updateCreepsCache.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(updateCreepsCache.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       Memory.cache.creeps.nextCheckTick = 1500;
@@ -207,7 +207,7 @@ describe("Update cache", () => {
   describe("Update method", () => {
     it("should return OK", () => {
       const update = Update();
-      expect(update.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(update.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });

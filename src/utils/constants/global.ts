@@ -1,3 +1,5 @@
+export const AverageValueOverAmountTicks = 1000;
+
 export const LogTypes: StringMap<LogType> = {
   None: { code: 0, value: { name: "None", color: "None" } },
   Error: { code: 10, value: { name: "Error", color: "Crimson" } },
@@ -30,8 +32,6 @@ export const CacheNextCheckIncrement = {
 };
 
 export const SaveUnloadedObjectForAmountTicks = 500;
-
-export const AverageValueOverAmountTicks = 10000;
 
 export const StatsDigitCount =
   5 + AverageValueOverAmountTicks.toString().length;

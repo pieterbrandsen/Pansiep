@@ -23,7 +23,7 @@ describe("Creep helper", () => {
       Game.creeps = { creep };
 
       const getCreep = GetCreep("creep");
-      expect(getCreep.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getCreep.code).toBe(FunctionReturnCodes.OK);
       expect(getCreep.response === creep).toBeTruthy();
     });
     it("should return NOT_FOUND", () => {
@@ -48,12 +48,12 @@ describe("Creep helper", () => {
       Memory.cache.creeps.data = { roomName: creeps };
 
       let getAllCreepIds = GetAllCreepIds(roomName);
-      expect(getAllCreepIds.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAllCreepIds.code).toBe(FunctionReturnCodes.OK);
       expect(getAllCreepIds.response).toHaveLength(3);
 
       Memory.cache.creeps.data = { roomName: [] };
       getAllCreepIds = GetAllCreepIds(roomName);
-      expect(getAllCreepIds.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAllCreepIds.code).toBe(FunctionReturnCodes.OK);
       expect(getAllCreepIds.response).toHaveLength(0);
     });
     it("should return NOT_FOUND", () => {
