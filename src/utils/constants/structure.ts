@@ -10,5 +10,9 @@ export const CachedStructureTypes: StructureConstant[] = [
   STRUCTURE_TERMINAL,
   STRUCTURE_TOWER,
 ];
+export const DangerousStructureTypes: StructureConstant[] = [
+  STRUCTURE_SPAWN,
+  STRUCTURE_TOWER,
+];
 
 export const TrackedIntents = ["destroy"];

@@ -13,8 +13,11 @@ import {
   RoomStatsPreProcessing,
   StructureStatsPreProcessing,
 } from "./stats";
-
 import { SetUpdateStatsVar } from "../utils/config/global";
+
+JSON.stringify = jest.fn(() => {
+  return "stringify";
+});
 
 beforeAll(() => {
   mockGlobal<Game>(
@@ -25,6 +28,7 @@ beforeAll(() => {
           return 1;
         },
       },
+      gpu: { level: 1, progress: 1, progressTotal: 10 },
     },
     true
   );
@@ -45,7 +49,7 @@ describe("Stats", () => {
       mockGlobal<Memory>("Memory", {});
       const resetStats = ResetStats();
       expect(Memory.stats).toBeTruthy();
-      expect(resetStats.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(resetStats.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("ResetPreProcessingRoomStats method", () => {
@@ -66,19 +70,19 @@ describe("Stats", () => {
       ResetStats();
       const resetRoomStats = ResetRoomStats("roomName");
       expect(Memory.stats.rooms.roomName).toBeTruthy();
-      expect(resetRoomStats.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(resetRoomStats.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("GetAveragedValue method", () => {
     it("should return OK", () => {
       let getAveragedValue = GetAveragedValue(100, 100);
-      expect(getAveragedValue.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAveragedValue.code).toBe(FunctionReturnCodes.OK);
 
       getAveragedValue = GetAveragedValue(100, undefined);
-      expect(getAveragedValue.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAveragedValue.code).toBe(FunctionReturnCodes.OK);
 
       getAveragedValue = GetAveragedValue(undefined, undefined);
-      expect(getAveragedValue.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAveragedValue.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("RoomStatsPreProcessing method", () => {
@@ -107,21 +111,29 @@ describe("Stats", () => {
     });
   });
   describe("RoomStats method", () => {
-    const room = mockInstanceOf<Room>({ name: "roomName" });
+    const room = mockInstanceOf<Room>({
+      name: "roomName",
+      controller: { level: 1, progress: 10, progressTotal: 100 },
+    });
     beforeEach(() => {
       mockGlobal<Memory>("Memory", {});
       ResetStats();
       ResetPreProcessingStats();
-
-      Game.rooms = { roomName: room };
     });
     it("should return OK", () => {
       SetUpdateStatsVar(true);
       let roomStats = RoomStats(room);
-      expect(roomStats.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(roomStats.code).toBe(FunctionReturnCodes.OK);
 
       roomStats = RoomStats(room);
-      expect(roomStats.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(roomStats.code).toBe(FunctionReturnCodes.OK);
+
+      const room2 = mockInstanceOf<Room>({
+        name: "roomName",
+        controller: undefined,
+      });
+      roomStats = RoomStats(room2);
+      expect(roomStats.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       SetUpdateStatsVar(false);
@@ -218,7 +230,7 @@ describe("Stats", () => {
     it("should return OK", () => {
       SetUpdateStatsVar(true);
       let globalStats = GlobalStats();
-      expect(globalStats.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(globalStats.code).toBe(FunctionReturnCodes.OK);
 
       global.preProcessingStats.funcCalls.a = { callCount: 1, cpuUsed: 1 };
       Memory.stats.funcCalls.a = { callCount: 1, cpuUsed: 1 };
@@ -234,7 +246,7 @@ describe("Stats", () => {
       global.preProcessingStats.funcCalls = {};
       globalStats = GlobalStats();
 
-      expect(globalStats.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(globalStats.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       SetUpdateStatsVar(false);

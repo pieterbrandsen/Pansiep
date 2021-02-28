@@ -29,14 +29,14 @@ describe("Garbage collection", () => {
       Memory.creeps.id = { commandRoom: "room" };
 
       let removeCreep = RemoveCreep("id", "roomName");
-      expect(removeCreep.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeCreep.code).toBe(FunctionReturnCodes.OK);
 
       Memory.creeps.id = { commandRoom: "room" };
       removeCreep = RemoveCreep("id", "roomName");
-      expect(removeCreep.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeCreep.code).toBe(FunctionReturnCodes.OK);
 
       removeCreep = RemoveCreep("id", "roomName");
-      expect(removeCreep.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeCreep.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("RemoveStructure method", () => {
@@ -48,14 +48,14 @@ describe("Garbage collection", () => {
       Memory.structures.id = { room: "room" };
 
       let removeStructure = RemoveStructure("id", "roomName");
-      expect(removeStructure.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeStructure.code).toBe(FunctionReturnCodes.OK);
 
       Memory.structures.id = { room: "room" };
       removeStructure = RemoveStructure("id", "roomName");
-      expect(removeStructure.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeStructure.code).toBe(FunctionReturnCodes.OK);
 
       removeStructure = RemoveStructure("id", "roomName");
-      expect(removeStructure.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeStructure.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("RemoveRoom method", () => {
@@ -81,14 +81,14 @@ describe("Garbage collection", () => {
       Memory.creeps.id2 = { commandRoom: "roomName2" };
 
       let removeRoom = RemoveRoom("roomName");
-      expect(removeRoom.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeRoom.code).toBe(FunctionReturnCodes.OK);
       expect(Object.keys(Memory.rooms).length === 0).toBeTruthy();
       expect(Object.keys(Memory.structures).length === 1).toBeTruthy();
       expect(Object.keys(Memory.creeps).length === 1).toBeTruthy();
 
       Memory.rooms.roomName = {};
       removeRoom = RemoveRoom("roomName");
-      expect(removeRoom.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(removeRoom.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });

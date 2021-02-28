@@ -39,12 +39,12 @@ describe("Structure loop", () => {
       Game.structures = { structure };
 
       const runStructure = RunStructure("structure");
-      expect(runStructure.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(runStructure.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return NO_CONTENT", () => {
       Game.structures = {};
       const runStructure = RunStructure("structure");
-      expect(runStructure.code === FunctionReturnCodes.NO_CONTENT).toBeTruthy();
+      expect(runStructure.code).toBe(FunctionReturnCodes.NO_CONTENT);
     });
   });
   describe("Run method", () => {
@@ -56,7 +56,7 @@ describe("Structure loop", () => {
       );
 
       const runStructure = Run("structure");
-      expect(runStructure.code === FunctionReturnCodes.NO_CONTENT).toBeTruthy();
+      expect(runStructure.code).toBe(FunctionReturnCodes.NO_CONTENT);
     });
 
     it("should return OK", () => {
@@ -70,11 +70,11 @@ describe("Structure loop", () => {
       Memory.cache.structures.data = { roomName: structures };
 
       let run = Run("roomName");
-      expect(run.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(run.code).toBe(FunctionReturnCodes.OK);
 
       Memory.cache.structures.data = { roomName: [] };
       run = Run("roomName");
-      expect(run.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(run.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });

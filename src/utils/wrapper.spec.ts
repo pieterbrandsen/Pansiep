@@ -21,6 +21,7 @@ beforeAll(() => {
     intentCalls: {},
     rooms: {},
     ticksStatsCollecting: 0,
+    gcl: { level: 1, progress: 1, progressTotal: 10 },
   };
 });
 
@@ -30,7 +31,7 @@ describe("Wrapper", () => {
       const wrappedFunc = FuncWrapper(() => {
         return FunctionReturnHelper(FunctionReturnCodes.OK);
       })();
-      expect(wrappedFunc.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(wrappedFunc.code).toBe(FunctionReturnCodes.OK);
       FuncWrapper(() => {
         return FunctionReturnHelper(FunctionReturnCodes.OK);
       })();

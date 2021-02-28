@@ -33,56 +33,44 @@ export const DescribeFunction = FuncWrapper(function DescribeFunction(
 });
 
 export const ResetGlobalMemoryCommand = FuncWrapper(
-  function ResetGlobalMemoryCommand(): FunctionReturn {
-    return InitializeGlobalMemory();
+  function ResetGlobalMemoryCommand(): number {
+    return InitializeGlobalMemory().code;
   }
 );
 
 export const ResetRoomMemoryCommand = FuncWrapper(
-  function ResetRoomMemoryCommand(id: string): FunctionReturn {
-    return InitializeRoomMemory(id);
+  function ResetRoomMemoryCommand(id: string): number {
+    return InitializeRoomMemory(id).code;
   }
 );
 
 export const ResetStructureMemoryCommand = FuncWrapper(
-  function ResetStructureMemoryCommand(
-    id: string,
-    roomName: string
-  ): FunctionReturn {
-    return InitializeStructureMemory(id, roomName);
+  function ResetStructureMemoryCommand(id: string, roomName: string): number {
+    return InitializeStructureMemory(id, roomName).code;
   }
 );
 
 export const ResetCreepMemoryCommand = FuncWrapper(
-  function ResetCreepMemoryCommand(
-    id: string,
-    roomName: string
-  ): FunctionReturn {
-    return InitializeCreepMemory(id, roomName);
+  function ResetCreepMemoryCommand(id: string, roomName: string): number {
+    return InitializeCreepMemory(id, roomName).code;
   }
 );
 
 export const DeleteRoomMemoryCommand = FuncWrapper(
-  function DeleteRoomMemoryCommand(id: string): FunctionReturn {
-    return RemoveRoom(id);
+  function DeleteRoomMemoryCommand(id: string): number {
+    return RemoveRoom(id).code;
   }
 );
 
 export const DeleteStructureMemoryCommand = FuncWrapper(
-  function DeleteStructureMemoryCommand(
-    id: string,
-    roomName: string
-  ): FunctionReturn {
-    return RemoveStructure(id, roomName);
+  function DeleteStructureMemoryCommand(id: string, roomName: string): number {
+    return RemoveStructure(id, roomName).code;
   }
 );
 
 export const DeleteCreepMemoryCommand = FuncWrapper(
-  function DeleteCreepMemoryCommand(
-    id: string,
-    roomName: string
-  ): FunctionReturn {
-    return RemoveCreep(id, roomName);
+  function DeleteCreepMemoryCommand(id: string, roomName: string): number {
+    return RemoveCreep(id, roomName).code;
   }
 );
 
@@ -92,12 +80,12 @@ export const HelpCommand = FuncWrapper(function HelpCommand(): string {
   helpMessage += DescribeFunction(
     "ResetGlobalMemoryCommand",
     "Reset all memory"
-  );
+  ).response;
   helpMessage += DescribeFunction(
     "ResetRoomMemoryCommand",
     "Reset the memory of an room",
     [{ name: "id", type: "string" }]
-  );
+  ).response;
   helpMessage += DescribeFunction(
     "ResetStructureMemoryCommand",
     "Reset the memory of an structure",
@@ -105,7 +93,7 @@ export const HelpCommand = FuncWrapper(function HelpCommand(): string {
       { name: "id", type: "string" },
       { name: "roomName", type: "string" },
     ]
-  );
+  ).response;
   helpMessage += DescribeFunction(
     "ResetCreepMemoryCommand",
     "Reset the memory of an creep",
@@ -113,13 +101,13 @@ export const HelpCommand = FuncWrapper(function HelpCommand(): string {
       { name: "id", type: "string" },
       { name: "roomName", type: "string" },
     ]
-  );
+  ).response;
 
   helpMessage += DescribeFunction(
     "DeleteRoomMemoryCommand",
     "Remove an room out of the memory",
     [{ name: "id", type: "string" }]
-  );
+  ).response;
   helpMessage += DescribeFunction(
     "DeleteStructureMemoryCommand",
     "Remove an structure out of the memory",
@@ -127,7 +115,7 @@ export const HelpCommand = FuncWrapper(function HelpCommand(): string {
       { name: "id", type: "string" },
       { name: "roomName", type: "string" },
     ]
-  );
+  ).response;
   helpMessage += DescribeFunction(
     "DeleteCreepMemoryCommand",
     "Remove an creep out of the memory",
@@ -135,7 +123,7 @@ export const HelpCommand = FuncWrapper(function HelpCommand(): string {
       { name: "id", type: "string" },
       { name: "roomName", type: "string" },
     ]
-  );
+  ).response;
   helpMessage += "<br><br>EndOfList";
   helpMessage += "</span";
   return helpMessage;

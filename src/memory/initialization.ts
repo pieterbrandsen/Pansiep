@@ -38,7 +38,7 @@ export const InitializeHeapVars = FuncWrapper(
     Log(
       LogTypes.Info,
       "memory/initialization:InitializeHeapVars",
-      "Initialized Heap vars"
+      "Initialized heap vars"
     );
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }

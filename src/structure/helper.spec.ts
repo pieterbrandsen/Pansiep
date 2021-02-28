@@ -23,7 +23,7 @@ describe("Structure helper", () => {
       Game.structures = { structure };
 
       const getStructure = GetStructure("structure");
-      expect(getStructure.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getStructure.code).toBe(FunctionReturnCodes.OK);
       expect(getStructure.response === structure).toBeTruthy();
     });
     it("should return NOT_FOUND", () => {
@@ -48,12 +48,12 @@ describe("Structure helper", () => {
       Memory.cache.structures.data = { roomName: structures };
 
       let getAllStructureNames = GetAllStructureIds(roomName);
-      expect(getAllStructureNames.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAllStructureNames.code).toBe(FunctionReturnCodes.OK);
       expect(getAllStructureNames.response).toHaveLength(3);
 
       Memory.cache.structures.data = { roomName: [] };
       getAllStructureNames = GetAllStructureIds(roomName);
-      expect(getAllStructureNames.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getAllStructureNames.code).toBe(FunctionReturnCodes.OK);
       expect(getAllStructureNames.response).toHaveLength(0);
     });
     it("should return NOT_FOUND", () => {

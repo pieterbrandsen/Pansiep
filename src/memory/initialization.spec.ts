@@ -45,7 +45,7 @@ describe("Initialize memory", () => {
       global.deleteCreepMemory = jest.fn();
 
       const areHeapVarsValid = AreHeapVarsValid();
-      expect(areHeapVarsValid.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(areHeapVarsValid.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return NO_CONTENT", () => {
       (global.help as unknown) = undefined;
@@ -58,7 +58,7 @@ describe("Initialize memory", () => {
   describe("InitializeHeapVars method", () => {
     it("should return OK", () => {
       const initializeHeapVars = InitializeHeapVars();
-      expect(initializeHeapVars.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(initializeHeapVars.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("AreCustomPrototypesInitialized method", () => {
@@ -112,7 +112,7 @@ describe("Initialize memory", () => {
     });
     it("should return OK", () => {
       const initializeRoomMemory = InitializeRoomMemory("roomName");
-      expect(initializeRoomMemory.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(initializeRoomMemory.code).toBe(FunctionReturnCodes.OK);
       expect(Memory.rooms.roomName).not.toBeUndefined();
     });
   });

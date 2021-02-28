@@ -68,7 +68,7 @@ describe("Main loop", () => {
     });
     it("should return OK", () => {
       const loop = Loop();
-      expect(loop.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(loop.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });
