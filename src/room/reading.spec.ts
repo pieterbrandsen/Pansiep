@@ -16,6 +16,10 @@ import {
 } from "./reading";
 import { FunctionReturnCodes } from "../utils/constants/global";
 
+JSON.stringify = jest.fn(() => {
+  return "stringify";
+});
+
 jest.mock("./visuals");
 
 describe("Room readings", () => {

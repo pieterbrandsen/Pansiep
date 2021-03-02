@@ -22,3 +22,31 @@ export const GetAllCreepIds = FuncWrapper(function GetAllCreepIds(
     return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
   return FunctionReturnHelper(FunctionReturnCodes.OK, creepIds);
 });
+
+export const GetType = FuncWrapper(function GetType(
+  creep: Creep
+): FunctionReturn {
+  if (creep.getActiveBodyparts(CLAIM) > 0) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK, "claim");
+  }
+  if (creep.getActiveBodyparts(HEAL) > 0) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK, "heal");
+  }
+  if (
+    creep.getActiveBodyparts(ATTACK) + creep.getActiveBodyparts(RANGED_ATTACK) >
+    0
+  ) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK, "attack");
+  }
+  if (creep.getActiveBodyparts(WORK) > 0) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK, "work");
+  }
+  if (creep.getActiveBodyparts(CARRY) > 0) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK, "transferring");
+  }
+  if (creep.getActiveBodyparts(MOVE) > 0) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK, "move");
+  }
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK, "none");
+});

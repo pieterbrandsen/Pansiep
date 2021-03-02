@@ -1,4 +1,8 @@
 import { mockGlobal, mockInstanceOf } from "screeps-jest";
+import {
+  ResetPreProcessingRoomStats,
+  ResetPreProcessingStats,
+} from "../memory/stats";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { RunCreep, Run } from "./loop";
 
@@ -6,7 +10,6 @@ JSON.stringify = jest.fn(() => {
   return "stringify";
 });
 
-jest.mock("../memory/stats");
 jest.mock("../memory/initialization", () => {
   return {
     IsCreepMemoryInitialized: (val: string) => {
@@ -19,23 +22,29 @@ jest.mock("../memory/initialization", () => {
   };
 });
 
+beforeAll(() => {
+  mockGlobal<Game>(
+    "Game",
+    {
+      cpu: {
+        getUsed: () => {
+          return 1;
+        },
+      },
+    },
+    true
+  );
+  ResetPreProcessingStats();
+});
+
 describe("Creep loop", () => {
   describe("RunCreep method", () => {
-    beforeEach(() => {
-      mockGlobal<Game>(
-        "Game",
-        {
-          cpu: {
-            getUsed: () => {
-              return 1;
-            },
-          },
-        },
-        true
-      );
-    });
     it("should return OK", () => {
-      const creep = mockInstanceOf<Creep>({ memory: {} });
+      const creep = mockInstanceOf<Creep>({
+        memory: {},
+        room: { name: "room" },
+      });
+      ResetPreProcessingRoomStats(creep.room.name);
       Game.creeps = { creep };
 
       const runCreep = RunCreep("creep");
@@ -57,11 +66,7 @@ describe("Creep loop", () => {
 
     it("should return OK", () => {
       mockGlobal<Memory>("Memory", { cache: { creeps: { data: {} } } });
-      const creeps = [
-        { creepType: "None", id: "noMem1" },
-        { creepType: "None", id: "1" },
-        { creepType: "None", id: "2" },
-      ];
+      const creeps = [{ id: "noMem1" }, { id: "1" }, { id: "2" }];
 
       Memory.cache.creeps.data = { roomName: creeps };
 

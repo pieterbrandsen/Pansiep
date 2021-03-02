@@ -70,7 +70,7 @@ describe("Room helper", () => {
       mockGlobal<Memory>("Memory", { rooms: {} });
     });
     it("should return OK", () => {
-      const roomMemory = {};
+      const roomMemory = { jobs: [] };
       Memory.rooms = { room: roomMemory };
 
       const getRoomMemoryUsingName = GetRoomMemoryUsingName("room");

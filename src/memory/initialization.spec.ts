@@ -1,4 +1,4 @@
-import { mockGlobal } from "screeps-jest";
+import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import {
   AreCustomPrototypesInitialized,
@@ -136,6 +136,10 @@ describe("Initialize memory", () => {
       Memory.creeps = {};
     });
     it("should return OK", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn().mockReturnValue(0),
+      });
+      Game.creeps = { id: creep };
       const initializeCreepMemory = InitializeCreepMemory("id", "roomName");
       expect(
         initializeCreepMemory.code === FunctionReturnCodes.OK
@@ -195,8 +199,12 @@ describe("Initialize memory", () => {
       InitializeGlobalMemory();
     });
     it("should return OK", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn().mockReturnValue(0),
+      });
+      Game.creeps = { id: creep };
       InitializeCreepMemory("id", "roomName");
-      Memory.cache.creeps.data.roomName = [{ id: "id", creepType: "None" }];
+      Memory.cache.creeps.data.roomName = [{ id: "id" }];
       const isCreepMemoryInitialized = IsCreepMemoryInitialized("id");
       expect(
         isCreepMemoryInitialized.code === FunctionReturnCodes.OK

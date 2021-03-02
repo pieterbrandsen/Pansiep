@@ -46,21 +46,30 @@ describe("Update cache", () => {
   describe("ReturnCompleteCache method", () => {
     it("should return OK and an object", () => {
       const creepCurrentCache = {
-        roomName: [
-          { id: "id1", creepType: "None" },
-          { id: "id2", creepType: "None" },
-        ],
-        roomName2: [{ id: "id", creepType: "None" }],
+        roomName: [{ id: "id1" }, { id: "id2" }],
+        roomName2: [{ id: "id" }],
       };
       const creepNewCache = {
-        roomName2: [{ id: "id", creepType: "None" }],
+        roomName2: [{ id: "id" }],
       };
-      const creepRoomObject = {
-        id: { commandRoom: "roomName2", isNotSeenSince: 600 },
-        id1: { commandRoom: "roomName", isNotSeenSince: 200 },
-        id2: { commandRoom: "roomName", isNotSeenSince: 600 },
+      const creepRoomObject: StringMap<CreepMemory> = {
+        id: {
+          commandRoom: "roomName2",
+          isNotSeenSince: 600,
+          type: "move",
+        },
+        id1: {
+          commandRoom: "roomName",
+          isNotSeenSince: 200,
+          type: "move",
+        },
+        id2: {
+          commandRoom: "roomName",
+          isNotSeenSince: 600,
+          type: "move",
+        },
       };
-      Memory.creeps.id1 = { commandRoom: "roomName" };
+      Memory.creeps.id1 = { commandRoom: "roomName", type: "move" };
 
       let returnCompleteCache = ReturnCompleteCache(
         creepCurrentCache,
@@ -115,11 +124,11 @@ describe("Update cache", () => {
         "room5",
         "room6",
       ];
-      Memory.rooms.room = { isNotSeenSince: 600 };
-      Memory.rooms.room2 = { isNotSeenSince: -500 };
-      Memory.rooms.room4 = {};
-      Memory.rooms.room5 = {};
-      Memory.rooms.room6 = { isNotSeenSince: 900 };
+      Memory.rooms.room = { isNotSeenSince: 600, jobs: [] };
+      Memory.rooms.room2 = { isNotSeenSince: -500, jobs: [] };
+      Memory.rooms.room4 = { jobs: [] };
+      Memory.rooms.room5 = { jobs: [] };
+      Memory.rooms.room6 = { isNotSeenSince: 900, jobs: [] };
 
       const updateRoomsCache = UpdateRoomsCache();
       expect(updateRoomsCache.code).toBe(FunctionReturnCodes.OK);
@@ -178,18 +187,31 @@ describe("Update cache", () => {
   });
   describe("UpdateCreepsCache method", () => {
     it("should return OK", () => {
-      const creep = mockInstanceOf<Creep>({ room: { name: "room" } });
-      const creep2 = mockInstanceOf<Creep>({ room: { name: "room" } });
-      const creep3 = mockInstanceOf<Creep>({ room: { name: "room2" } });
-      Game.creeps = { creep, creep2, creep3 };
-      Memory.creeps.creep = { commandRoom: "room" };
-      Memory.creeps.creep3 = { commandRoom: "room2" };
+      const creep = mockInstanceOf<Creep>({
+        room: { name: "room" },
+        getActiveBodyparts: jest.fn().mockReturnValue(0),
+      });
+      const creep2 = mockInstanceOf<Creep>({
+        room: { name: "room" },
+        getActiveBodyparts: jest.fn().mockReturnValue(0),
+      });
+      const creep3 = mockInstanceOf<Creep>({
+        room: { name: "room2" },
+        getActiveBodyparts: jest.fn().mockReturnValue(0),
+      });
+      Game.creeps = {
+        creep,
+        creep2,
+        creep3,
+        id: creep,
+        id2: creep,
+        id3: creep,
+      };
+      Memory.creeps.creep = { commandRoom: "room", type: "move" };
+      Memory.creeps.creep3 = { commandRoom: "room2", type: "move" };
       Memory.cache.creeps.data = {
-        room: [
-          { id: "id", creepType: "None" },
-          { id: "id2", creepType: "None" },
-        ],
-        room2: [{ id: "id3", creepType: "None" }],
+        room: [{ id: "id" }, { id: "id2" }],
+        room2: [{ id: "id3" }],
       };
 
       Memory.cache.creeps.nextCheckTick = 10;

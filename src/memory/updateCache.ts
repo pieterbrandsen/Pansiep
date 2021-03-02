@@ -80,6 +80,7 @@ export const UpdateRoomsCache = FuncWrapper(
     forEach(Object.keys(Game.rooms), (key: string) => {
       if (IsRoomMemoryInitialized(key).code !== FunctionReturnCodes.OK)
         InitializeRoomMemory(key);
+
       cache.push(key);
     });
 
@@ -183,7 +184,7 @@ export const UpdateCreepsCache = FuncWrapper(
       }
 
       if (!cache[creepMemory.commandRoom]) cache[creepMemory.commandRoom] = [];
-      cache[creepMemory.commandRoom].push({ id: key, creepType: "None" });
+      cache[creepMemory.commandRoom].push({ id: key });
     });
 
     const returnCompleteCache = ReturnCompleteCache(
