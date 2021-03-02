@@ -35,7 +35,7 @@ describe("Room loop", () => {
   });
   describe("RunRoom method", () => {
     it("should return OK", () => {
-      const room = mockInstanceOf<Room>();
+      const room = mockInstanceOf<Room>({ name: "room" });
       Game.rooms = { room };
       const runRoom = RunRoom("room");
       expect(runRoom.code).toBe(FunctionReturnCodes.OK);

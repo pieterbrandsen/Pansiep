@@ -59,21 +59,23 @@ type JobActionTypes =
   | "heal";
 
 interface Job {
-  Id: Id<Job>;
-  Action: JobActionTypes;
+  id: Id<Job>;
+  action: JobActionTypes;
+  updateJobAtTick: number;
 
-  AssignedCreeps: string[];
-  MaxCreeps: number;
-  AssignedStructures: string[];
-  MaxStructures: number;
+  assignedCreepsIds: string[];
+  maxCreeps: number;
+  assignedStructuresIds: string[];
+  maxStructures: number;
 
   roomName: string;
-  objId: Id<Structure>;
+  objId: Id<Structure | ConstructionSite | Creep>;
 
-  EnergyRequired?: number;
-  StopHealingAtMaxHits?: boolean;
-  LinkedJobId?: string;
-  ExpireAtTick?: number;
+  position?: { x: number; y: number };
+  energyRequired?: number;
+  stopHealingAtMaxHits?: boolean;
+  linkedJobId?: string;
+  expireAtTick?: number;
 }
 
 interface RoomMemory {

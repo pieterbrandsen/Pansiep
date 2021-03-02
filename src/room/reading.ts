@@ -3,7 +3,10 @@ import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { GetObjectsFromIDs } from "./helper";
-import { DangerousStructureTypes } from "../utils/constants/structure";
+import {
+  DangerousStructureTypes,
+  WalkableStructureTypes,
+} from "../utils/constants/structure";
 import { AddTextWPos } from "./visuals";
 import { VisualDisplayLevels } from "../utils/constants/room";
 
@@ -37,6 +40,32 @@ export const GetStructuresInRange = FuncWrapper(function GetStructuresInRange(
     .map((s) => s.structure);
   return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
 });
+
+export const GetConstructionSitesInRange = FuncWrapper(
+  function GetConstructionSitesInRange(
+    pos: RoomPosition,
+    range: number,
+    room: Room,
+    filterOnStrType?: string[]
+  ): FunctionReturn {
+    const sites = room
+      .lookForAtArea(
+        LOOK_CONSTRUCTION_SITES,
+        pos.y - range,
+        pos.x - range,
+        pos.y + range,
+        pos.x + range,
+        true
+      )
+      .filter((s) =>
+        filterOnStrType
+          ? filterOnStrType.includes(s.constructionSite.structureType)
+          : true
+      )
+      .map((s) => s.constructionSite);
+    return FunctionReturnHelper(FunctionReturnCodes.OK, sites);
+  }
+);
 
 export const GetTerrainInRange = FuncWrapper(function GetTerrainInRange(
   pos: RoomPosition,
@@ -192,6 +221,35 @@ export const HasPositionEnergyStructures = FuncWrapper(
       );
     }
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  }
+);
+
+export const GetAccesSpotsAroundPosition = FuncWrapper(
+  function GetAccesSpotsAroundPosition(
+    room: Room,
+    pos: RoomPosition,
+    range: 1 | 2
+  ): FunctionReturn {
+    let openSpots = range === 1 ? 8 : 16;
+    const blockedTerrain = GetTerrainInRange(pos, range, room, [
+      "wall",
+    ]).response.filter((p: RoomPosition) => p !== pos);
+    openSpots -= (blockedTerrain as RoomPosition[]).length;
+    const structures = GetStructuresInRange(pos, range, room);
+    forEach(structures, (str: Structure) => {
+      openSpots -= 1;
+      if (WalkableStructureTypes.includes(str.structureType)) {
+        if (
+          str.structureType === STRUCTURE_RAMPART &&
+          (str as StructureRampart).my
+        ) {
+          openSpots += 1;
+        }
+      }
+
+      if (str.pos === pos) openSpots += 1;
+    });
+    return FunctionReturnHelper(FunctionReturnCodes.OK, openSpots);
   }
 );
 

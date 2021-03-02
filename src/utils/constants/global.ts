@@ -29,6 +29,7 @@ export const CacheNextCheckIncrement = {
   rooms: 50,
   structures: 50,
   creeps: 50,
+  jobs: 50,
 };
 
 export const SaveUnloadedObjectForAmountTicks = 500;
