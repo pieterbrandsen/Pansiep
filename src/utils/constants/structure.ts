@@ -15,4 +15,9 @@ export const DangerousStructureTypes: StructureConstant[] = [
   STRUCTURE_TOWER,
 ];
 
+export const WalkableStructureTypes: StructureConstant[] = [
+  STRUCTURE_CONTAINER,
+  STRUCTURE_RAMPART,
+];
+
 export const TrackedIntents = ["destroy"];

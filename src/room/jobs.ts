@@ -8,7 +8,7 @@ export const GetAllJobs = FuncWrapper(function GetAllJobs(
   filterOnTypes?: JobActionTypes[]
 ): FunctionReturn {
   const jobs = Memory.rooms[roomName].jobs.filter((j) =>
-    filterOnTypes ? filterOnTypes.includes(j.Action) : true
+    filterOnTypes ? filterOnTypes.includes(j.action) : true
   );
   if (isUndefined(jobs))
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT, []);
@@ -27,10 +27,16 @@ export const GetJobById = FuncWrapper(function GetJobById(
 
 export const UpdateJobById = FuncWrapper(function UpdateJobById(
   id: Id<Job>,
-  updatedJob: Job,
+  job: Job,
   roomName: string
 ): FunctionReturn {
-  Memory.rooms[roomName].jobs[id] = updatedJob;
+  const jobsMem = Memory.rooms[roomName].jobs;
+  const index = jobsMem.findIndex((j) => j.id === id);
+  if (index >= 0) {
+    jobsMem[index] = job;
+  } else {
+    jobsMem.push(job);
+  }
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
@@ -38,14 +44,8 @@ export const DeleteJobById = FuncWrapper(function DeleteJobById(
   id: Id<Job>,
   roomName: string
 ): FunctionReturn {
-  delete Memory.rooms[roomName].jobs[id];
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-export const AddJob = FuncWrapper(function AddJob(
-  roomName: string,
-  job: Job
-): FunctionReturn {
-  Memory.rooms[roomName].jobs.push(job);
+  const index = Memory.rooms[roomName].jobs.findIndex((j) => j.id === id);
+  Memory.rooms[roomName].jobs.splice(index, 1);
+  console.log(Memory.rooms[roomName].jobs.splice(index, 1).length)
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

@@ -18,6 +18,9 @@ import { CachedStructureTypes } from "../utils/constants/structure";
 import { FuncWrapper } from "../utils/wrapper";
 import { RemoveCreep, RemoveRoom, RemoveStructure } from "./garbageCollection";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { DeleteJobById, UpdateJobById } from "../room/jobs";
+import { GetConstructionSitesInRange } from "../room/reading";
+import { GetRoom } from "../room/helper";
 
 type RoomObjTypes = StringMap<StructureCache[]> | StringMap<CreepCache[]>;
 export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
@@ -207,10 +210,62 @@ export const UpdateCreepsCache = FuncWrapper(
   }
 );
 
+export const UpdateJobsCache = FuncWrapper(
+  function UpdateJobsCache(): FunctionReturn {
+    forOwn(Memory.rooms, (mem: RoomMemory, key: string) => {
+      const getRoom = GetRoom(key);
+      if (
+        isUndefined(mem.isNotSeenSince) &&
+        getRoom.code === FunctionReturnCodes.OK
+      ) {
+        const room: Room = getRoom.response;
+        for (let i = 0; i < mem.jobs.length; i += 1) {
+          const job = mem.jobs[i];
+          if (job.updateJobAtTick <= Game.time) {
+            let obj: Structure | ConstructionSite | Creep;
+            switch (job.action) {
+              case "build":
+                if (job.objId === "undefined" && job.position) {
+                  const pos: RoomPosition = new RoomPosition(
+                    job.position.x,
+                    job.position.y,
+                    key
+                  );
+                  const csSites: ConstructionSite[] = GetConstructionSitesInRange(
+                    pos,
+                    0,
+                    room
+                  ).response;
+                  if (csSites.length > 0) job.objId = csSites[0].id;
+                }
+                obj = Game.getObjectById(job.objId) as ConstructionSite;
+                if (obj) {
+                  job.energyRequired =
+                    (obj.progressTotal - obj.progress) / BUILD_POWER;
+                  job.updateJobAtTick =
+                    Game.time + CacheNextCheckIncrement.jobs;
+                  UpdateJobById(job.id, job, key);
+                } else {
+                  DeleteJobById(job.id, key);
+                  UpdateStructuresCache();
+                }
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }
+    });
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
 export const Update = FuncWrapper(function Update() {
   UpdateRoomsCache();
   UpdateStructuresCache();
   UpdateCreepsCache();
+  UpdateJobsCache();
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
