@@ -9,6 +9,7 @@ import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { TrackedIntents as TrackedRoomIntents } from "../utils/constants/room";
 import { TrackedIntents as TrackedStructureIntents } from "../utils/constants/structure";
 import { TrackedIntents as TrackedCreepIntents } from "../utils/constants/creep";
+import { GetCreep, GetType as GetCreepType } from "../creep/helper";
 
 export const AreHeapVarsValid = FuncWrapper(
   function AreHeapVarsValid(): FunctionReturn {
@@ -139,7 +140,7 @@ export const InitializeGlobalMemory = FuncWrapper(
 export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
   roomName: string
 ): FunctionReturn {
-  Memory.rooms[roomName] = {};
+  Memory.rooms[roomName] = { jobs: [] };
 
   Log(
     LogTypes.Debug,
@@ -171,7 +172,12 @@ export const InitializeCreepMemory = FuncWrapper(function InitializeCreepMemory(
   id: string,
   roomName: string
 ): FunctionReturn {
-  Memory.creeps[id] = { commandRoom: roomName };
+  const creep = GetCreep(id).response;
+
+  Memory.creeps[id] = {
+    commandRoom: roomName,
+    type: GetCreepType(creep).response,
+  };
 
   Log(
     LogTypes.Debug,

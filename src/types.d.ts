@@ -45,12 +45,55 @@ interface StatsMemory {
   rooms: StringMap<RoomStats>;
 }
 
+type JobActionTypes =
+  | "move"
+  | "transfer"
+  | "withdraw"
+  | "harvest"
+  | "build"
+  | "repair"
+  | "dismantle"
+  | "upgrade"
+  | "attack"
+  | "claim"
+  | "heal";
+
+interface Job {
+  Id: Id<Job>;
+  Action: JobActionTypes;
+
+  AssignedCreeps: string[];
+  MaxCreeps: number;
+  AssignedStructures: string[];
+  MaxStructures: number;
+
+  roomName: string;
+  objId: Id<Structure>;
+
+  EnergyRequired?: number;
+  StopHealingAtMaxHits?: boolean;
+  LinkedJobId?: string;
+  ExpireAtTick?: number;
+}
+
 interface RoomMemory {
   isNotSeenSince?: number;
+  // isNotSeenSince2: number;
+  jobs: Job[];
 }
+
+type CreepTypes =
+  | "work"
+  | "move"
+  | "transferring"
+  | "heal"
+  | "attack"
+  | "claim"
+  | "none";
 
 interface CreepMemory {
   isNotSeenSince?: number;
+  type: CreepTypes;
   commandRoom: string;
 }
 
@@ -65,7 +108,6 @@ interface StructureCache {
 }
 
 interface CreepCache {
-  creepType: string;
   id: string;
 }
 
