@@ -66,11 +66,7 @@ describe("Creep loop", () => {
 
     it("should return OK", () => {
       mockGlobal<Memory>("Memory", { cache: { creeps: { data: {} } } });
-      const creeps = [
-        { creepType: "None", id: "noMem1" },
-        { creepType: "None", id: "1" },
-        { creepType: "None", id: "2" },
-      ];
+      const creeps = [{ id: "noMem1" }, { id: "1" }, { id: "2" }];
 
       Memory.cache.creeps.data = { roomName: creeps };
 

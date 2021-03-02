@@ -1,6 +1,6 @@
 import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { isUndefined } from "lodash";
-import { GetCreep, GetAllCreepIds } from "./helper";
+import { GetCreep, GetAllCreepIds, GetType } from "./helper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import {
   ResetPreProcessingRoomStats,
@@ -50,11 +50,7 @@ describe("Creep helper", () => {
 
     it("should return a string[]", () => {
       mockGlobal<Memory>("Memory", { cache: { creeps: { data: {} } } });
-      const creeps = [
-        { creepType: "None", id: "0" },
-        { creepType: "None", id: "1" },
-        { creepType: "None", id: "2" },
-      ];
+      const creeps = [{ id: "0" }, { id: "1" }, { id: "2" }];
       Memory.cache.creeps.data = { roomName: creeps };
 
       let getAllCreepIds = GetAllCreepIds(roomName);
@@ -73,6 +69,135 @@ describe("Creep helper", () => {
       expect(
         getAllCreepIds.code === FunctionReturnCodes.NOT_FOUND
       ).toBeTruthy();
+    });
+  });
+  describe("GetType", () => {
+    it("should return OK and 'claim'", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn((type: BodyPartConstant) => {
+          if (type === CLAIM) {
+            return 3;
+          }
+          if (type === HEAL) {
+            return 3;
+          }
+          if (type === MOVE) {
+            return 2;
+          }
+          return 0;
+        }),
+      });
+      const getType = GetType(creep);
+      expect(getType.code).toBe(FunctionReturnCodes.OK);
+      expect(getType.response).toBe("claim");
+    });
+    it("should return OK and 'heal'", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn((type: BodyPartConstant) => {
+          if (type === CLAIM) {
+            return 0;
+          }
+          if (type === HEAL) {
+            return 3;
+          }
+          if (type === MOVE) {
+            return 2;
+          }
+          return 0;
+        }),
+      });
+      const getType = GetType(creep);
+      expect(getType.code).toBe(FunctionReturnCodes.OK);
+      expect(getType.response).toBe("heal");
+    });
+    it("should return OK and 'attack'", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn((type: BodyPartConstant) => {
+          if (type === CLAIM) {
+            return 0;
+          }
+          if (type === ATTACK || type === RANGED_ATTACK) {
+            return 3;
+          }
+          if (type === MOVE) {
+            return 2;
+          }
+          return 0;
+        }),
+      });
+      const getType = GetType(creep);
+      expect(getType.code).toBe(FunctionReturnCodes.OK);
+      expect(getType.response).toBe("attack");
+    });
+    it("should return OK and 'work'", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn((type: BodyPartConstant) => {
+          if (type === CLAIM) {
+            return 0;
+          }
+          if (type === WORK) {
+            return 3;
+          }
+          if (type === MOVE) {
+            return 2;
+          }
+          return 0;
+        }),
+      });
+      const getType = GetType(creep);
+      expect(getType.code).toBe(FunctionReturnCodes.OK);
+      expect(getType.response).toBe("work");
+    });
+    it("should return OK and 'transferring'", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn((type: BodyPartConstant) => {
+          if (type === CLAIM) {
+            return 0;
+          }
+          if (type === CARRY) {
+            return 3;
+          }
+          if (type === MOVE) {
+            return 2;
+          }
+          return 0;
+        }),
+      });
+      const getType = GetType(creep);
+      expect(getType.code).toBe(FunctionReturnCodes.OK);
+      expect(getType.response).toBe("transferring");
+    });
+    it("should return OK and 'move'", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn((type: BodyPartConstant) => {
+          if (type === CLAIM) {
+            return 0;
+          }
+          if (type === MOVE) {
+            return 3;
+          }
+          return 0;
+        }),
+      });
+      const getType = GetType(creep);
+      expect(getType.code).toBe(FunctionReturnCodes.OK);
+      expect(getType.response).toBe("move");
+    });
+    it("should return OK and 'none'", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn((type: BodyPartConstant) => {
+          if (type === CLAIM) {
+            return 0;
+          }
+          if (type === ATTACK) {
+            return 0;
+          }
+          return 0;
+        }),
+      });
+      const getType = GetType(creep);
+      expect(getType.code).toBe(FunctionReturnCodes.OK);
+      expect(getType.response).toBe("none");
     });
   });
 });
