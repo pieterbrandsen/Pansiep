@@ -1,5 +1,5 @@
 import { forEach, isUndefined } from "lodash";
-import { GetCachedCreepIds, GetCreep } from "./helper";
+import { GetCachedCreepIds, GetCreep, ExecuteJob } from "./helper";
 import { IsCreepMemoryInitialized } from "../memory/initialization";
 import { CreepStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
@@ -17,11 +17,11 @@ export const RunCreep = FuncWrapper(function RunCreep(
   const creepMem = Memory.creeps[id];
   if (isUndefined(creepMem.jobId)) {
     AssignNewJob(id);
+  } else {
+    ExecuteJob(creep, creepMem);
   }
 
   CreepStatsPreProcessing(creep);
-
-  creep.move(TOP_LEFT);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

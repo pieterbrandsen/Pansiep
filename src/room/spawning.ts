@@ -84,7 +84,7 @@ export const GetNextCreepType = FuncWrapper(function GetNextCreepType(
 ): FunctionReturn {
   const room: Room = GetRoom(roomId).response;
   if (room) {
-    if (room.energyCapacityAvailable / 5 > room.energyAvailable) {
+    if (room.energyCapacityAvailable / 4 > room.energyAvailable) {
       return FunctionReturnHelper(FunctionReturnCodes.OK, "pioneer");
     }
   }
