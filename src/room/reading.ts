@@ -91,10 +91,15 @@ export const GetTerrainInRange = FuncWrapper(function GetTerrainInRange(
 });
 
 export const GetStructures = FuncWrapper(function GetStructures(
-  roomName: string
+  roomName: string,
+  filterOnStrTypes?: StructureConstant[]
 ): FunctionReturn {
   return GetObjectsFromIDs<Structure>(
-    Memory.cache.structures.data[roomName].map((s) => s.id)
+    Memory.cache.structures.data[roomName]
+      .filter((s) =>
+        filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
+      )
+      .map((s) => s.id)
   );
 });
 
@@ -230,7 +235,7 @@ export const GetAccesSpotsAroundPosition = FuncWrapper(
     pos: RoomPosition,
     range: 1 | 2
   ): FunctionReturn {
-    let openSpots = range === 1 ? 8 : 16;
+    let openSpots = range === 1 ? 8 : 24;
     const blockedTerrain = GetTerrainInRange(pos, range, room, [
       "wall",
     ]).response.filter((p: RoomPosition) => p !== pos);

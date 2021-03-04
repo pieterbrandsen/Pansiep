@@ -28,7 +28,8 @@ export const GetAllStructureIds = FuncWrapper(function GetAllStructureIds(
 export const BuildStructure = FuncWrapper(function BuildStructure(
   room: Room,
   pos: RoomPosition,
-  structureType: StructureConstant
+  structureType: StructureConstant,
+  hasPriority = false
 ): FunctionReturn {
   const createConstructionSite = room.createConstructionSite(
     pos,
@@ -41,18 +42,21 @@ export const BuildStructure = FuncWrapper(function BuildStructure(
     );
 
   const jobId: Id<Job> = `${pos.x}/${pos.y}-${structureType}` as Id<Job>;
+  const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2).response;
+  const structureCost = CONSTRUCTION_COST[structureType];
   const job: Job = {
     id: jobId,
     action: "build",
     updateJobAtTick: Game.time + 1,
     assignedCreepsIds: [],
-    maxCreeps: GetAccesSpotsAroundPosition(room, pos, 2).response,
+    maxCreeps: openSpots,
     assignedStructuresIds: [],
     maxStructures: 0,
     roomName: room.name,
     objId: "undefined" as Id<ConstructionSite>,
+    hasPriority,
     position: { x: pos.x, y: pos.y },
-    energyRequired: CONSTRUCTION_COST[structureType],
+    energyRequired: structureCost,
   };
   UpdateJobById(jobId, job, room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);

@@ -47,7 +47,7 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
           roomObject[obj.id].isNotSeenSince = Game.time;
         else if (
           (roomObject[obj.id].isNotSeenSince as number) +
-            SaveUnloadedObjectForAmountTicks <
+            SaveUnloadedObjectForAmountTicks <=
           Game.time
         ) {
           if ((roomObject[obj.id] as StructureMemory).room !== undefined)
@@ -96,7 +96,7 @@ export const UpdateRoomsCache = FuncWrapper(
           roomMem.isNotSeenSince = Game.time;
         } else if (
           (roomMem.isNotSeenSince as number) +
-            SaveUnloadedObjectForAmountTicks * 2 <
+            SaveUnloadedObjectForAmountTicks * 2 <=
           Game.time
         ) {
           RemoveRoom(key);
