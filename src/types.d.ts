@@ -71,6 +71,7 @@ interface Job {
   roomName: string;
   objId: Id<Structure | ConstructionSite | Creep>;
 
+  hasPriority: boolean;
   position?: { x: number; y: number };
   energyRequired?: number;
   stopHealingAtMaxHits?: boolean;
@@ -78,13 +79,8 @@ interface Job {
   expireAtTick?: number;
 }
 
-interface RoomMemory {
-  isNotSeenSince?: number;
-  // isNotSeenSince2: number;
-  jobs: Job[];
-}
-
 type CreepTypes =
+  | "pioneer"
   | "work"
   | "move"
   | "transferring"
@@ -93,9 +89,16 @@ type CreepTypes =
   | "claim"
   | "none";
 
+interface RoomMemory {
+  isNotSeenSince?: number;
+  spawnQueue: CreepTypes[];
+  jobs: Job[];
+}
+
 interface CreepMemory {
   isNotSeenSince?: number;
   type: CreepTypes;
+  jobId?: string;
   commandRoom: string;
 }
 

@@ -18,3 +18,5 @@ export const TrackedIntents = [
   "lookForAt",
   "lookForAtArea",
 ];
+
+export const MaxCreepsPerCreepType = 10;

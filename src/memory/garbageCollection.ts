@@ -4,16 +4,22 @@ import { ResetRoomStats } from "./stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { GetJobs, UpdateJobById } from "../room/jobs";
 
 export const RemoveCreep = FuncWrapper(function RemoveCreep(
   id: string,
   roomName: string
 ): FunctionReturn {
+  const jobs: Job[] = GetJobs(roomName).response;
+  const job = jobs.find((j) => j.assignedCreepsIds.includes(id));
+  if (job) {
+    job.assignedCreepsIds = remove(job.assignedCreepsIds, id);
+    UpdateJobById(job.id, job, roomName);
+  }
+
   delete Memory.creeps[id];
-  Memory.cache.creeps.data[roomName] = remove(
-    Memory.cache.creeps.data[roomName],
-    (c) => c.id
-  );
+  // TODO This deleted cached, this is not intended
+  remove(Memory.cache.creeps.data[roomName], (c) => c.id);
 
   Log(
     LogTypes.Debug,
@@ -29,6 +35,13 @@ export const RemoveStructure = FuncWrapper(function RemoveStructure(
   id: string,
   roomName: string
 ): FunctionReturn {
+  const jobs: Job[] = GetJobs(roomName).response;
+  const job = jobs.find((j) => j.assignedStructuresIds.includes(id));
+  if (job) {
+    job.assignedStructuresIds = remove(job.assignedStructuresIds, id);
+    UpdateJobById(job.id, job, roomName);
+  }
+
   delete Memory.structures[id];
   Memory.cache.structures.data[roomName] = remove(
     Memory.cache.structures.data[roomName],
