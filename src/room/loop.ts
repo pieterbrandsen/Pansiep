@@ -9,6 +9,7 @@ import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { RoomVisuals } from "./visuals";
 import { BuildStructure } from "../structure/helper";
+import { SpawnCreeps } from "./spawning";
 
 export const RunRoom = FuncWrapper(function RunRoom(
   id: string
@@ -25,6 +26,13 @@ export const RunRoom = FuncWrapper(function RunRoom(
   RoomStats(room);
 
   RoomVisuals(room);
+
+  // BuildStructure(
+  //   room,
+  //   new RoomPosition(26, 25, room.name),
+  //   STRUCTURE_CONTAINER
+  // );
+  SpawnCreeps(room.name);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
