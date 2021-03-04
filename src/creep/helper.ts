@@ -2,6 +2,65 @@ import { isUndefined, forOwn } from "lodash";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
+import { GetJobById } from "../room/jobs";
+import { ExecuteAttack } from "./actions/attack";
+import { ExecuteBuild } from "./actions/build";
+import { ExecuteClaim } from "./actions/claim";
+import { ExecuteDismantle } from "./actions/dismantle";
+import { ExecuteHarvest } from "./actions/harvest";
+import { ExecuteHeal } from "./actions/heal";
+import { ExecuteMove } from "./actions/move";
+import { ExecuteRepair } from "./actions/repair";
+import { ExecuteTransfer } from "./actions/transfer";
+import { ExecuteUpgrade } from "./actions/upgrade";
+import { ExecuteWithdraw } from "./actions/withdraw";
+
+export const ExecuteJob = FuncWrapper(function ExecuteJob(
+  creep: Creep,
+  creepMem: CreepMemory
+): FunctionReturn {
+  const job: Job = GetJobById(creepMem.jobId as Id<Job>, creepMem.commandRoom)
+    .response;
+  switch (job.action) {
+    case "attack":
+      ExecuteAttack(creep, creepMem, job);
+      break;
+    case "build":
+      ExecuteBuild(creep, creepMem, job);
+      break;
+    case "claim":
+      ExecuteClaim(creep, creepMem, job);
+      break;
+    case "dismantle":
+      ExecuteDismantle(creep, creepMem, job);
+      break;
+    case "harvest":
+      ExecuteHarvest(creep, creepMem, job);
+      break;
+    case "heal":
+      ExecuteHeal(creep, creepMem, job);
+      break;
+    case "move":
+      ExecuteMove(creep, creepMem, job);
+      break;
+    case "repair":
+      ExecuteRepair(creep, creepMem, job);
+      break;
+    case "transfer":
+      ExecuteTransfer(creep, creepMem, job);
+      break;
+    case "upgrade":
+      ExecuteUpgrade(creep, creepMem, job);
+      break;
+    case "withdraw":
+      ExecuteWithdraw(creep, creepMem, job);
+      break;
+    default:
+      break;
+  }
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
 export const GetCreep = FuncWrapper(function GetCreep(
   id: string
