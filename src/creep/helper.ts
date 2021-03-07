@@ -2,7 +2,7 @@ import { isUndefined, forOwn } from "lodash";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { GetJobById } from "../room/jobs";
+import { GetJobById, UpdateJobById } from "../room/jobs";
 import { ExecuteAttack } from "./actions/attack";
 import { ExecuteBuild } from "./actions/build";
 import { ExecuteClaim } from "./actions/claim";
@@ -15,45 +15,108 @@ import { ExecuteTransfer } from "./actions/transfer";
 import { ExecuteUpgrade } from "./actions/upgrade";
 import { ExecuteWithdraw } from "./actions/withdraw";
 
+export const IsCreepDamaged = FuncWrapper(function IsCreepDamaged(
+  creep: Creep
+): FunctionReturn {
+  return FunctionReturnHelper(
+    FunctionReturnCodes.OK,
+    creep.hits < creep.hitsMax
+  );
+});
+
+export const CreateHealJob = FuncWrapper(function CreateHealJob(
+  creep: Creep
+): FunctionReturn {
+  const healJobId: Id<Job> = `heal-${creep.name}` as Id<Job>;
+  const healJob: Job = {
+    id: healJobId,
+    action: "heal",
+    updateJobAtTick: Game.time + 500,
+    assignedCreepsIds: [],
+    maxCreeps: 1,
+    assignedStructuresIds: [],
+    maxStructures: 99,
+    roomName: creep.room.name,
+    objId: creep.id,
+    hasPriority: false,
+    position: { x: creep.pos.x, y: creep.pos.y },
+  };
+  UpdateJobById(healJobId, healJob, creep.room.name);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const TryToCreateHealJob = FuncWrapper(function TryToCreateHealJob(
+  creep: Creep
+): FunctionReturn {
+  if (
+    IsCreepDamaged(creep).response &&
+    GetJobById(`heal-${creep.name}` as Id<Job>, creep.room.name).code ===
+      FunctionReturnCodes.NOT_FOUND
+  ) {
+    CreateHealJob(creep);
+    return FunctionReturnHelper(FunctionReturnCodes.CREATED);
+  }
+  return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
+});
+
+export const UpdateCreepMemory = FuncWrapper(function UpdateCreepMemory(
+  name: string,
+  mem: CreepMemory
+) {
+  Memory.creeps[name] = mem;
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
 export const ExecuteJob = FuncWrapper(function ExecuteJob(
   creep: Creep,
   creepMem: CreepMemory
 ): FunctionReturn {
-  const job: Job = GetJobById(creepMem.jobId as Id<Job>, creepMem.commandRoom)
-    .response;
+  const getJobById = GetJobById(
+    creepMem.jobId as Id<Job>,
+    creepMem.commandRoom
+  );
+  if (getJobById.code === FunctionReturnCodes.NOT_FOUND) {
+    const mem = creepMem;
+    delete mem.jobId;
+    UpdateCreepMemory(creep.name, mem);
+    return FunctionReturnHelper(getJobById.code);
+  }
+  const job = getJobById.response;
   switch (job.action) {
     case "attack":
-      ExecuteAttack(creep, creepMem, job);
+      ExecuteAttack(creep, job);
       break;
     case "build":
-      ExecuteBuild(creep, creepMem, job);
+      ExecuteBuild(creep, job);
       break;
     case "claim":
-      ExecuteClaim(creep, creepMem, job);
+      ExecuteClaim(creep, job);
       break;
     case "dismantle":
-      ExecuteDismantle(creep, creepMem, job);
+      ExecuteDismantle(creep, job);
       break;
     case "harvest":
-      ExecuteHarvest(creep, creepMem, job);
+      ExecuteHarvest(creep, job);
       break;
     case "heal":
-      ExecuteHeal(creep, creepMem, job);
+      ExecuteHeal(creep, job);
       break;
     case "move":
-      ExecuteMove(creep, creepMem, job);
+      ExecuteMove(creep, job);
       break;
     case "repair":
-      ExecuteRepair(creep, creepMem, job);
+      ExecuteRepair(creep, job);
       break;
     case "transfer":
-      ExecuteTransfer(creep, creepMem, job);
+    case "transferSource":
+      ExecuteTransfer(creep, job);
       break;
     case "upgrade":
-      ExecuteUpgrade(creep, creepMem, job);
+      ExecuteUpgrade(creep, job);
       break;
     case "withdraw":
-      ExecuteWithdraw(creep, creepMem, job);
+    case "withdrawController":
+      ExecuteWithdraw(creep, job);
       break;
     default:
       break;
@@ -68,7 +131,16 @@ export const GetCreep = FuncWrapper(function GetCreep(
   const creep: Creep | undefined = Game.creeps[id];
   if (isUndefined(creep))
     return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
-  return FunctionReturnHelper<Creep>(FunctionReturnCodes.OK, creep);
+  return FunctionReturnHelper(FunctionReturnCodes.OK, creep);
+});
+
+export const GetCreepMemory = FuncWrapper(function GetCreepMemory(
+  name: string
+): FunctionReturn {
+  const creepMem: CreepMemory | undefined = Memory.creeps[name];
+  if (isUndefined(creepMem))
+    return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
+  return FunctionReturnHelper(FunctionReturnCodes.OK, creepMem);
 });
 
 export const GetCreepsMemory = FuncWrapper(function GetAllCreepMemory(

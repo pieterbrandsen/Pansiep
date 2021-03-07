@@ -1,26 +1,32 @@
 import { forEach, isUndefined } from "lodash";
-import { GetCachedCreepIds, GetCreep, ExecuteJob } from "./helper";
+import {
+  GetCachedCreepIds,
+  GetCreep,
+  ExecuteJob,
+  TryToCreateHealJob,
+} from "./helper";
 import { IsCreepMemoryInitialized } from "../memory/initialization";
 import { CreepStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
-import { AssignNewJob } from "../room/jobs";
+import { AssignNewJobForCreep } from "../room/jobs";
 
 export const RunCreep = FuncWrapper(function RunCreep(
-  id: string
+  name: string
 ): FunctionReturn {
-  const getCreep = GetCreep(id);
+  const getCreep = GetCreep(name);
   if (getCreep.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   const creep = getCreep.response as Creep;
-  const creepMem = Memory.creeps[id];
+  const creepMem = Memory.creeps[name];
   if (isUndefined(creepMem.jobId)) {
-    AssignNewJob(id);
+    AssignNewJobForCreep(name);
   } else {
     ExecuteJob(creep, creepMem);
   }
 
+  TryToCreateHealJob(creep);
   CreepStatsPreProcessing(creep);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -32,10 +38,10 @@ export const Run = FuncWrapper(function RunCreeps(
   const getCreepIds = GetCachedCreepIds(roomName);
   if (getCreepIds.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  forEach(getCreepIds.response, (value: string) => {
-    const isCreepMemoryInitialized = IsCreepMemoryInitialized(value);
+  forEach(getCreepIds.response, (name: string) => {
+    const isCreepMemoryInitialized = IsCreepMemoryInitialized(name);
     if (isCreepMemoryInitialized.code === FunctionReturnCodes.OK)
-      RunCreep(value);
+      RunCreep(name);
   });
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
