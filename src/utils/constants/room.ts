@@ -19,4 +19,7 @@ export const TrackedIntents = [
   "lookForAtArea",
 ];
 
-export const MaxCreepsPerCreepType = 10;
+export const MaxCreepsPerCreepType = 7;
+
+// Timers
+export const RoomPlannerDelay = 1;

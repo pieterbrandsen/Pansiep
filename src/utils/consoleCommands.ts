@@ -63,7 +63,10 @@ export const DeleteRoomMemoryCommand = FuncWrapper(
 );
 
 export const DeleteStructureMemoryCommand = FuncWrapper(
-  function DeleteStructureMemoryCommand(id: string, roomName: string): number {
+  function DeleteStructureMemoryCommand(
+    id: Id<Structure>,
+    roomName: string
+  ): number {
     return RemoveStructure(id, roomName).code;
   }
 );

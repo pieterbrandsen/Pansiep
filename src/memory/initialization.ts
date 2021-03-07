@@ -10,7 +10,7 @@ import { TrackedIntents as TrackedRoomIntents } from "../utils/constants/room";
 import { TrackedIntents as TrackedStructureIntents } from "../utils/constants/structure";
 import { TrackedIntents as TrackedCreepIntents } from "../utils/constants/creep";
 import { GetCreep, GetType as GetCreepType } from "../creep/helper";
-import { AssignNewJob } from "../room/jobs";
+import { AssignNewJobForCreep } from "../room/jobs";
 
 export const AreHeapVarsValid = FuncWrapper(
   function AreHeapVarsValid(): FunctionReturn {
@@ -170,14 +170,14 @@ export const InitializeStructureMemory = FuncWrapper(
 );
 
 export const InitializeCreepMemory = FuncWrapper(function InitializeCreepMemory(
-  id: string,
+  name: string,
   roomName: string,
   creepType?: CreepTypes,
   addToCache = false
 ): FunctionReturn {
-  const creep = GetCreep(id).response;
+  const creep = GetCreep(name).response;
 
-  Memory.creeps[id] = {
+  Memory.creeps[name] = {
     commandRoom: roomName,
     type: creepType || GetCreepType(creep).response,
   };
@@ -185,10 +185,10 @@ export const InitializeCreepMemory = FuncWrapper(function InitializeCreepMemory(
   if (addToCache) {
     if (isUndefined(Memory.cache.creeps.data[roomName]))
       Memory.cache.creeps.data[roomName] = [];
-    Memory.cache.creeps.data[roomName].push({ id });
+    Memory.cache.creeps.data[roomName].push({ id: name });
   }
 
-  AssignNewJob(id);
+  AssignNewJobForCreep(name);
 
   Log(
     LogTypes.Debug,
@@ -213,7 +213,7 @@ export const IsRoomMemoryInitialized = FuncWrapper(
 );
 
 export const IsStructureMemoryInitialized = FuncWrapper(
-  function IsStructureMemoryInitialized(id: string): FunctionReturn {
+  function IsStructureMemoryInitialized(id: Id<Structure>): FunctionReturn {
     if (Memory.structures[id]) {
       const strMem = Memory.structures[id];
       if (

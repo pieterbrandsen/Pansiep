@@ -1,3 +1,16 @@
+type StructuresWithStorage =
+  | StructureLab
+  | StructureLink
+  | StructureNuker
+  | StructureSpawn
+  | StructureExtension
+  | StructureTower;
+type DedicatedStorageStructures =
+  | StructureTerminal
+  | StructureContainer
+  | StructureFactory
+  | StructureStorage;
+
 interface StringMap<T> {
   [key: string]: T;
 }
@@ -48,8 +61,10 @@ interface StatsMemory {
 type JobActionTypes =
   | "move"
   | "transfer"
+  | "transferSource"
   | "withdraw"
-  | "harvest"
+  | "withdrawController"
+  | "harvest" // TODO Group a source/controller in a object and ?
   | "build"
   | "repair"
   | "dismantle"
@@ -69,13 +84,13 @@ interface Job {
   maxStructures: number;
 
   roomName: string;
-  objId: Id<Structure | ConstructionSite | Creep>;
+  objId: Id<Structure | ConstructionSite | Creep | Source>;
 
   hasPriority: boolean;
   position?: { x: number; y: number };
+  resourceType?: ResourceConstant;
   energyRequired?: number;
   stopHealingAtMaxHits?: boolean;
-  linkedJobId?: string;
   expireAtTick?: number;
 }
 
@@ -96,15 +111,18 @@ interface RoomMemory {
 }
 
 interface CreepMemory {
-  isNotSeenSince?: number;
   type: CreepTypes;
-  jobId?: string;
   commandRoom: string;
+
+  walkPath?: PathStep[];
+  isNotSeenSince?: number;
+  jobId?: string;
 }
 
 interface StructureMemory {
   isNotSeenSince?: number;
   room: string;
+  jobId?: string;
 }
 
 interface StructureCache {
@@ -145,11 +163,11 @@ declare namespace NodeJS {
 
     resetGlobalMemory(): number;
     resetRoomMemory(roomName: string): number;
-    resetStructureMemory(id: string, roomName: string): number;
+    resetStructureMemory(id: Id<Structure>, roomName: string): number;
     resetCreepMemory(creepName: string, roomName: string): number;
 
     deleteRoomMemory(roomName: string): number;
-    deleteStructureMemory(id: string, roomName: string): number;
+    deleteStructureMemory(id: Id<Structure>, roomName: string): number;
     deleteCreepMemory(creepName: string, roomName: string): number;
   }
 }

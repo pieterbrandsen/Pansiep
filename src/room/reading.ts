@@ -67,6 +67,24 @@ export const GetConstructionSitesInRange = FuncWrapper(
   }
 );
 
+export const GetSourcesInRange = FuncWrapper(function GetSourcesInRange(
+  pos: RoomPosition,
+  range: number,
+  room: Room
+): FunctionReturn {
+  const sources = room
+    .lookForAtArea(
+      LOOK_SOURCES,
+      pos.y - range,
+      pos.x - range,
+      pos.y + range,
+      pos.x + range,
+      true
+    )
+    .map((s) => s.source);
+  return FunctionReturnHelper(FunctionReturnCodes.OK, sources);
+});
+
 export const GetTerrainInRange = FuncWrapper(function GetTerrainInRange(
   pos: RoomPosition,
   range: number,
@@ -236,10 +254,12 @@ export const GetAccesSpotsAroundPosition = FuncWrapper(
     range: 1 | 2
   ): FunctionReturn {
     let openSpots = range === 1 ? 8 : 24;
-    const blockedTerrain = GetTerrainInRange(pos, range, room, [
+    openSpots += 2;
+    const blockedTerrain: RoomPosition[] = GetTerrainInRange(pos, range, room, [
       "wall",
-    ]).response.filter((p: RoomPosition) => p !== pos);
-    openSpots -= (blockedTerrain as RoomPosition[]).length;
+    ]).response.filter((p: RoomPosition) => p.getRangeTo(pos) > 0);
+
+    openSpots -= blockedTerrain.length;
     const structures = GetStructuresInRange(pos, range, room);
     forEach(structures, (str: Structure) => {
       openSpots -= 1;
@@ -255,6 +275,36 @@ export const GetAccesSpotsAroundPosition = FuncWrapper(
       if (str.pos === pos) openSpots += 1;
     });
     return FunctionReturnHelper(FunctionReturnCodes.OK, openSpots);
+  }
+);
+
+export const GetBestEnergyStructurePosAroundPosition = FuncWrapper(
+  function GetBestEnergyStructurePosAroundPosition(
+    room: Room,
+    position: RoomPosition,
+    range: 1 | 2
+  ): FunctionReturn {
+    const positions: RoomPosition[] = GetTerrainInRange(position, range, room, [
+      "plain",
+      "swamp",
+    ]).response;
+    let bestPos: { pos: RoomPosition; accesSpots: number; distance: number } = {
+      pos: position,
+      accesSpots: 99,
+      distance: 99,
+    };
+    forEach(positions, (pos: RoomPosition) => {
+      const accesSpots = GetAccesSpotsAroundPosition(room, pos, 1).response;
+      const distance = pos.getRangeTo(position);
+      if (
+        distance > 0 &&
+        bestPos.distance >= distance &&
+        bestPos.accesSpots >= accesSpots
+      ) {
+        bestPos = { pos, accesSpots, distance };
+      }
+    });
+    return FunctionReturnHelper(FunctionReturnCodes.OK, bestPos.pos);
   }
 );
 

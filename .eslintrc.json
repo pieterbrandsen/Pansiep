@@ -27,8 +27,9 @@
         "jest"
     ],
     "rules": {
+        "no-underscore-dangle": 0,
         "no-unused-vars": 0,
-        "no-console": "off",
+        "no-console": 0,
         "prefer-spread": 0,
         "import/no-cycle": 0,
         "import/extensions": [

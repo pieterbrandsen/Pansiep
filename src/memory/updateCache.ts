@@ -18,11 +18,43 @@ import { CachedStructureTypes } from "../utils/constants/structure";
 import { FuncWrapper } from "../utils/wrapper";
 import { RemoveCreep, RemoveRoom, RemoveStructure } from "./garbageCollection";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
-import { DeleteJobById, UpdateJobById } from "../room/jobs";
+import { DeleteJobById, UpdateJobById, GetJobById } from "../room/jobs";
 import { GetConstructionSitesInRange } from "../room/reading";
 import { GetRoom } from "../room/helper";
 
-type RoomObjTypes = StringMap<StructureCache[]> | StringMap<CreepCache[]>;
+export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
+  jobId: Id<Job>,
+  roomName: string
+): FunctionReturn {
+  const job: Job = {
+    id: jobId,
+    action: "move",
+    updateJobAtTick: Game.time + 500,
+    assignedCreepsIds: [],
+    maxCreeps: 1,
+    assignedStructuresIds: [],
+    maxStructures: 99,
+    roomName,
+    objId: "UNDEFINED" as Id<Structure>,
+    hasPriority: false,
+    position: { x: 25, y: 25 },
+  };
+  UpdateJobById(jobId, job, roomName);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const TryToCreateMoveJob = FuncWrapper(function TryToCreateMoveJob(
+  jobId: Id<Job>,
+  roomName: string
+) {
+  if (GetJobById(jobId, roomName).code === FunctionReturnCodes.NOT_FOUND) {
+    CreateMoveJob(jobId, roomName);
+    return FunctionReturnHelper(FunctionReturnCodes.CREATED);
+  }
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+type RoomObjTypes = StringMap<StructureCache[] | CreepCache[]>;
 export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
   currentCache: RoomObjTypes,
   newCache: RoomObjTypes,
@@ -30,6 +62,8 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
 ): FunctionReturn {
   const returnCache = newCache;
   Object.keys(currentCache).forEach((key) => {
+    const noVisionJobId = `move-25/25-${key}` as Id<Job>;
+
     if (!returnCache[key]) returnCache[key] = [];
     const newCacheArr = returnCache[key];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,6 +93,7 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
         roomObject[obj.id] &&
         roomObject[obj.id].isNotSeenSince !== undefined
       ) {
+        DeleteJobById(noVisionJobId, key);
         // eslint-disable-next-line no-param-reassign
         delete roomObject[obj.id].isNotSeenSince;
       }
@@ -132,17 +167,31 @@ export const UpdateStructuresCache = FuncWrapper(
       Game.time + CacheNextCheckIncrement.structures;
 
     const cache: StringMap<StructureCache[]> = {};
-    forOwn(Game.structures, (str: Structure, key: string) => {
-      let strMem = Memory.structures[key];
+    forEach(Game.rooms, (room: Room) => {
+      forEach(
+        room.find(FIND_STRUCTURES, {
+          filter: { structureType: STRUCTURE_CONTAINER },
+        }),
+        (str: Structure) => {
+          Game.structures[str.id] = str;
+        }
+      );
+    });
+
+    forOwn(Game.structures, (str: Structure, id: string) => {
+      let strMem = Memory.structures[id];
       if (CachedStructureTypes.includes(str.structureType)) {
-        if (IsStructureMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
-          InitializeStructureMemory(key, str.room.name);
-          strMem = Memory.structures[key];
+        if (
+          IsStructureMemoryInitialized(id as Id<Structure>).code !==
+          FunctionReturnCodes.OK
+        ) {
+          InitializeStructureMemory(id, str.room.name);
+          strMem = Memory.structures[id];
         }
 
         if (!cache[strMem.room]) cache[strMem.room] = [];
         cache[strMem.room].push({
-          id: key,
+          id,
           structureType: str.structureType,
         });
       }
@@ -179,15 +228,15 @@ export const UpdateCreepsCache = FuncWrapper(
       Game.time + CacheNextCheckIncrement.creeps;
 
     const cache: StringMap<CreepCache[]> = {};
-    forOwn(Game.creeps, (creep: Creep, key: string) => {
-      let creepMemory = Memory.creeps[key];
-      if (IsCreepMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
-        InitializeCreepMemory(key, creep.room.name);
-        creepMemory = Memory.creeps[key];
+    forOwn(Game.creeps, (creep: Creep, name: string) => {
+      let creepMemory = Memory.creeps[name];
+      if (IsCreepMemoryInitialized(name).code !== FunctionReturnCodes.OK) {
+        InitializeCreepMemory(name, creep.room.name);
+        creepMemory = Memory.creeps[name];
       }
 
       if (!cache[creepMemory.commandRoom]) cache[creepMemory.commandRoom] = [];
-      cache[creepMemory.commandRoom].push({ id: key });
+      cache[creepMemory.commandRoom].push({ id: name });
     });
 
     const returnCompleteCache = ReturnCompleteCache(

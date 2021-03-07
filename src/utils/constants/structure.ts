@@ -1,5 +1,7 @@
 export const CachedStructureTypes: StructureConstant[] = [
+  STRUCTURE_CONTAINER,
   STRUCTURE_CONTROLLER,
+  STRUCTURE_EXTENSION,
   STRUCTURE_FACTORY,
   STRUCTURE_LAB,
   STRUCTURE_LINK,
@@ -21,3 +23,5 @@ export const WalkableStructureTypes: StructureConstant[] = [
 ];
 
 export const TrackedIntents = ["destroy"];
+
+export const ControllerEnergyStructureRange = 2;

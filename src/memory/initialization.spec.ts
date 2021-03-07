@@ -175,20 +175,26 @@ describe("Initialize memory", () => {
       Memory.cache.structures.data.roomName = [
         { id: "id", structureType: STRUCTURE_CONTROLLER },
       ];
-      const isStructureMemoryInitialized = IsStructureMemoryInitialized("id");
+      const isStructureMemoryInitialized = IsStructureMemoryInitialized(
+        "id" as Id<Structure>
+      );
       expect(
         isStructureMemoryInitialized.code === FunctionReturnCodes.OK
       ).toBeTruthy();
     });
     it("should return NO_CONTENT", () => {
-      let isStructureMemoryInitialized = IsStructureMemoryInitialized("id");
+      let isStructureMemoryInitialized = IsStructureMemoryInitialized(
+        "id" as Id<Structure>
+      );
       expect(
         isStructureMemoryInitialized.code === FunctionReturnCodes.NO_CONTENT
       ).toBeTruthy();
 
       InitializeStructureMemory("id", "roomName");
       (Memory.structures.id.room as unknown) = undefined;
-      isStructureMemoryInitialized = IsStructureMemoryInitialized("id");
+      isStructureMemoryInitialized = IsStructureMemoryInitialized(
+        "id" as Id<Structure>
+      );
       expect(
         isStructureMemoryInitialized.code === FunctionReturnCodes.NO_CONTENT
       ).toBeTruthy();
