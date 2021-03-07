@@ -2,38 +2,13 @@ import { isUndefined } from "lodash";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
-import { GetJobById, UpdateJobById, GetJobs } from "../../room/jobs";
+import { GetJobById, UpdateJobById, GetJobs, CreateRepairJob, CreateTransferJob, CreateUpgradeJob, CreateWithdrawJob } from "../../room/jobs";
 import { GetAccesSpotsAroundPosition } from "../../room/reading";
 
 export const IsStructureDamaged = FuncWrapper(function IsStructureDamaged(
   str: Structure
 ): FunctionReturn {
   return FunctionReturnHelper(FunctionReturnCodes.OK, str.hits < str.hitsMax);
-});
-
-export const CreateRepairJob = FuncWrapper(function CreateRepairJob(
-  str: Structure,
-  jobId: Id<Job>,
-  hasPriority = false
-): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(str.room, str.pos, 2)
-    .response;
-  const job: Job = {
-    id: jobId,
-    action: "repair",
-    updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
-    maxCreeps: openSpots,
-    assignedStructuresIds: [],
-    maxStructures: 3,
-    roomName: str.room.name,
-    objId: str.id,
-    hasPriority,
-    position: { x: str.pos.x, y: str.pos.y },
-    energyRequired: (str.hitsMax - str.hits) / 100,
-  };
-  UpdateJobById(jobId, job, str.room.name);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
 export const TryToCreateRepairJob = FuncWrapper(function TryToCreateRepairJob(
@@ -96,35 +71,6 @@ export const IsStructureFullEnough = FuncWrapper(function IsStructureFullEnough(
   });
 });
 
-export const CreateWithdrawJob = FuncWrapper(function CreateWithdrawJob(
-  str: Structure,
-  jobId: Id<Job>,
-  energyRequired: number,
-  resourceType: ResourceConstant,
-  action: JobActionTypes,
-  hasPriority = false
-): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(str.room, str.pos, 1)
-    .response;
-  const job: Job = {
-    id: jobId,
-    action,
-    updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
-    maxCreeps: openSpots > 1 ? openSpots - 1 : openSpots,
-    assignedStructuresIds: [],
-    maxStructures: 3,
-    roomName: str.room.name,
-    objId: str.id,
-    hasPriority,
-    position: { x: str.pos.x, y: str.pos.y },
-    energyRequired,
-    resourceType,
-  };
-  UpdateJobById(jobId, job, str.room.name);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
 export const TryToCreateWithdrawJob = FuncWrapper(
   function TryToCreateWithdrawJob(
     str: Structure,
@@ -154,35 +100,6 @@ export const TryToCreateWithdrawJob = FuncWrapper(
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
 );
-
-export const CreateTransferJob = FuncWrapper(function CreateTransferJob(
-  str: Structure,
-  jobId: Id<Job>,
-  energyRequired: number,
-  resourceType: ResourceConstant,
-  hasPriority = false,
-  action: JobActionTypes
-): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(str.room, str.pos, 1)
-    .response;
-  const job: Job = {
-    id: jobId,
-    action,
-    updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
-    maxCreeps: openSpots > 1 ? openSpots - 1 : openSpots,
-    assignedStructuresIds: [],
-    maxStructures: 99,
-    roomName: str.room.name,
-    objId: str.id,
-    hasPriority,
-    position: { x: str.pos.x, y: str.pos.y },
-    energyRequired: energyRequired * -1,
-    resourceType,
-  };
-  UpdateJobById(jobId, job, str.room.name);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
 
 export const TryToCreateTransferJob = FuncWrapper(
   function TryToCreateTransferJob(
@@ -215,35 +132,6 @@ export const TryToCreateTransferJob = FuncWrapper(
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
 );
-
-export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
-  room: Room
-): FunctionReturn {
-  if (isUndefined(room.controller)) {
-    return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
-  }
-
-  const roomPos: RoomPosition = room.controller.pos;
-  const jobId: Id<Job> = `upgrade-${roomPos.x}/${roomPos.y}` as Id<Job>;
-  const openSpots: number = GetAccesSpotsAroundPosition(room, roomPos, 2)
-    .response;
-  const job: Job = {
-    id: jobId,
-    action: "upgrade",
-    updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
-    maxCreeps: openSpots,
-    assignedStructuresIds: [],
-    maxStructures: 99,
-    roomName: room.name,
-    objId: room.controller.id,
-    hasPriority: false,
-    position: { x: roomPos.x, y: roomPos.y },
-    energyRequired: 5000,
-  };
-  UpdateJobById(jobId, job, room.name);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
 
 export const TryToCreateUpgradeJob = FuncWrapper(function TryToCreateUpgradeJob(
   room: Room

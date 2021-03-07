@@ -1,5 +1,5 @@
 import { isUndefined } from "lodash";
-import { UpdateJobById } from "../room/jobs";
+import { CreateBuildJob, UpdateJobById } from "../room/jobs";
 import { GetAccesSpotsAroundPosition } from "../room/reading";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
@@ -74,24 +74,7 @@ export const BuildStructure = FuncWrapper(function BuildStructure(
       createConstructionSite
     );
 
-  const jobId: Id<Job> = `build-${pos.x}/${pos.y}-${structureType}` as Id<Job>;
-  const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2).response;
-  const structureCost = CONSTRUCTION_COST[structureType];
-  const job: Job = {
-    id: jobId,
-    action: "build",
-    updateJobAtTick: Game.time + 1,
-    assignedCreepsIds: [],
-    maxCreeps: openSpots,
-    assignedStructuresIds: [],
-    maxStructures: 99,
-    roomName: room.name,
-    objId: "undefined" as Id<ConstructionSite>,
-    hasPriority,
-    position: { x: pos.x, y: pos.y },
-    energyRequired: structureCost,
-  };
-  UpdateJobById(jobId, job, room.name);
+    CreateBuildJob(room,pos,structureType,hasPriority);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
