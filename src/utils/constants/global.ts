@@ -17,6 +17,7 @@ export const FunctionReturnCodes = {
   NO_CONTENT: 204,
   NOT_MODIFIED: 205,
   NOT_MY_ROOM: 206,
+  // BUSY: 207,
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,

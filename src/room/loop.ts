@@ -8,7 +8,7 @@ import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { RoomVisuals } from "./visuals";
-import { BuildStructure } from "../structure/helper";
+import { TryToExecuteRoomPlanner } from "./planner";
 
 export const RunRoom = FuncWrapper(function RunRoom(
   id: string
@@ -24,6 +24,7 @@ export const RunRoom = FuncWrapper(function RunRoom(
   RunCreeps(id);
   RoomStats(room);
 
+  TryToExecuteRoomPlanner(room);
   RoomVisuals(room);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);

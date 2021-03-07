@@ -1,6 +1,6 @@
 import { LogTypes } from "../constants/global";
 
-export const LogLevel: LogType = LogTypes.Error;
+export const LogLevel: LogType = LogTypes.All;
 let UpdateStats = true;
 export const GetUpdateStatsVar = function GetUpdateStatsVar(): boolean {
   return UpdateStats;
