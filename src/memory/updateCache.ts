@@ -254,11 +254,7 @@ export const UpdateJobsCache = FuncWrapper(
             switch (job.action) {
               case "build":
                 if (job.objId === "undefined" && job.position) {
-                  const pos: RoomPosition = new RoomPosition(
-                    job.position.x,
-                    job.position.y,
-                    key
-                  );
+                  const pos: RoomPosition = job.position;
                   const csSites: ConstructionSite[] = GetConstructionSitesInRange(
                     pos,
                     0,

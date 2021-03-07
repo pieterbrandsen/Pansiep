@@ -87,7 +87,7 @@ interface Job {
   objId: Id<Structure | ConstructionSite | Creep | Source>;
 
   hasPriority: boolean;
-  position?: { x: number; y: number };
+  position?: RoomPosition;
   resourceType?: ResourceConstant;
   energyRequired?: number;
   stopHealingAtMaxHits?: boolean;
@@ -159,7 +159,7 @@ declare namespace NodeJS {
   interface Global {
     preProcessingStats: StatsMemory;
 
-    help(): string;
+    help?(): string;
 
     resetGlobalMemory(): number;
     resetRoomMemory(roomName: string): number;

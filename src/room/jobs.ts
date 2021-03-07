@@ -246,7 +246,7 @@ export const CreateHarvestJob = FuncWrapper(function CreateHarvestJob(
     objId: source.id,
     hasPriority: true,
     resourceType: RESOURCE_ENERGY,
-    position: { x: source.pos.x, y: source.pos.y },
+    position: source.pos,
   };
   UpdateJobById(jobId, job, source.room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -267,7 +267,7 @@ export const CreateHealJob = FuncWrapper(function CreateHealJob(
     roomName: creep.room.name,
     objId: creep.id,
     hasPriority: false,
-    position: { x: creep.pos.x, y: creep.pos.y },
+    position: creep.pos,
   };
   UpdateJobById(jobId, job, creep.room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -275,7 +275,8 @@ export const CreateHealJob = FuncWrapper(function CreateHealJob(
 
 export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
   jobId: Id<Job>,
-  roomName: string
+  roomName: string,
+  pos:RoomPosition = new RoomPosition(25, 25, roomName),
 ): FunctionReturn {
   const job: Job = {
     id: jobId,
@@ -288,7 +289,7 @@ export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
     roomName,
     objId: "UNDEFINED" as Id<Structure>,
     hasPriority: false,
-    position: { x: 25, y: 25 },
+    position:pos,
   };
   UpdateJobById(jobId, job, roomName);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -309,7 +310,7 @@ export const CreateBuildJob = FuncWrapper(function CreateBuildJob(room:Room,pos:
     roomName: room.name,
     objId: "undefined" as Id<ConstructionSite>,
     hasPriority,
-    position: { x: pos.x, y: pos.y },
+    position: pos,
     energyRequired: structureCost,
   };
   UpdateJobById(jobId, job, room.name);
@@ -337,7 +338,7 @@ export const CreateWithdrawJob = FuncWrapper(function CreateWithdrawJob(
     roomName: str.room.name,
     objId: str.id,
     hasPriority,
-    position: { x: str.pos.x, y: str.pos.y },
+    position: str.pos,
     energyRequired,
     resourceType,
   };
@@ -366,7 +367,7 @@ export const CreateTransferJob = FuncWrapper(function CreateTransferJob(
     roomName: str.room.name,
     objId: str.id,
     hasPriority,
-    position: { x: str.pos.x, y: str.pos.y },
+    position: str.pos,
     energyRequired: energyRequired * -1,
     resourceType,
   };
@@ -381,9 +382,9 @@ export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
     return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
 
-  const roomPos: RoomPosition = room.controller.pos;
-  const jobId: Id<Job> = `upgrade-${roomPos.x}/${roomPos.y}` as Id<Job>;
-  const openSpots: number = GetAccesSpotsAroundPosition(room, roomPos, 2)
+  const pos: RoomPosition = room.controller.pos;
+  const jobId: Id<Job> = `upgrade-${pos.x}/${pos.y}` as Id<Job>;
+  const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2)
     .response;
   const job: Job = {
     id: jobId,
@@ -396,7 +397,7 @@ export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
     roomName: room.name,
     objId: room.controller.id,
     hasPriority: false,
-    position: { x: roomPos.x, y: roomPos.y },
+    position: pos,
     energyRequired: 5000,
   };
   UpdateJobById(jobId, job, room.name);
@@ -421,7 +422,7 @@ export const CreateRepairJob = FuncWrapper(function CreateRepairJob(
     roomName: str.room.name,
     objId: str.id,
     hasPriority,
-    position: { x: str.pos.x, y: str.pos.y },
+    position: str.pos,
     energyRequired: (str.hitsMax - str.hits) / 100,
   };
   UpdateJobById(jobId, job, str.room.name);
