@@ -18,30 +18,14 @@ import { CachedStructureTypes } from "../utils/constants/structure";
 import { FuncWrapper } from "../utils/wrapper";
 import { RemoveCreep, RemoveRoom, RemoveStructure } from "./garbageCollection";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
-import { DeleteJobById, UpdateJobById, GetJobById } from "../room/jobs";
+import {
+  DeleteJobById,
+  UpdateJobById,
+  GetJobById,
+  CreateMoveJob,
+} from "../room/jobs";
 import { GetConstructionSitesInRange } from "../room/reading";
 import { GetRoom } from "../room/helper";
-
-export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
-  jobId: Id<Job>,
-  roomName: string
-): FunctionReturn {
-  const job: Job = {
-    id: jobId,
-    action: "move",
-    updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
-    maxCreeps: 1,
-    assignedStructuresIds: [],
-    maxStructures: 99,
-    roomName,
-    objId: "UNDEFINED" as Id<Structure>,
-    hasPriority: false,
-    position: { x: 25, y: 25 },
-  };
-  UpdateJobById(jobId, job, roomName);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
 
 export const TryToCreateMoveJob = FuncWrapper(function TryToCreateMoveJob(
   jobId: Id<Job>,
@@ -275,11 +259,7 @@ export const UpdateJobsCache = FuncWrapper(
             switch (job.action) {
               case "build":
                 if (job.objId === "undefined" && job.position) {
-                  const pos: RoomPosition = new RoomPosition(
-                    job.position.x,
-                    job.position.y,
-                    key
-                  );
+                  const pos: RoomPosition = job.position;
                   const csSites: ConstructionSite[] = GetConstructionSitesInRange(
                     pos,
                     0,

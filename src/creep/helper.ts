@@ -2,7 +2,7 @@ import { isUndefined, forOwn } from "lodash";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { GetJobById, UpdateJobById } from "../room/jobs";
+import { CreateHealJob, GetJobById } from "../room/jobs";
 import { ExecuteAttack } from "./actions/attack";
 import { ExecuteBuild } from "./actions/build";
 import { ExecuteClaim } from "./actions/claim";
@@ -22,27 +22,6 @@ export const IsCreepDamaged = FuncWrapper(function IsCreepDamaged(
     FunctionReturnCodes.OK,
     creep.hits < creep.hitsMax
   );
-});
-
-export const CreateHealJob = FuncWrapper(function CreateHealJob(
-  creep: Creep
-): FunctionReturn {
-  const healJobId: Id<Job> = `heal-${creep.name}` as Id<Job>;
-  const healJob: Job = {
-    id: healJobId,
-    action: "heal",
-    updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
-    maxCreeps: 1,
-    assignedStructuresIds: [],
-    maxStructures: 99,
-    roomName: creep.room.name,
-    objId: creep.id,
-    hasPriority: false,
-    position: { x: creep.pos.x, y: creep.pos.y },
-  };
-  UpdateJobById(healJobId, healJob, creep.room.name);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
 export const TryToCreateHealJob = FuncWrapper(function TryToCreateHealJob(

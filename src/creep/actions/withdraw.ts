@@ -41,7 +41,7 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
     case ERR_FULL:
       UnassignJob(job.id, creep.name, job.roomName);
       AssignNewJobForCreep(
-        creep.name,
+        creep,
         creepMem.type === "transferring" ? ["transfer"] : undefined
       );
       break;

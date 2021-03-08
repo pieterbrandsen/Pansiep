@@ -16,11 +16,11 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
 ): FunctionReturn {
   if (creep.store.getFreeCapacity(job.resourceType) === 0) {
     UnassignJob(job.id, creep.name, job.roomName);
-    const assignNewJobForCreepCode = AssignNewJobForCreep(creep.name, [
+    const assignNewJobForCreepCode = AssignNewJobForCreep(creep, [
       "transferSource",
     ]).code;
     if (assignNewJobForCreepCode === FunctionReturnCodes.NOT_MODIFIED) {
-      AssignNewJobForCreep(creep.name);
+      AssignNewJobForCreep(creep);
     }
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }

@@ -36,11 +36,11 @@ export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
     case ERR_NOT_ENOUGH_RESOURCES:
       UnassignJob(job.id, creep.name, job.roomName);
       if (
-        AssignNewJobForCreep(creep.name, ["withdrawController"]).code ===
+        AssignNewJobForCreep(creep, ["withdrawController"]).code ===
         FunctionReturnCodes.NOT_MODIFIED
       ) {
         AssignNewJobForCreep(
-          creep.name,
+          creep,
           creepMem.type === "work" || creepMem.type === "pioneer"
             ? ["withdraw", "harvest"]
             : ["withdraw"]

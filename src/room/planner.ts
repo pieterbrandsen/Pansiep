@@ -5,40 +5,12 @@ import { RoomPlannerDelay } from "../utils/constants/room";
 import { ExecuteEachTick } from "../utils/helper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
-import { GetJobById, UpdateJobById } from "./jobs";
+import { CreateHarvestJob, GetJobById } from "./jobs";
 import {
-  GetAccesSpotsAroundPosition,
   GetSources,
   HasPositionEnergyStructures,
   GetBestEnergyStructurePosAroundPosition,
 } from "./reading";
-
-export const CreateHarvestJob = FuncWrapper(function CreateHarvestJob(
-  jobId: Id<Job>,
-  source: Source
-): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(
-    source.room,
-    source.pos,
-    1
-  ).response;
-  const job: Job = {
-    id: jobId,
-    action: "harvest",
-    updateJobAtTick: Game.time + 100,
-    assignedCreepsIds: [],
-    maxCreeps: openSpots,
-    assignedStructuresIds: [],
-    maxStructures: 99,
-    roomName: source.room.name,
-    objId: source.id,
-    hasPriority: true,
-    resourceType: RESOURCE_ENERGY,
-    position: { x: source.pos.x, y: source.pos.y },
-  };
-  UpdateJobById(jobId, job, source.room.name);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
 
 export const Sources = FuncWrapper(function Sources(
   room: Room
@@ -81,7 +53,7 @@ export const Sources = FuncWrapper(function Sources(
 export const Controller = FuncWrapper(function Controller(
   room: Room
 ): FunctionReturn {
-  if (isUndefined(room.controller)) {
+  if (isUndefined(room.controller) || room.controller.level === 1) {
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
 
