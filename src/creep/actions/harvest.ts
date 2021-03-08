@@ -36,7 +36,7 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
       DeleteJobById(job.id, job.roomName);
       break;
     case ERR_NOT_IN_RANGE:
-  ExecuteMove(creep, job);
+      ExecuteMove(creep, job);
       break;
     default:
       break;

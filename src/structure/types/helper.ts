@@ -1,9 +1,14 @@
-import { isUndefined } from "lodash";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
-import { GetJobById, UpdateJobById, GetJobs, CreateRepairJob, CreateTransferJob, CreateUpgradeJob, CreateWithdrawJob } from "../../room/jobs";
-import { GetAccesSpotsAroundPosition } from "../../room/reading";
+import {
+  GetJobById,
+  GetJobs,
+  CreateRepairJob,
+  CreateTransferJob,
+  CreateUpgradeJob,
+  CreateWithdrawJob,
+} from "../../room/jobs";
 
 export const IsStructureDamaged = FuncWrapper(function IsStructureDamaged(
   str: Structure

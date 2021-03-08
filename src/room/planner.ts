@@ -5,9 +5,8 @@ import { RoomPlannerDelay } from "../utils/constants/room";
 import { ExecuteEachTick } from "../utils/helper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
-import { CreateHarvestJob, GetJobById, UpdateJobById } from "./jobs";
+import { CreateHarvestJob, GetJobById } from "./jobs";
 import {
-  GetAccesSpotsAroundPosition,
   GetSources,
   HasPositionEnergyStructures,
   GetBestEnergyStructurePosAroundPosition,
@@ -54,7 +53,7 @@ export const Sources = FuncWrapper(function Sources(
 export const Controller = FuncWrapper(function Controller(
   room: Room
 ): FunctionReturn {
-  if (isUndefined(room.controller)) {
+  if (isUndefined(room.controller) || room.controller.level === 1) {
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
 

@@ -28,11 +28,11 @@ export const GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
   roomName: string,
   filterOnTypes?: JobActionTypes[]
 ): FunctionReturn {
-  let jobs:Job[] = GetJobs(roomName,filterOnTypes).response.filter(
-      (j:Job) =>
-        j.assignedCreepsIds.length < j.maxCreeps &&
-        j.assignedStructuresIds.length < j.maxStructures
-    );
+  const jobs: Job[] = GetJobs(roomName, filterOnTypes).response.filter(
+    (j: Job) =>
+      j.assignedCreepsIds.length < j.maxCreeps &&
+      j.assignedStructuresIds.length < j.maxStructures
+  );
 
   if (jobs.length === 0)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT, []);
@@ -40,11 +40,44 @@ export const GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
   return FunctionReturnHelper(FunctionReturnCodes.OK, jobs);
 });
 
-export const GetClosestJob = FuncWrapper(function GetClosestJob(jobs:Job[],pos: RoomPosition): FunctionReturn {
-  const jobsWithPos:Job[] = [];
-  jobs.filter(job => job.position).forEach((job:Job) => {job.position = CreateRoomPosition(job.position as RoomPosition).response; jobsWithPos.push(job);})
-  return FunctionReturnHelper(FunctionReturnCodes.OK, first(jobsWithPos.sort((a:Job, b:Job) => (a.position as RoomPosition).getRangeTo(pos)-(b.position as RoomPosition).getRangeTo(pos))));
-})
+export const GetClosestJob = FuncWrapper(function GetClosestJob(
+  jobs: Job[],
+  pos: RoomPosition
+): FunctionReturn {
+  const jobsWithPos: Job[] = [];
+  jobs
+    .filter((job) => job.position)
+    .forEach((job: Job) => {
+      const _job = job;
+      _job.position = CreateRoomPosition(job.position as RoomPosition).response;
+      jobsWithPos.push(_job);
+    });
+  return FunctionReturnHelper(
+    FunctionReturnCodes.OK,
+    first(
+      jobsWithPos.sort(
+        (a: Job, b: Job) =>
+          (a.position as RoomPosition).getRangeTo(pos) -
+          (b.position as RoomPosition).getRangeTo(pos)
+      )
+    )
+  );
+});
+
+export const UpdateJobById = FuncWrapper(function UpdateJobById(
+  id: Id<Job>,
+  job: Job,
+  roomName: string
+): FunctionReturn {
+  const jobsMem = Memory.rooms[roomName].jobs;
+  const index = jobsMem.findIndex((j) => j.id === id);
+  if (index >= 0) {
+    jobsMem[index] = job;
+  } else {
+    jobsMem.push(job);
+  }
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
 
 export const AssignNewJobForStructure = FuncWrapper(
   function AssignNewJobForStructure(
@@ -70,12 +103,12 @@ export const AssignNewJobForStructure = FuncWrapper(
       }
     }
 
-    const closestJob: Job = GetClosestJob(jobs,str.pos).response;
+    const closestJob: Job = GetClosestJob(jobs, str.pos).response;
     if (closestJob) {
       closestJob.assignedStructuresIds.push(strId);
-      UpdateJobById(closestJob.id, closestJob,closestJob.roomName);
+      UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
       strMem.jobId = closestJob.id;
-      UpdateStructureMemory(str.id,strMem);
+      UpdateStructureMemory(str.id, strMem);
       return FunctionReturnHelper(FunctionReturnCodes.OK);
     }
     return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
@@ -86,10 +119,10 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
   creep: Creep,
   filterOnTypes?: JobActionTypes[]
 ): FunctionReturn {
-  const creepMem: CreepMemory = GetCreepMemory(
-creep.name    ).response;
+  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
   const creepType = creepMem.type;
   let jobs: Job[] = [];
+  let otherJobs: Job[] = [];
 
   if (filterOnTypes) {
     jobs = GetAvailableJobs(creepMem.commandRoom, filterOnTypes).response;
@@ -108,24 +141,35 @@ creep.name    ).response;
         jobs = GetAvailableJobs(creepMem.commandRoom, ["move"]).response;
         break;
       case "pioneer":
-        jobs = GetAvailableJobs(creepMem.commandRoom, [
-          "transfer",
-          "build",
-          "repair",
-          "dismantle",
+        otherJobs = GetAvailableJobs(creepMem.commandRoom, [
+          "withdraw",
+          "harvest",
         ]).response;
+        if (otherJobs.length > 0 || creep.store.getUsedCapacity() >= 100) {
+          jobs = GetAvailableJobs(creepMem.commandRoom, [
+            "transfer",
+            "build",
+            "repair",
+            "dismantle",
+          ]).response;
+        }
         break;
       case "transferring":
         jobs = GetAvailableJobs(creepMem.commandRoom, ["transfer"]).response;
         break;
       case "work":
-        jobs = GetAvailableJobs(creepMem.commandRoom, [
-          "build",
-          "repair",
-          "dismantle",
+        otherJobs = GetAvailableJobs(creepMem.commandRoom, [
+          "withdraw",
+          "harvest",
         ]).response;
-        if (jobs.length === 0) {
-          jobs = GetAvailableJobs(creepMem.commandRoom, ["upgrade"]).response;
+        if (otherJobs.length > 0) {
+          jobs = GetAvailableJobs(creepMem.commandRoom, [
+            "build",
+            "repair",
+            "dismantle",
+          ]).response;
+          if (jobs.length === 0)
+            jobs = GetAvailableJobs(creepMem.commandRoom, ["upgrade"]).response;
         }
         break;
       default:
@@ -134,19 +178,13 @@ creep.name    ).response;
   }
 
   jobs = jobs.sort((x) => (x.hasPriority ? -1 : 1));
-  jobs = jobs.sort(
-    (a, b) => a.assignedCreepsIds.length - b.assignedCreepsIds.length
-  );
-  jobs = jobs.sort(
-    (a, b) => a.assignedStructuresIds.length - b.assignedStructuresIds.length
-  );
 
-  const closestJob: Job = GetClosestJob(jobs,creep.pos).response;
+  const closestJob: Job = GetClosestJob(jobs, creep.pos).response;
   if (closestJob) {
     closestJob.assignedCreepsIds.push(creep.name);
-    UpdateJobById(closestJob.id, closestJob,closestJob.roomName);
+    UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
     creepMem.jobId = closestJob.id;
-    UpdateCreepMemory(creep.name,creepMem);
+    UpdateCreepMemory(creep.name, creepMem);
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
   return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
@@ -162,21 +200,6 @@ export const GetJobById = FuncWrapper(function GetJobById(
   if (isUndefined(job))
     return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
   return FunctionReturnHelper(FunctionReturnCodes.OK, job);
-});
-
-export const UpdateJobById = FuncWrapper(function UpdateJobById(
-  id: Id<Job>,
-  job: Job,
-  roomName: string
-): FunctionReturn {
-  const jobsMem = Memory.rooms[roomName].jobs;
-  const index = jobsMem.findIndex((j) => j.id === id);
-  if (index >= 0) {
-    jobsMem[index] = job;
-  } else {
-    jobsMem.push(job);
-  }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
 export const UpdateJobList = FuncWrapper(function UpdateJobList(
@@ -281,7 +304,7 @@ export const CreateHealJob = FuncWrapper(function CreateHealJob(
 export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
   jobId: Id<Job>,
   roomName: string,
-  pos:RoomPosition = new RoomPosition(25, 25, roomName),
+  pos: RoomPosition = new RoomPosition(25, 25, roomName)
 ): FunctionReturn {
   const job: Job = {
     id: jobId,
@@ -294,13 +317,18 @@ export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
     roomName,
     objId: "UNDEFINED" as Id<Structure>,
     hasPriority: false,
-    position:pos,
+    position: pos,
   };
   UpdateJobById(jobId, job, roomName);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
-export const CreateBuildJob = FuncWrapper(function CreateBuildJob(room:Room,pos:RoomPosition,structureType:StructureConstant,hasPriority:boolean=false): FunctionReturn {
+export const CreateBuildJob = FuncWrapper(function CreateBuildJob(
+  room: Room,
+  pos: RoomPosition,
+  structureType: StructureConstant,
+  hasPriority = false
+): FunctionReturn {
   const jobId: Id<Job> = `build-${pos.x}/${pos.y}-${structureType}` as Id<Job>;
   const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2).response;
   const structureCost = CONSTRUCTION_COST[structureType];
@@ -320,7 +348,7 @@ export const CreateBuildJob = FuncWrapper(function CreateBuildJob(room:Room,pos:
   };
   UpdateJobById(jobId, job, room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
-})
+});
 
 export const CreateWithdrawJob = FuncWrapper(function CreateWithdrawJob(
   str: Structure,
@@ -387,10 +415,9 @@ export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
     return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
 
-  const pos: RoomPosition = room.controller.pos;
+  const { pos } = room.controller;
   const jobId: Id<Job> = `upgrade-${pos.x}/${pos.y}` as Id<Job>;
-  const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2)
-    .response;
+  const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2).response;
   const job: Job = {
     id: jobId,
     action: "upgrade",
@@ -433,4 +460,3 @@ export const CreateRepairJob = FuncWrapper(function CreateRepairJob(
   UpdateJobById(jobId, job, str.room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
-

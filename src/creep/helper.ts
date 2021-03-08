@@ -2,7 +2,7 @@ import { isUndefined, forOwn } from "lodash";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { CreateHealJob, GetJobById, UpdateJobById } from "../room/jobs";
+import { CreateHealJob, GetJobById } from "../room/jobs";
 import { ExecuteAttack } from "./actions/attack";
 import { ExecuteBuild } from "./actions/build";
 import { ExecuteClaim } from "./actions/claim";

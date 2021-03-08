@@ -9,7 +9,13 @@ export const ExecuteEachTick = FuncWrapper(function ExecuteEachTick(
   return FunctionReturnHelper(FunctionReturnCodes.OK, executeThisTick);
 });
 
-export const CreateRoomPosition = FuncWrapper(function CreateRoomPosition(objPos: RoomPosition): FunctionReturn {
-  const pos:RoomPosition = new RoomPosition(objPos.x, objPos.y, objPos.roomName);
-  return FunctionReturnHelper(FunctionReturnCodes.OK,pos);
-})
+export const CreateRoomPosition = FuncWrapper(function CreateRoomPosition(
+  objPos: RoomPosition
+): FunctionReturn {
+  const pos: RoomPosition = new RoomPosition(
+    objPos.x,
+    objPos.y,
+    objPos.roomName
+  );
+  return FunctionReturnHelper(FunctionReturnCodes.OK, pos);
+});

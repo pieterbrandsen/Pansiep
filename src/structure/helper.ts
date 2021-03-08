@@ -1,6 +1,5 @@
 import { isUndefined } from "lodash";
-import { CreateBuildJob, UpdateJobById } from "../room/jobs";
-import { GetAccesSpotsAroundPosition } from "../room/reading";
+import { CreateBuildJob } from "../room/jobs";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
@@ -74,7 +73,7 @@ export const BuildStructure = FuncWrapper(function BuildStructure(
       createConstructionSite
     );
 
-    CreateBuildJob(room,pos,structureType,hasPriority);
+  CreateBuildJob(room, pos, structureType, hasPriority);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 

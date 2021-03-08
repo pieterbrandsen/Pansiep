@@ -14,12 +14,15 @@ export const ExecuteContainer = FuncWrapper(function ExecuteContainer(
   str: StructureContainer
 ): FunctionReturn {
   TryToCreateRepairJob(str);
-  const sources: Source[] = GetSourcesInRange(str.pos, 2, str.room).response;
+  const sourcesInRange: Source[] = GetSourcesInRange(str.pos, 2, str.room)
+    .response;
   if (
-    (str.room.controller &&
-      str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)) ||
-    sources.length > 0
+    str.room.controller &&
+    str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)
   ) {
+    TryToCreateTransferJob(str, 75, RESOURCE_ENERGY, false, "transfer");
+    TryToCreateWithdrawJob(str, 5);
+  } else if (sourcesInRange.length > 0) {
     TryToCreateTransferJob(str, 75, RESOURCE_ENERGY, false, "transferSource");
     TryToCreateWithdrawJob(str, 5);
   } else {
