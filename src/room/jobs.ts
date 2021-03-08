@@ -163,7 +163,8 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
         break;
       case "pioneer":
         jobs = GetAvailableJobs(creepMem.commandRoom, [
-          "transfer",
+            "harvest",
+            "transfer",
           "build",
           "repair",
           "dismantle",
@@ -176,8 +177,8 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
         break;
       case "work":
         jobs = GetAvailableJobs(creepMem.commandRoom, [
-            "harvest",
-            "build",
+          "harvest",
+          "build",
             "repair",
             "dismantle",
           ]).response;

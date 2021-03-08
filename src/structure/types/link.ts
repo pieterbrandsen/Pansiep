@@ -20,10 +20,10 @@ export const ExecuteLink = FuncWrapper(function ExecuteLink(
  str.room.controller &&
       str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)
   ) {
-    TryToCreateTransferJob(str, 20, RESOURCE_ENERGY, false);
-    TryToCreateWithdrawJob(str, 80);
+    TryToCreateWithdrawJob(str, 0,RESOURCE_ENERGY,"withdrawController");
   } else if (sources.length > 0) {
-    TryToCreateWithdrawJob(str, 80,RESOURCE_ENERGY,"withdrawController");
+    TryToCreateWithdrawJob(str, 0);
+    TryToCreateTransferJob(str, 100, RESOURCE_ENERGY,false,"transferSource");
   }
   else {
     TryToCreateWithdrawJob(str, 100);
