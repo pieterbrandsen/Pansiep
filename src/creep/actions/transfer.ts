@@ -1,6 +1,7 @@
 import {
   AssignNewJobForCreep,
   DeleteJobById,
+  SwitchCreepSavedJobIds,
   UnassignJob,
   UpdateJobById,
 } from "../../room/jobs";
@@ -26,7 +27,9 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
   ) {
     UnassignJob(job.id, creep.name, job.roomName);
     if (job.action === "transferSource") {
-      AssignNewJobForCreep(creep, ["harvest"]);
+      SwitchCreepSavedJobIds(creep.name,true);
+
+      // AssignNewJobForCreep(creep, ["harvest"]);
     } else {
       AssignNewJobForCreep(
         creep,

@@ -1,4 +1,4 @@
-import { forEach, isUndefined } from "lodash";
+import { first, forEach, isUndefined } from "lodash";
 import { BuildStructure } from "../structure/helper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { RoomPlannerDelay } from "../utils/constants/room";

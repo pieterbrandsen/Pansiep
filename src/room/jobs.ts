@@ -115,12 +115,33 @@ export const AssignNewJobForStructure = FuncWrapper(
   }
 );
 
+export const SwitchCreepSavedJobIds = FuncWrapper(
+  function SwitchCreepSavedJobIds(
+    name: string,
+    switchBack = false
+  ): FunctionReturn {
+    const creepMem: CreepMemory = GetCreepMemory(name).response;
+    if (switchBack) {
+      const { jobId } = creepMem;
+      creepMem.jobId = creepMem.secondJobId;
+      creepMem.secondJobId = jobId;
+    } else {
+      const jobId = creepMem.secondJobId;
+      creepMem.secondJobId = creepMem.jobId;
+      creepMem.jobId = jobId;
+    }
+    UpdateCreepMemory(name, creepMem);
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
 export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
   creep: Creep,
   filterOnTypes?: JobActionTypes[]
 ): FunctionReturn {
   const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
   const creepType = creepMem.type;
+
   let jobs: Job[] = [];
   let otherJobs: Job[] = [];
 
@@ -141,36 +162,27 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
         jobs = GetAvailableJobs(creepMem.commandRoom, ["move"]).response;
         break;
       case "pioneer":
-        otherJobs = GetAvailableJobs(creepMem.commandRoom, [
-          "withdraw",
-          "harvest",
+        jobs = GetAvailableJobs(creepMem.commandRoom, [
+          "transfer",
+          "build",
+          "repair",
+          "dismantle",
         ]).response;
-        if (otherJobs.length > 0 || creep.store.getUsedCapacity() >= 100) {
-          jobs = GetAvailableJobs(creepMem.commandRoom, [
-            "transfer",
-            "build",
-            "repair",
-            "dismantle",
-          ]).response;
-        }
+        if (jobs.length === 0)
+        jobs = GetAvailableJobs(creepMem.commandRoom, ["upgrade"]).response;
         break;
       case "transferring":
         jobs = GetAvailableJobs(creepMem.commandRoom, ["transfer"]).response;
         break;
       case "work":
-        otherJobs = GetAvailableJobs(creepMem.commandRoom, [
-          "withdraw",
-          "harvest",
-        ]).response;
-        if (otherJobs.length > 0) {
-          jobs = GetAvailableJobs(creepMem.commandRoom, [
+        jobs = GetAvailableJobs(creepMem.commandRoom, [
+            "harvest",
             "build",
             "repair",
             "dismantle",
           ]).response;
           if (jobs.length === 0)
             jobs = GetAvailableJobs(creepMem.commandRoom, ["upgrade"]).response;
-        }
         break;
       default:
         break;

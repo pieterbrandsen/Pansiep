@@ -117,6 +117,7 @@ interface CreepMemory {
   walkPath?: PathStep[];
   isNotSeenSince?: number;
   jobId?: string;
+  secondJobId?: string;
 }
 
 interface StructureMemory {

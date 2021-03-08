@@ -11,6 +11,8 @@ import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 import { GetCreepMemory } from "../helper";
+import { SwitchCreepSavedJobIds } from '../../room/jobs';
+import { isUndefined } from "lodash";
 
 // eslint-disable-next-line
 export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
@@ -40,10 +42,15 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
       break;
     case ERR_FULL:
       UnassignJob(job.id, creep.name, job.roomName);
-      AssignNewJobForCreep(
-        creep,
-        creepMem.type === "transferring" ? ["transfer"] : undefined
-      );
+      if (isUndefined(creepMem.secondJobId)) {
+        AssignNewJobForCreep(
+          creep,
+          creepMem.type === "transferring" ? ["transfer"] : undefined
+          );
+        }
+        else { 
+          SwitchCreepSavedJobIds(creep.name,true);
+        }
       break;
     case ERR_NOT_IN_RANGE:
       ExecuteMove(creep, job);

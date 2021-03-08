@@ -17,13 +17,15 @@ export const ExecuteLink = FuncWrapper(function ExecuteLink(
 
   const sources: Source[] = GetSourcesInRange(str.pos, 2, str.room).response;
   if (
-    (str.room.controller &&
-      str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)) ||
-    sources.length > 0
+ str.room.controller &&
+      str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)
   ) {
-    TryToCreateTransferJob(str, 20, RESOURCE_ENERGY, false, "transferSource");
-    TryToCreateWithdrawJob(str, 5);
-  } else {
+    TryToCreateTransferJob(str, 20, RESOURCE_ENERGY, false);
+    TryToCreateWithdrawJob(str, 80);
+  } else if (sources.length > 0) {
+    TryToCreateWithdrawJob(str, 80,RESOURCE_ENERGY,"withdrawController");
+  }
+  else {
     TryToCreateWithdrawJob(str, 100);
   }
 

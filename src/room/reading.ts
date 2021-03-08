@@ -235,12 +235,7 @@ export const HasPositionEnergyStructures = FuncWrapper(
     if (structures.length > 1) {
       return FunctionReturnHelper(
         FunctionReturnCodes.OK,
-        Math.max.apply(
-          Math,
-          structures.map((s) => {
-            return s.store.energy;
-          })
-        )
+        first(structures.sort((a, b) => a.store.energy - b.store.energy))
       );
     }
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
