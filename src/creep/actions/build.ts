@@ -26,7 +26,7 @@ export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
     case ERR_NOT_ENOUGH_RESOURCES:
       UnassignJob(job.id, creep.name, job.roomName);
       AssignNewJobForCreep(
-        creep.name,
+        creep,
         creepMem.type === "work" || creepMem.type === "pioneer"
           ? ["withdraw", "harvest"]
           : ["withdraw"]

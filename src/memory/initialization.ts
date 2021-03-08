@@ -197,8 +197,6 @@ export const InitializeCreepMemory = FuncWrapper(function InitializeCreepMemory(
     Memory.cache.creeps.data[roomName].push({ id: name });
   }
 
-  AssignNewJobForCreep(name);
-
   Log(
     LogTypes.Debug,
     "memory/initialization:InitializeCreepMemory",

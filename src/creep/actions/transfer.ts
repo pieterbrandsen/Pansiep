@@ -26,10 +26,10 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
   ) {
     UnassignJob(job.id, creep.name, job.roomName);
     if (job.action === "transferSource") {
-      AssignNewJobForCreep(creep.name, ["harvest"]);
+      AssignNewJobForCreep(creep, ["harvest"]);
     } else {
       AssignNewJobForCreep(
-        creep.name,
+        creep,
         creepMem.type === "work" || creepMem.type === "pioneer"
           ? ["withdraw", "harvest"]
           : ["withdraw"]
@@ -59,7 +59,7 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
     case ERR_NOT_ENOUGH_RESOURCES:
       UnassignJob(job.id, creep.name, job.roomName);
       AssignNewJobForCreep(
-        creep.name,
+        creep,
         creepMem.type === "work" || creepMem.type === "pioneer"
           ? ["withdraw", "harvest"]
           : ["withdraw"]

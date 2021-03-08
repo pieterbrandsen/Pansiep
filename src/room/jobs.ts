@@ -5,6 +5,7 @@ import { FunctionReturnCodes } from "../utils/constants/global";
 import { GetCreepMemory, UpdateCreepMemory } from "../creep/helper";
 import { GetStructureMemory, UpdateStructureMemory } from "../structure/helper";
 import { GetAccesSpotsAroundPosition } from "./reading";
+import { CreateRoomPosition } from "../utils/helper";
 
 export const GetJobs = FuncWrapper(function GetJobs(
   roomName: string,
@@ -27,10 +28,8 @@ export const GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
   roomName: string,
   filterOnTypes?: JobActionTypes[]
 ): FunctionReturn {
-  let jobs = Memory.rooms[roomName].jobs
-    .filter((j) => (filterOnTypes ? filterOnTypes.includes(j.action) : true))
-    .filter(
-      (j) =>
+  let jobs:Job[] = GetJobs(roomName,filterOnTypes).response.filter(
+      (j:Job) =>
         j.assignedCreepsIds.length < j.maxCreeps &&
         j.assignedStructuresIds.length < j.maxStructures
     );
@@ -38,11 +37,14 @@ export const GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
   if (jobs.length === 0)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT, []);
 
-  jobs = jobs.sort((a, b) => {
-    return Number(a.hasPriority) - Number(b.hasPriority);
-  });
   return FunctionReturnHelper(FunctionReturnCodes.OK, jobs);
 });
+
+export const GetClosestJob = FuncWrapper(function GetClosestJob(jobs:Job[],pos: RoomPosition): FunctionReturn {
+  const jobsWithPos:Job[] = [];
+  jobs.filter(job => job.position).forEach((job:Job) => {job.position = CreateRoomPosition(job.position as RoomPosition).response; jobsWithPos.push(job);})
+  return FunctionReturnHelper(FunctionReturnCodes.OK, first(jobsWithPos.sort((a:Job, b:Job) => (a.position as RoomPosition).getRangeTo(pos)-(b.position as RoomPosition).getRangeTo(pos))));
+})
 
 export const AssignNewJobForStructure = FuncWrapper(
   function AssignNewJobForStructure(
@@ -68,12 +70,12 @@ export const AssignNewJobForStructure = FuncWrapper(
       }
     }
 
-    jobs = jobs.sort((x) => (x.hasPriority ? -1 : 1));
-
-    const firstJob: Job | undefined = first(jobs);
-    if (firstJob) {
-      firstJob.assignedStructuresIds.push(strId);
-      strMem.jobId = firstJob.id;
+    const closestJob: Job = GetClosestJob(jobs,str.pos).response;
+    if (closestJob) {
+      closestJob.assignedStructuresIds.push(strId);
+      UpdateJobById(closestJob.id, closestJob,closestJob.roomName);
+      strMem.jobId = closestJob.id;
+      UpdateStructureMemory(str.id,strMem);
       return FunctionReturnHelper(FunctionReturnCodes.OK);
     }
     return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
@@ -81,10 +83,11 @@ export const AssignNewJobForStructure = FuncWrapper(
 );
 
 export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
-  creepName: string,
+  creep: Creep,
   filterOnTypes?: JobActionTypes[]
 ): FunctionReturn {
-  const creepMem: CreepMemory = GetCreepMemory(creepName).response;
+  const creepMem: CreepMemory = GetCreepMemory(
+creep.name    ).response;
   const creepType = creepMem.type;
   let jobs: Job[] = [];
 
@@ -138,10 +141,12 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
     (a, b) => a.assignedStructuresIds.length - b.assignedStructuresIds.length
   );
 
-  const firstJob: Job | undefined = first(jobs);
-  if (firstJob) {
-    firstJob.assignedCreepsIds.push(creepName);
-    creepMem.jobId = firstJob.id;
+  const closestJob: Job = GetClosestJob(jobs,creep.pos).response;
+  if (closestJob) {
+    closestJob.assignedCreepsIds.push(creep.name);
+    UpdateJobById(closestJob.id, closestJob,closestJob.roomName);
+    creepMem.jobId = closestJob.id;
+    UpdateCreepMemory(creep.name,creepMem);
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
   return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
@@ -428,3 +433,4 @@ export const CreateRepairJob = FuncWrapper(function CreateRepairJob(
   UpdateJobById(jobId, job, str.room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
+
