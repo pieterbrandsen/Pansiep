@@ -1,5 +1,5 @@
 import { isUndefined } from "lodash";
-import { CreateBuildJob } from "../room/jobs";
+import { CreateBuildJob } from "../room/jobs/create";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";

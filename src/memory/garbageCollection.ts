@@ -4,13 +4,13 @@ import { ResetRoomStats } from "./stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
-import { GetJobs, UpdateJobById, UpdateJobList } from "../room/jobs";
+import { GetAllJobs, UpdateJobById, UpdateJobList } from "../room/jobs/handler";
 
 export const RemoveCreep = FuncWrapper(function RemoveCreep(
   name: string,
   roomName: string
 ): FunctionReturn {
-  const jobs: Job[] = GetJobs(roomName).response;
+  const jobs: Job[] = GetAllJobs(roomName).response;
   const job = jobs.find((j) => j.assignedCreepsIds.includes(name));
   if (job) {
     job.assignedCreepsIds = remove(job.assignedCreepsIds, name);
@@ -35,7 +35,7 @@ export const RemoveStructure = FuncWrapper(function RemoveStructure(
   id: Id<Structure>,
   roomName: string
 ): FunctionReturn {
-  const jobs: Job[] = GetJobs(roomName).response;
+  const jobs: Job[] = GetAllJobs(roomName).response;
   const job = jobs.find((j) => j.assignedStructuresIds.includes(id));
   if (job) {
     job.assignedStructuresIds = remove(job.assignedStructuresIds, id);

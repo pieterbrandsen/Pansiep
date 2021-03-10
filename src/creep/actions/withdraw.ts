@@ -1,9 +1,11 @@
+import { isUndefined } from "lodash";
 import {
   DeleteJobById,
   AssignNewJobForCreep,
   UnassignJob,
   UpdateJobById,
-} from "../../room/jobs";
+  SwitchCreepSavedJobIds,
+} from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { GetUsedCapacity } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
@@ -11,8 +13,6 @@ import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 import { GetCreepMemory } from "../helper";
-import { SwitchCreepSavedJobIds } from '../../room/jobs';
-import { isUndefined } from "lodash";
 
 // eslint-disable-next-line
 export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
@@ -46,11 +46,10 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
         AssignNewJobForCreep(
           creep,
           creepMem.type === "transferring" ? ["transfer"] : undefined
-          );
-        }
-        else { 
-          SwitchCreepSavedJobIds(creep.name,true);
-        }
+        );
+      } else {
+        SwitchCreepSavedJobIds(creep.name);
+      }
       break;
     case ERR_NOT_IN_RANGE:
       ExecuteMove(creep, job);

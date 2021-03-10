@@ -2,7 +2,9 @@ import {
   UnassignJob,
   AssignNewJobForCreep,
   DeleteJobById,
-} from "../../room/jobs";
+  SwitchCreepSavedJobIds,
+  GetJobById,
+} from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
@@ -21,8 +23,8 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
       "transferSource",
     ]).code;
     if (assignNewJobForCreepCode === FunctionReturnCodes.NOT_MODIFIED) {
-    UnassignJob(job.id, creep.name, job.roomName);
-    AssignNewJobForCreep(creep);
+      UnassignJob(job.id, creep.name, job.roomName);
+      AssignNewJobForCreep(creep);
     } else {
       creepMem.secondJobId = job.id;
       UpdateCreepMemory(creep.name, creepMem);

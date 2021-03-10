@@ -4,7 +4,7 @@ import {
   AssignNewJobForCreep,
   UnassignJob,
   UpdateJobById,
-} from "../../room/jobs";
+} from "../../room/jobs/handler";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";

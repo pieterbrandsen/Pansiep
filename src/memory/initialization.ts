@@ -141,7 +141,11 @@ export const InitializeGlobalMemory = FuncWrapper(
 export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
   roomName: string
 ): FunctionReturn {
-  Memory.rooms[roomName] = { jobs: [], spawnQueue: [] };
+  Memory.rooms[roomName] = {
+    jobs: [],
+    spawnQueue: [],
+    lastControllerLevelAtRoomPlanner: 0,
+  };
   const getRoom = GetRoom(roomName);
   if (getRoom.code === FunctionReturnCodes.OK) {
     const room: Room = getRoom.response;

@@ -2,7 +2,7 @@ import { isUndefined, forOwn } from "lodash";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { CreateHealJob, GetJobById } from "../room/jobs";
+import { GetJobById } from "../room/jobs/handler";
 import { ExecuteAttack } from "./actions/attack";
 import { ExecuteBuild } from "./actions/build";
 import { ExecuteClaim } from "./actions/claim";
@@ -14,6 +14,7 @@ import { ExecuteRepair } from "./actions/repair";
 import { ExecuteTransfer } from "./actions/transfer";
 import { ExecuteUpgrade } from "./actions/upgrade";
 import { ExecuteWithdraw } from "./actions/withdraw";
+import { CreateHealJob } from "../room/jobs/create";
 
 export const IsCreepDamaged = FuncWrapper(function IsCreepDamaged(
   creep: Creep

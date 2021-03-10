@@ -124,11 +124,34 @@ describe("Update cache", () => {
         "room5",
         "room6",
       ];
-      Memory.rooms.room = { isNotSeenSince: 600, jobs: [] };
-      Memory.rooms.room2 = { isNotSeenSince: -500, jobs: [] };
-      Memory.rooms.room4 = { jobs: [] };
-      Memory.rooms.room5 = { jobs: [] };
-      Memory.rooms.room6 = { isNotSeenSince: 900, jobs: [] };
+      Memory.rooms.room = {
+        isNotSeenSince: 600,
+        jobs: [],
+        lastControllerLevelAtRoomPlanner: 0,
+        spawnQueue: [],
+      };
+      Memory.rooms.room2 = {
+        isNotSeenSince: -500,
+        jobs: [],
+        lastControllerLevelAtRoomPlanner: 0,
+        spawnQueue: [],
+      };
+      Memory.rooms.room4 = {
+        jobs: [],
+        lastControllerLevelAtRoomPlanner: 0,
+        spawnQueue: [],
+      };
+      Memory.rooms.room5 = {
+        jobs: [],
+        lastControllerLevelAtRoomPlanner: 0,
+        spawnQueue: [],
+      };
+      Memory.rooms.room6 = {
+        isNotSeenSince: 900,
+        jobs: [],
+        lastControllerLevelAtRoomPlanner: 0,
+        spawnQueue: [],
+      };
 
       const updateRoomsCache = UpdateRoomsCache();
       expect(updateRoomsCache.code).toBe(FunctionReturnCodes.OK);

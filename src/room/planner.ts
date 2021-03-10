@@ -1,11 +1,13 @@
-import { first, forEach, isUndefined } from "lodash";
+import { forEach, isUndefined } from "lodash";
 import { BuildStructure } from "../structure/helper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { RoomPlannerDelay } from "../utils/constants/room";
 import { ExecuteEachTick } from "../utils/helper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
-import { CreateHarvestJob, GetJobById } from "./jobs";
+import { GetRoomMemoryUsingName, UpdateRoomMemory } from "./helper";
+import { CreateHarvestJob } from "./jobs/create";
+import { GetJobById } from "./jobs/handler";
 import {
   GetSources,
   HasPositionEnergyStructures,
@@ -76,6 +78,18 @@ export const Controller = FuncWrapper(function Controller(
     range
   ).response;
   BuildStructure(room, pos, strType, true);
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+export const GetBasePlanned = FuncWrapper(function Base(
+  room: Room
+): FunctionReturn {
+  if (isUndefined(room.controller))
+    return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
+  const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
+  const controllerLevel = room.controller.level;
+  mem.lastControllerLevelAtRoomPlanner = controllerLevel;
+  UpdateRoomMemory(mem, room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 

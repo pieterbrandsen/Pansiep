@@ -1,14 +1,13 @@
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
+import { GetAllJobs, GetJobById } from "../../room/jobs/handler";
 import {
-  GetJobById,
-  GetJobs,
   CreateRepairJob,
+  CreateWithdrawJob,
   CreateTransferJob,
   CreateUpgradeJob,
-  CreateWithdrawJob,
-} from "../../room/jobs";
+} from "../../room/jobs/create";
 
 export const IsStructureDamaged = FuncWrapper(function IsStructureDamaged(
   str: Structure
@@ -141,7 +140,7 @@ export const TryToCreateTransferJob = FuncWrapper(
 export const TryToCreateUpgradeJob = FuncWrapper(function TryToCreateUpgradeJob(
   room: Room
 ): FunctionReturn {
-  const jobs: Job[] = GetJobs(room.name, ["build", "dismantle", "upgrade"])
+  const jobs: Job[] = GetAllJobs(room.name, ["build", "dismantle", "upgrade"])
     .response;
 
   if (jobs.length === 0) {

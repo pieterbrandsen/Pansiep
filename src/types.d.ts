@@ -64,7 +64,7 @@ type JobActionTypes =
   | "transferSource"
   | "withdraw"
   | "withdrawController"
-  | "harvest" // TODO Group a source/controller in a object and ?
+  | "harvest"
   | "build"
   | "repair"
   | "dismantle"
@@ -105,9 +105,10 @@ type CreepTypes =
   | "none";
 
 interface RoomMemory {
-  isNotSeenSince?: number;
   spawnQueue: CreepTypes[];
   jobs: Job[];
+  lastControllerLevelAtRoomPlanner: number;
+  isNotSeenSince?: number;
 }
 
 interface CreepMemory {

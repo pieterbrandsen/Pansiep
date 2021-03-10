@@ -1,4 +1,4 @@
-import { DeleteJobById } from "../../room/jobs";
+import { DeleteJobById } from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";

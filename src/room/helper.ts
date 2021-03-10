@@ -30,6 +30,14 @@ export const GetRoomMemoryUsingName = FuncWrapper(
   }
 );
 
+export const UpdateRoomMemory = FuncWrapper(function UpdateRoomMemory(
+  mem: RoomMemory,
+  name: string
+): FunctionReturn {
+  Memory.rooms[name] = mem;
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
 export const IsMyReservedRoom = FuncWrapper(function IsMyReservedRoom(
   room: Room
 ): FunctionReturn {

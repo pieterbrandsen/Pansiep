@@ -2,7 +2,7 @@ import { forEach, forOwn, reduce, isUndefined } from "lodash";
 import { GetCreepsMemory } from "../../creep/helper";
 import { InitializeCreepMemory } from "../../memory/initialization";
 import { GetRoom } from "../../room/helper";
-import { GetJobs } from "../../room/jobs";
+import { GetAllJobs } from "../../room/jobs/handler";
 import { FunctionReturnCodes, LogTypes } from "../../utils/constants/global";
 import { MaxCreepsPerCreepType } from "../../utils/constants/room";
 import { Log } from "../../utils/logger";
@@ -16,7 +16,7 @@ export const GetJobActionsWithCreepNeed = FuncWrapper(
     id: string,
     usePriorityJobs
   ): FunctionReturn {
-    let jobs = GetJobs(id).response;
+    let jobs = GetAllJobs(id).response;
 
     const priorityJobs: Job[] = jobs.filter((j: Job) => j.hasPriority);
     if (usePriorityJobs && priorityJobs.length > 0) {
