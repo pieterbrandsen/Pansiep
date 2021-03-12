@@ -161,7 +161,8 @@ export const CreateTransferJob = FuncWrapper(function CreateTransferJob(
 });
 
 export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
-  room: Room
+  room: Room,
+  hasPriority = false
 ): FunctionReturn {
   if (isUndefined(room.controller)) {
     return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
@@ -180,7 +181,7 @@ export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
     maxStructures: 99,
     roomName: room.name,
     objId: room.controller.id,
-    hasPriority: false,
+    hasPriority,
     position: pos,
     energyRequired: 5000,
   };

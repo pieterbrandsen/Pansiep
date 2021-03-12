@@ -2,8 +2,6 @@ import {
   UnassignJob,
   AssignNewJobForCreep,
   DeleteJobById,
-  SwitchCreepSavedJobIds,
-  GetJobById,
 } from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";

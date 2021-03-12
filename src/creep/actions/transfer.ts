@@ -28,17 +28,15 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
     if (job.action === "transferSource") {
       SwitchCreepSavedJobIds(creep.name);
       UnassignJob(job.id, creep.name, job.roomName);
-    } else {
-      if (
-        AssignNewJobForCreep(
-          creep,
-          creepMem.type === "work" || creepMem.type === "pioneer"
-            ? ["withdraw", "harvest"]
-            : ["withdraw"]
-        ).code === FunctionReturnCodes.OK
-      )
+    } else if (
+      AssignNewJobForCreep(
+        creep,
+        creepMem.type === "work" || creepMem.type === "pioneer"
+          ? ["withdraw", "harvest"]
+          : ["withdraw"]
+      ).code === FunctionReturnCodes.OK
+    )
       UnassignJob(job.id, creep.name, job.roomName);
-    }
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
 
@@ -61,12 +59,14 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
       UpdateJobById(job.id, _job, job.roomName);
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
-      if (AssignNewJobForCreep(
-        creep,
-        creepMem.type === "work" || creepMem.type === "pioneer"
-        ? ["withdraw", "harvest"]
-        : ["withdraw"]
-        ).code === FunctionReturnCodes.OK)
+      if (
+        AssignNewJobForCreep(
+          creep,
+          creepMem.type === "work" || creepMem.type === "pioneer"
+            ? ["withdraw", "harvest"]
+            : ["withdraw"]
+        ).code === FunctionReturnCodes.OK
+      )
         UnassignJob(job.id, creep.name, job.roomName);
       break;
     case ERR_NOT_IN_RANGE:

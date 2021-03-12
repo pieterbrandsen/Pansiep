@@ -19,25 +19,25 @@ export const TrackedIntents = [
   "lookForAtArea",
 ];
 
-export const JobActionPriority: {[key in JobActionTypes]: number} = {
-  "move":0,
-  "transfer":0,
-  "transferSource":0,
+export const JobActionPriority: { [key in JobActionTypes]: number } = {
+  move: 0,
+  transfer: 0,
+  transferSource: 0,
 
-  "withdraw":1,
-  "withdrawController":1,
-  "attack":1,
-  "heal":1,
-  "harvest":1,
-  "repair":1,
+  withdraw: 1,
+  withdrawController: 1,
+  attack: 1,
+  heal: 1,
+  harvest: 1,
+  repair: 1,
 
-  "build":2,
+  build: 2,
 
-  "dismantle":3,
-  "upgrade":3,
-  
-  "claim":4,
-}
+  dismantle: 3,
+  upgrade: 3,
+
+  claim: 4,
+};
 
 export const MaxCreepsPerCreepType = 7;
 

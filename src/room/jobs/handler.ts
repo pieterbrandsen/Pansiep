@@ -1,4 +1,4 @@
-import { isUndefined, first, forEach, remove, groupBy } from "lodash";
+import { isUndefined, first, forEach, remove } from "lodash";
 import { FuncWrapper } from "../../utils/wrapper";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FunctionReturnCodes } from "../../utils/constants/global";
@@ -92,7 +92,7 @@ export const SwitchCreepSavedJobIds = FuncWrapper(
     switchBack = false
   ): FunctionReturn {
     const creepMem: CreepMemory = GetCreepMemory(name).response;
-    let id:string| undefined= undefined;
+    let id: string | undefined;
     if (switchBack) {
       id = creepMem.jobId;
       creepMem.jobId = creepMem.secondJobId;
@@ -149,7 +149,7 @@ export const AssignNewJobForStructure = FuncWrapper(
 export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
   creep: Creep,
   filterOnTypes?: JobActionTypes[],
-  forcedJob?:Job
+  forcedJob?: Job
 ): FunctionReturn {
   const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
   let jobs: Job[] = [];
@@ -157,7 +157,7 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
   if (forcedJob) {
     forcedJob.assignedCreepsIds.push(creep.name);
     UpdateJobById(forcedJob.id, forcedJob, forcedJob.roomName);
-  
+
     creepMem.jobId = forcedJob.id;
     UpdateCreepMemory(creep.name, creepMem);
     return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -194,7 +194,14 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
                 "repair",
                 "dismantle",
               ]
-            : ["transfer", "dismantle", "build", "repair", "dismantle","upgrade"]
+            : [
+                "transfer",
+                "dismantle",
+                "build",
+                "repair",
+                "dismantle",
+                "upgrade",
+              ]
         ).response;
         break;
       case "transferring":
@@ -206,7 +213,14 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
           creepMem.commandRoom,
           true,
           creep.store.getUsedCapacity() < creep.store.getCapacity()
-            ? ["harvest", "dismantle", "build", "repair", "dismantle","upgrade"]
+            ? [
+                "harvest",
+                "dismantle",
+                "build",
+                "repair",
+                "dismantle",
+                "upgrade",
+              ]
             : ["dismantle", "build", "repair", "dismantle"]
         ).response;
         break;
@@ -218,19 +232,23 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
   if (jobs.length === 0)
     return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
 
-    const jobsGroupedByPrioritize:StringMap<Job[]> = {};
-    let highestPriorityJobsNumber:number = 99;
-    forEach(jobs, (j:Job) => {
-      const num = JobActionPriority[j.action];
-      if (highestPriorityJobsNumber > num) {
-        highestPriorityJobsNumber = num;
-      }
+  const jobsGroupedByPrioritize: StringMap<Job[]> = {};
+  let highestPriorityJobsNumber = 99;
+  forEach(jobs, (j: Job) => {
+    const num = JobActionPriority[j.action];
+    if (highestPriorityJobsNumber > num) {
+      highestPriorityJobsNumber = num;
+    }
 
-      if (isUndefined(jobsGroupedByPrioritize[num])) jobsGroupedByPrioritize[num]=[];
-      jobsGroupedByPrioritize[num].push(j);
-    });
+    if (isUndefined(jobsGroupedByPrioritize[num]))
+      jobsGroupedByPrioritize[num] = [];
+    jobsGroupedByPrioritize[num].push(j);
+  });
 
-  const closestJob: Job = GetClosestJob(jobsGroupedByPrioritize[highestPriorityJobsNumber], creep.pos).response;
+  const closestJob: Job = GetClosestJob(
+    jobsGroupedByPrioritize[highestPriorityJobsNumber],
+    creep.pos
+  ).response;
   closestJob.assignedCreepsIds.push(creep.name);
   UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
 

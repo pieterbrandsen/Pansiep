@@ -104,10 +104,19 @@ type CreepTypes =
   | "claim"
   | "none";
 
+interface BaseStructure {
+  pos: RoomPosition;
+  type: StructureConstant;
+}
+
 interface RoomMemory {
   spawnQueue: CreepTypes[];
   jobs: Job[];
-  lastControllerLevelAtRoomPlanner: number;
+
+  // Base
+  lastControllerLevelAtRoomPlanner?: number;
+  base?: string[];
+
   isNotSeenSince?: number;
 }
 

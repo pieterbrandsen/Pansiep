@@ -22,6 +22,10 @@ export const WalkableStructureTypes: StructureConstant[] = [
   STRUCTURE_RAMPART,
 ];
 
+// export const NonWalkableStructureTypes: StructureConstant[] = [
+
+// ]
+
 export const TrackedIntents = ["destroy"];
 
 export const ControllerEnergyStructureRange = 2;

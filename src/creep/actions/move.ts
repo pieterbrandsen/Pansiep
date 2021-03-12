@@ -1,3 +1,4 @@
+import { UnassignJob } from "../../room/jobs/handler";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { CreateRoomPosition } from "../../utils/helper";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
@@ -19,7 +20,7 @@ export const ExecuteMove = FuncWrapper(function ExecuteMove(
     ? CreateRoomPosition(job.position).response
     : new RoomPosition(25, 25, job.roomName);
 
-  if (
+  switch (
     creep.moveTo(targetPos, {
       visualizePathStyle: {
         fill: "transparent",
@@ -28,9 +29,16 @@ export const ExecuteMove = FuncWrapper(function ExecuteMove(
         strokeWidth: 0.15,
         opacity: 0.1,
       },
-    }) === OK
+    })
   ) {
-    creep.say("move");
+    case OK:
+      creep.say("move");
+      break;
+    case ERR_NO_PATH:
+      UnassignJob(job.id, creep.name, job.roomName);
+      break;
+    default:
+      break;
   }
 
   // creepMem.walkPath = GetPath(creep,targetPos).response;
