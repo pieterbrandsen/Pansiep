@@ -98,8 +98,8 @@ export const GetNextCreepType = FuncWrapper(function GetNextCreepType(
         MaxCreepsPerCreepType * 1.5
       )
         return FunctionReturnHelper(FunctionReturnCodes.OK, "pioneer");
+      return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
     }
-    return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
   }
 
   const possibleJobActionTypes: JobActionTypes[] = GetJobActionsWithCreepNeed(

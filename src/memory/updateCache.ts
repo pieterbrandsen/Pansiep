@@ -167,7 +167,7 @@ export const UpdateStructuresCache = FuncWrapper(
     forEach(Game.rooms, (room: Room) => {
       forEach(
         room.find(FIND_STRUCTURES, {
-          filter: { structureType: STRUCTURE_CONTAINER },
+          filter: (str:Structure) => {return str.structureType === STRUCTURE_CONTAINER || str.structureType ===  STRUCTURE_ROAD},
         }),
         (str: Structure) => {
           Game.structures[str.id] = str;

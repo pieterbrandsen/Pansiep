@@ -42,4 +42,6 @@ export const JobActionPriority: { [key in JobActionTypes]: number } = {
 export const MaxCreepsPerCreepType = 7;
 
 // Timers
-export const RoomPlannerDelay = 1;
+export const RoomSourcePlannerDelay = 25;
+export const RoomControllerPlannerDelay = 500;
+export const RoomBasePlannerDelay = 5000;

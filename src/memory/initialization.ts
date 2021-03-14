@@ -11,6 +11,7 @@ import { TrackedIntents as TrackedStructureIntents } from "../utils/constants/st
 import { TrackedIntents as TrackedCreepIntents } from "../utils/constants/creep";
 import { GetCreep, GetType as GetCreepType } from "../creep/helper";
 import { GetRoom } from "../room/helper";
+import { TryToExecuteRoomPlanner } from "../room/planner";
 
 export const AreHeapVarsValid = FuncWrapper(
   function AreHeapVarsValid(): FunctionReturn {
@@ -152,6 +153,7 @@ export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
     forEach(csSites, (site: ConstructionSite) => {
       site.remove();
     });
+    TryToExecuteRoomPlanner(room,true)
   }
 
   Log(

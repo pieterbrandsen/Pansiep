@@ -104,6 +104,7 @@ type CreepTypes =
   | "claim"
   | "none";
 
+type BaseTypes = "hearth" | "extension" | "lab";
 interface BaseStructure {
   pos: RoomPosition;
   type: StructureConstant;
@@ -115,7 +116,11 @@ interface RoomMemory {
 
   // Base
   lastControllerLevelAtRoomPlanner?: number;
-  base?: string[];
+  base?: {
+    hearth?: RoomPosition;
+    lab?: RoomPosition;
+    extension: RoomPosition[];
+  };
 
   isNotSeenSince?: number;
 }

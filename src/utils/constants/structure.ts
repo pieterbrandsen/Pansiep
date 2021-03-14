@@ -11,6 +11,7 @@ export const CachedStructureTypes: StructureConstant[] = [
   STRUCTURE_STORAGE,
   STRUCTURE_TERMINAL,
   STRUCTURE_TOWER,
+  STRUCTURE_ROAD,
 ];
 export const DangerousStructureTypes: StructureConstant[] = [
   STRUCTURE_SPAWN,
