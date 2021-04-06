@@ -1,9 +1,11 @@
+import { isUndefined } from "lodash";
 import {
   DeleteJobById,
   AssignNewJobForCreep,
   UnassignJob,
   UpdateJobById,
-} from "../../room/jobs";
+  SwitchCreepSavedJobIds,
+} from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { GetUsedCapacity } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
@@ -40,10 +42,14 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
       break;
     case ERR_FULL:
       UnassignJob(job.id, creep.name, job.roomName);
-      AssignNewJobForCreep(
-        creep,
-        creepMem.type === "transferring" ? ["transfer"] : undefined
-      );
+      if (isUndefined(creepMem.secondJobId)) {
+        AssignNewJobForCreep(
+          creep,
+          creepMem.type === "transferring" ? ["transfer"] : undefined
+        );
+      } else {
+        SwitchCreepSavedJobIds(creep.name);
+      }
       break;
     case ERR_NOT_IN_RANGE:
       ExecuteMove(creep, job);

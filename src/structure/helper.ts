@@ -1,5 +1,6 @@
 import { isUndefined } from "lodash";
-import { CreateBuildJob } from "../room/jobs";
+import { CreateBuildJob } from "../room/jobs/create";
+import { GetStructuresInRange } from "../room/reading";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
@@ -11,6 +12,7 @@ import { ExecuteLab } from "./types/lab";
 import { ExecuteLink } from "./types/link";
 import { ExecuteNuker } from "./types/nuker";
 import { ExecuteObserver } from "./types/observer";
+import { ExecuteRoad } from "./types/road";
 import { ExecuteSpawn } from "./types/spawn";
 import { ExecuteStorage } from "./types/storage";
 import { ExecuteTerminal } from "./types/terminal";
@@ -63,18 +65,22 @@ export const BuildStructure = FuncWrapper(function BuildStructure(
   structureType: StructureConstant,
   hasPriority = false
 ): FunctionReturn {
-  const createConstructionSite = room.createConstructionSite(
-    pos,
-    structureType
-  );
-  if (createConstructionSite !== OK)
-    return FunctionReturnHelper(
-      FunctionReturnCodes.NOT_MODIFIED,
-      createConstructionSite
-    );
-
-  CreateBuildJob(room, pos, structureType, hasPriority);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
+  switch (room.createConstructionSite(pos, structureType)) {
+    case OK:
+      CreateBuildJob(room, pos, structureType, hasPriority);
+      return FunctionReturnHelper(FunctionReturnCodes.OK);
+    case ERR_INVALID_TARGET:
+      if (
+        (GetStructuresInRange(pos, 0, room, [structureType])
+          .response as RoomPosition[]).length > 0
+      ) {
+        return FunctionReturnHelper(FunctionReturnCodes.OK);
+      }
+      break;
+    default:
+      break;
+  }
+  return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
 });
 
 export const ExecuteStructure = FuncWrapper(function ExecuteStructure(
@@ -116,6 +122,9 @@ export const ExecuteStructure = FuncWrapper(function ExecuteStructure(
       break;
     case STRUCTURE_TOWER:
       ExecuteTower(str as StructureTower);
+      break;
+    case STRUCTURE_ROAD:
+      ExecuteRoad(str as StructureRoad);
       break;
     default:
       break;

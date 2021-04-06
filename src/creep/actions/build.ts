@@ -6,7 +6,7 @@ import {
   AssignNewJobForCreep,
   DeleteJobById,
   UnassignJob,
-} from "../../room/jobs";
+} from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { GetCreepMemory } from "../helper";
 
@@ -24,13 +24,15 @@ export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
       creep.say("build");
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
-      UnassignJob(job.id, creep.name, job.roomName);
-      AssignNewJobForCreep(
-        creep,
-        creepMem.type === "work" || creepMem.type === "pioneer"
-          ? ["withdraw", "harvest"]
-          : ["withdraw"]
-      );
+      if (
+        AssignNewJobForCreep(
+          creep,
+          creepMem.type === "work" || creepMem.type === "pioneer"
+            ? ["withdraw", "harvest"]
+            : ["withdraw"]
+        ).code === FunctionReturnCodes.OK
+      )
+        UnassignJob(job.id, creep.name, job.roomName);
       break;
     case ERR_NOT_IN_RANGE:
       ExecuteMove(creep, job);

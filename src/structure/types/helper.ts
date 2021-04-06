@@ -1,14 +1,13 @@
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
+import { GetAllJobs, GetJobById } from "../../room/jobs/handler";
 import {
-  GetJobById,
-  GetJobs,
   CreateRepairJob,
+  CreateWithdrawJob,
   CreateTransferJob,
   CreateUpgradeJob,
-  CreateWithdrawJob,
-} from "../../room/jobs";
+} from "../../room/jobs/create";
 
 export const IsStructureDamaged = FuncWrapper(function IsStructureDamaged(
   str: Structure
@@ -141,10 +140,19 @@ export const TryToCreateTransferJob = FuncWrapper(
 export const TryToCreateUpgradeJob = FuncWrapper(function TryToCreateUpgradeJob(
   room: Room
 ): FunctionReturn {
-  const jobs: Job[] = GetJobs(room.name, ["build", "dismantle", "upgrade"])
-    .response;
+  const spendJobs: Job[] = GetAllJobs(room.name, [
+    "build",
+    "dismantle",
+    "upgrade",
+  ]).response;
+  const upgradeJobs: Job[] = spendJobs.filter((j) => j.action === "upgrade");
 
-  if (jobs.length === 0) {
+  if (
+    upgradeJobs.length === 0 &&
+    (room.controller as StructureController).ticksToDowngrade < 10 * 1000
+  ) {
+    CreateUpgradeJob(room, true);
+  } else if (spendJobs.length === 0) {
     CreateUpgradeJob(room);
     return FunctionReturnHelper(FunctionReturnCodes.CREATED);
   }

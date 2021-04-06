@@ -64,7 +64,7 @@ type JobActionTypes =
   | "transferSource"
   | "withdraw"
   | "withdrawController"
-  | "harvest" // TODO Group a source/controller in a object and ?
+  | "harvest"
   | "build"
   | "repair"
   | "dismantle"
@@ -104,10 +104,25 @@ type CreepTypes =
   | "claim"
   | "none";
 
+type BaseTypes = "hearth" | "extension" | "lab";
+interface BaseStructure {
+  pos: RoomPosition;
+  type: StructureConstant;
+}
+
 interface RoomMemory {
-  isNotSeenSince?: number;
   spawnQueue: CreepTypes[];
   jobs: Job[];
+
+  // Base
+  lastControllerLevelAtRoomPlanner?: number;
+  base?: {
+    hearth?: RoomPosition;
+    lab?: RoomPosition;
+    extension: RoomPosition[];
+  };
+
+  isNotSeenSince?: number;
 }
 
 interface CreepMemory {
@@ -117,6 +132,7 @@ interface CreepMemory {
   walkPath?: PathStep[];
   isNotSeenSince?: number;
   jobId?: string;
+  secondJobId?: string;
 }
 
 interface StructureMemory {

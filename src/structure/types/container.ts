@@ -20,11 +20,11 @@ export const ExecuteContainer = FuncWrapper(function ExecuteContainer(
     str.room.controller &&
     str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)
   ) {
-    TryToCreateTransferJob(str, 75, RESOURCE_ENERGY, false, "transfer");
-    TryToCreateWithdrawJob(str, 5);
+    TryToCreateWithdrawJob(str, 0, RESOURCE_ENERGY, "withdrawController");
+    TryToCreateTransferJob(str, 100, RESOURCE_ENERGY);
   } else if (sourcesInRange.length > 0) {
-    TryToCreateTransferJob(str, 75, RESOURCE_ENERGY, false, "transferSource");
-    TryToCreateWithdrawJob(str, 5);
+    TryToCreateWithdrawJob(str, 0);
+    TryToCreateTransferJob(str, 100, RESOURCE_ENERGY, false, "transferSource");
   } else {
     TryToCreateWithdrawJob(str, 50);
   }

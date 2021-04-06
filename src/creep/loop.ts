@@ -10,7 +10,7 @@ import { CreepStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
-import { AssignNewJobForCreep } from "../room/jobs";
+import { AssignNewJobForCreep } from "../room/jobs/handler";
 
 export const RunCreep = FuncWrapper(function RunCreep(
   name: string

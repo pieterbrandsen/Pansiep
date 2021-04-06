@@ -22,10 +22,11 @@ import {
   DeleteJobById,
   UpdateJobById,
   GetJobById,
-  CreateMoveJob,
-} from "../room/jobs";
+  UnassignJob,
+} from "../room/jobs/handler";
 import { GetConstructionSitesInRange } from "../room/reading";
 import { GetRoom } from "../room/helper";
+import { CreateMoveJob } from "../room/jobs/create";
 
 export const TryToCreateMoveJob = FuncWrapper(function TryToCreateMoveJob(
   jobId: Id<Job>,
@@ -60,10 +61,22 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
       ) {
         newCacheArr.push(obj);
 
-        if (isUndefined(roomObject[obj.id].isNotSeenSince))
+        if (isUndefined(roomObject[obj.id].isNotSeenSince)) {
           // eslint-disable-next-line no-param-reassign
           roomObject[obj.id].isNotSeenSince = Game.time;
-        else if (
+
+          const firstJobId: Id<Job> | undefined = roomObject[obj.id]
+            .jobId as Id<Job>;
+          if (firstJobId) {
+            UnassignJob(firstJobId, obj.id, key);
+          }
+          const secondJobId: Id<Job> | undefined = (roomObject[
+            obj.id
+          ] as CreepMemory).secondJobId as Id<Job>;
+          if (secondJobId) {
+            UnassignJob(secondJobId, obj.id, key);
+          }
+        } else if (
           (roomObject[obj.id].isNotSeenSince as number) +
             SaveUnloadedObjectForAmountTicks <=
           Game.time
@@ -154,7 +167,12 @@ export const UpdateStructuresCache = FuncWrapper(
     forEach(Game.rooms, (room: Room) => {
       forEach(
         room.find(FIND_STRUCTURES, {
-          filter: { structureType: STRUCTURE_CONTAINER },
+          filter: (str: Structure) => {
+            return (
+              str.structureType === STRUCTURE_CONTAINER ||
+              str.structureType === STRUCTURE_ROAD
+            );
+          },
         }),
         (str: Structure) => {
           Game.structures[str.id] = str;
