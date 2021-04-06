@@ -21,7 +21,7 @@ export const GetStructuresInRange = FuncWrapper(function GetStructuresInRange(
   pos: RoomPosition,
   range: number,
   room: Room,
-  filterOnStrType?: string[]
+  filterOnStrType?: StructureConstant[]
 ): FunctionReturn {
   const structures = room
     .lookForAtArea(

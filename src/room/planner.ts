@@ -1,18 +1,10 @@
-import {
-  forEach,
-  intersection,
-  intersectionBy,
-  intersectionWith,
-  isEqual,
-  isUndefined,
-} from "lodash";
+import { forEach, intersectionWith, isUndefined } from "lodash";
 import { BuildStructure } from "../structure/helper";
 import { FunctionReturnCodes, Username } from "../utils/constants/global";
 import {
   RoomBasePlannerDelay,
   RoomControllerPlannerDelay,
   RoomSourcePlannerDelay,
-  VisualDisplayLevels,
 } from "../utils/constants/room";
 import { ExecuteEachTick } from "../utils/helper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
@@ -26,7 +18,6 @@ import {
   GetBestEnergyStructurePosAroundPosition,
   GetTerrainInRange,
 } from "./reading";
-import { AddCircleWPos, AddTextWCoords, AddTextWPos } from "./visuals";
 
 export const Sources = FuncWrapper(function Sources(
   room: Room
@@ -105,7 +96,10 @@ export const GetBaseHearthLocation = FuncWrapper(function GetBaseHearthLocation(
 });
 
 export const GetExtensionPartOfBase = FuncWrapper(
-  function GetExtensionPartOfBase(pos: RoomPosition): FunctionReturn {
+  function GetExtensionPartOfBase(
+    pos: RoomPosition,
+    filterOnStrType?: StructureConstant[]
+  ): FunctionReturn {
     const extension: BaseStructure = {
       type: STRUCTURE_EXTENSION,
       pos: new RoomPosition(pos.x, pos.y, pos.roomName),
@@ -174,13 +168,16 @@ export const GetExtensionPartOfBase = FuncWrapper(
       road6,
       road7,
       road8,
-    ];
+    ].filter((s) =>
+      filterOnStrType ? filterOnStrType.includes(s.type) : true
+    );
     return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
   }
 );
 
 export const GetLabPartOfBase = FuncWrapper(function GetLabPartOfBase(
-  pos: RoomPosition
+  pos: RoomPosition,
+  filterOnStrType?: StructureConstant[]
 ): FunctionReturn {
   const lab: BaseStructure = {
     type: STRUCTURE_LAB,
@@ -260,12 +257,13 @@ export const GetLabPartOfBase = FuncWrapper(function GetLabPartOfBase(
     road3,
     road4,
     road5,
-  ];
+  ].filter((s) => (filterOnStrType ? filterOnStrType.includes(s.type) : true));
   return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
 });
 
 export const GetHearthOfBase = FuncWrapper(function GetHearthOfBase(
-  pos: RoomPosition
+  pos: RoomPosition,
+  filterOnStrType?: StructureConstant[]
 ): FunctionReturn {
   const link: BaseStructure = {
     type: STRUCTURE_LINK,
@@ -485,7 +483,7 @@ export const GetHearthOfBase = FuncWrapper(function GetHearthOfBase(
     road27,
     road28,
     road29,
-  ];
+  ].filter((s) => (filterOnStrType ? filterOnStrType.includes(s.type) : true));
   return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
 });
 
@@ -496,7 +494,7 @@ export const DoesPositionsOfBaseFit = FuncWrapper(
     blackListedPositions?: RoomPosition[]
   ): FunctionReturn {
     let doesFit = true;
-    for (let i = 0; i < positions.length; i++) {
+    for (let i = 0; i < positions.length; i += 1) {
       const pos = positions[i];
       const terrain: RoomPosition[] = GetTerrainInRange(pos, 0, room, ["wall"])
         .response;
@@ -604,22 +602,23 @@ export const GetCompleteBasePlanned = FuncWrapper(
     let usedPositions: RoomPosition[] = [];
     const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
     if (isUndefined(mem.base)) mem.base = { extension: [] };
-    for (let i = 0; i < positions.length; i++) {
+    for (let i = 0; i < positions.length; i += 1) {
       const pos = positions[i];
-      const baseStructures = GetHearthOfBase(pos).response.filter(
-        (s) => s.type !== STRUCTURE_ROAD
-      );
+      const baseStructures: BaseStructure[] = GetHearthOfBase(pos, [
+        STRUCTURE_ROAD,
+      ]).response;
       if (
         mem.base &&
         DoesPositionsOfBaseFit(
           room,
-          baseStructures.map((i) => i.pos),
+          baseStructures.map((s) => s.pos),
           usedPositions
         ).code === FunctionReturnCodes.OK
       ) {
-        usedPositions = usedPositions.concat(
-          baseStructures.map((s: BaseStructure) => s.pos)
+        const baseStructurePositions = baseStructures.map(
+          (s: BaseStructure) => s.pos
         );
+        usedPositions = usedPositions.concat(baseStructurePositions);
         mem.base.hearth = pos;
         break;
       }
@@ -633,11 +632,12 @@ export const GetCompleteBasePlanned = FuncWrapper(
         5,
         { n: 5, e: 5, s: 5, w: 6 }
       ).response;
-      for (let i = 0; i < labPositions.length; i++) {
+      for (let i = 0; i < labPositions.length; i += 1) {
         const pos = labPositions[i];
         const labStructures: BaseStructure[] = GetLabPartOfBase(
-          pos
-        ).response.filter((s) => s.type !== STRUCTURE_ROAD);
+          pos,
+          [STRUCTURE_ROAD]
+        ).response;
         if (
           DoesPositionsOfBaseFit(
             room,
@@ -663,7 +663,7 @@ export const GetCompleteBasePlanned = FuncWrapper(
         4,
         { n: 5, e: 4, s: 5, w: 5 }
       ).response;
-      for (let i = 0; i < hearthExtensionPositions.length; i++) {
+      for (let i = 0; i < hearthExtensionPositions.length; i += 1) {
         if (mem.base.extension.length === 12) {
           break;
         }
@@ -694,11 +694,11 @@ export const GetCompleteBasePlanned = FuncWrapper(
               3,
               3
             ).response.filter((s) => s.type !== STRUCTURE_ROAD);
-            for (let j = 0; j < extensionPositions.length; j++) {
-              const pos = extensionPositions[j];
-              extensionStructures = GetExtensionPartOfBase(pos).response.filter(
-                (s) => s.type !== STRUCTURE_ROAD
-              );
+            for (let j = 0; j < extensionPositions.length; j += 1) {
+              const posJ = extensionPositions[j];
+              extensionStructures = GetExtensionPartOfBase(posJ, [
+                STRUCTURE_ROAD,
+              ]).response;
               if (
                 DoesPositionsOfBaseFit(
                   room,
@@ -709,7 +709,7 @@ export const GetCompleteBasePlanned = FuncWrapper(
                 usedPositions = usedPositions.concat(
                   extensionStructures.map((s: BaseStructure) => s.pos)
                 );
-                mem.base.extension.push(pos);
+                mem.base.extension.push(posJ);
                 if (mem.base.extension.length === 12) {
                   break;
                 }
@@ -744,20 +744,23 @@ export const GetBaseBuild = FuncWrapper(function GetBaseBuild(
         mem.base.hearth
       ).response;
       forEach(hearthBaseStructures, (str: BaseStructure) => {
-          BuildStructure(room, str.pos, str.type);
+        BuildStructure(room, str.pos, str.type);
       });
     }
     const controllerLevel = room.controller.level;
-    if (mem.base.lab && controllerLevel >=6) {
-      const labBaseStructures: BaseStructure[] = GetLabPartOfBase(
-        mem.base.lab
-      ).response;
+    if (mem.base.lab && controllerLevel >= 6) {
+      const labBaseStructures: BaseStructure[] = GetLabPartOfBase(mem.base.lab)
+        .response;
       forEach(labBaseStructures, (str: BaseStructure) => {
         BuildStructure(room, str.pos, str.type);
       });
     }
 
-    for (let i = 0; i < (CONTROLLER_STRUCTURES["extension"][controllerLevel] / 5); i++) {
+    for (
+      let i = 0;
+      i < CONTROLLER_STRUCTURES.extension[controllerLevel] / 5;
+      i += 1
+    ) {
       const extensionPartPos = mem.base.extension[i];
       const extensionBaseStructures: BaseStructure[] = GetExtensionPartOfBase(
         extensionPartPos
@@ -774,28 +777,39 @@ export const ExecuteBasePlanner = FuncWrapper(function ExecuteRoomPlanner(
   room: Room
 ): FunctionReturn {
   GetBasePlanned(room);
-    GetBaseBuild(room);
+  GetBaseBuild(room);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
 export const TryToExecuteRoomPlanner = FuncWrapper(
-  function TryToExecuteRoomPlanner(room: Room,forceExecute = false): FunctionReturn {
-    if (ExecuteEachTick(RoomSourcePlannerDelay,forceExecute).response) {
+  function TryToExecuteRoomPlanner(
+    room: Room,
+    forceExecute = false
+  ): FunctionReturn {
+    if (ExecuteEachTick(RoomSourcePlannerDelay, forceExecute).response) {
       Sources(room);
     }
     if (
-      room.controller && (room.controller.owner
+      room.controller &&
+      (room.controller.owner
         ? room.controller.owner.username === Username
         : false)
     ) {
-      if (ExecuteEachTick(RoomControllerPlannerDelay,forceExecute).response) {
+      if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
         Controller(room);
       }
-      const mem: RoomMemory= GetRoomMemoryUsingName(room.name).response;
+      const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
       const controllerLevel = room.controller.level;
-      const lastControllerLevel = mem.lastControllerLevelAtRoomPlanner ? mem.lastControllerLevelAtRoomPlanner : 0;
-      if (ExecuteEachTick(RoomBasePlannerDelay, forceExecute ? forceExecute : lastControllerLevel < controllerLevel).response) {
+      const lastControllerLevel = mem.lastControllerLevelAtRoomPlanner
+        ? mem.lastControllerLevelAtRoomPlanner
+        : 0;
+      if (
+        ExecuteEachTick(
+          RoomBasePlannerDelay,
+          forceExecute || lastControllerLevel < controllerLevel
+        ).response
+      ) {
         ExecuteBasePlanner(room);
       }
       mem.lastControllerLevelAtRoomPlanner = controllerLevel;

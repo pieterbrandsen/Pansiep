@@ -123,9 +123,9 @@ export const ExecuteStructure = FuncWrapper(function ExecuteStructure(
     case STRUCTURE_TOWER:
       ExecuteTower(str as StructureTower);
       break;
-      case STRUCTURE_ROAD:
-        ExecuteRoad(str as StructureRoad);
-        break;
+    case STRUCTURE_ROAD:
+      ExecuteRoad(str as StructureRoad);
+      break;
     default:
       break;
   }

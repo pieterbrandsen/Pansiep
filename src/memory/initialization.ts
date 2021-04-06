@@ -153,7 +153,7 @@ export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
     forEach(csSites, (site: ConstructionSite) => {
       site.remove();
     });
-    TryToExecuteRoomPlanner(room,true)
+    TryToExecuteRoomPlanner(room, true);
   }
 
   Log(

@@ -3,10 +3,14 @@ import { FunctionReturnHelper } from "./statusGenerator";
 import { FuncWrapper } from "./wrapper";
 
 export const ExecuteEachTick = FuncWrapper(function ExecuteEachTick(
-  tickAmount: number, forceTrue:boolean = false
+  tickAmount: number,
+  forceTrue = false
 ): FunctionReturn {
-  const executeThisTick:boolean = Game.time % tickAmount === 0;
-  return FunctionReturnHelper(FunctionReturnCodes.OK, forceTrue ? forceTrue : executeThisTick);
+  const executeThisTick: boolean = Game.time % tickAmount === 0;
+  return FunctionReturnHelper(
+    FunctionReturnCodes.OK,
+    forceTrue || executeThisTick
+  );
 });
 
 export const CreateRoomPosition = FuncWrapper(function CreateRoomPosition(
