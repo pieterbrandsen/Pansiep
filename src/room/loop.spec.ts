@@ -2,6 +2,7 @@ import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { RunRoom, Run } from "./loop";
 
+jest.mock("./visuals");
 jest.mock("../memory/stats");
 jest.mock("../structure/loop");
 jest.mock("../creep/loop");
@@ -34,15 +35,15 @@ describe("Room loop", () => {
   });
   describe("RunRoom method", () => {
     it("should return OK", () => {
-      const room = mockInstanceOf<Room>();
+      const room = mockInstanceOf<Room>({ name: "room" });
       Game.rooms = { room };
       const runRoom = RunRoom("room");
-      expect(runRoom.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(runRoom.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return NO_CONTENT", () => {
       Game.rooms = {};
       const runRoom = RunRoom("room");
-      expect(runRoom.code === FunctionReturnCodes.NO_CONTENT).toBeTruthy();
+      expect(runRoom.code).toBe(FunctionReturnCodes.NO_CONTENT);
     });
   });
   describe("Run method", () => {
@@ -54,11 +55,11 @@ describe("Room loop", () => {
       Memory.cache.rooms.data = rooms;
 
       let run = Run();
-      expect(run.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(run.code).toBe(FunctionReturnCodes.OK);
 
       Memory.cache.rooms.data = [];
       run = Run();
-      expect(run.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(run.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });

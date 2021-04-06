@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash";
+import { forEach, isUndefined } from "lodash";
 import { FunctionReturnCodes, Username } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
@@ -30,6 +30,14 @@ export const GetRoomMemoryUsingName = FuncWrapper(
   }
 );
 
+export const UpdateRoomMemory = FuncWrapper(function UpdateRoomMemory(
+  mem: RoomMemory,
+  name: string
+): FunctionReturn {
+  Memory.rooms[name] = mem;
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
 export const IsMyReservedRoom = FuncWrapper(function IsMyReservedRoom(
   room: Room
 ): FunctionReturn {
@@ -47,4 +55,18 @@ export const IsMyReservedRoom = FuncWrapper(function IsMyReservedRoom(
 export const GetRoomIds = FuncWrapper(function GetRoomIds(): FunctionReturn {
   const roomIds: string[] = Memory.cache.rooms.data;
   return FunctionReturnHelper(FunctionReturnCodes.OK, roomIds);
+});
+
+export const GetObjectsFromIDs = FuncWrapper(function GetObjectsFromIDs<T>(
+  IDs: string[]
+): FunctionReturn {
+  const objects: T[] = [];
+  forEach(IDs, (id: string) => {
+    const object: T | null = Game.getObjectById(id);
+    if (object !== null) {
+      objects.push(object);
+    }
+  });
+
+  return FunctionReturnHelper(FunctionReturnCodes.OK, objects);
 });

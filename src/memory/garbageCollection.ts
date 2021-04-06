@@ -4,36 +4,47 @@ import { ResetRoomStats } from "./stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { GetAllJobs, UpdateJobById, UpdateJobList } from "../room/jobs/handler";
 
 export const RemoveCreep = FuncWrapper(function RemoveCreep(
-  id: string,
+  name: string,
   roomName: string
 ): FunctionReturn {
-  delete Memory.creeps[id];
-  Memory.cache.creeps.data[roomName] = remove(
-    Memory.cache.creeps.data[roomName],
-    (c) => c.id
-  );
+  const jobs: Job[] = GetAllJobs(roomName).response;
+  const job = jobs.find((j) => j.assignedCreepsIds.includes(name));
+  if (job) {
+    job.assignedCreepsIds = remove(job.assignedCreepsIds, name);
+    UpdateJobById(job.id, job, roomName);
+  }
+  remove(jobs, (j) => j.objId === name);
+  UpdateJobList(roomName, jobs);
+
+  delete Memory.creeps[name];
 
   Log(
     LogTypes.Debug,
     "memory/garbageCollection:RemoveCreep",
     "Deleted Creep memory",
-    id
+    name
   );
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
 export const RemoveStructure = FuncWrapper(function RemoveStructure(
-  id: string,
+  id: Id<Structure>,
   roomName: string
 ): FunctionReturn {
+  const jobs: Job[] = GetAllJobs(roomName).response;
+  const job = jobs.find((j) => j.assignedStructuresIds.includes(id));
+  if (job) {
+    job.assignedStructuresIds = remove(job.assignedStructuresIds, id);
+    UpdateJobById(job.id, job, roomName);
+  }
+  remove(jobs, (j) => j.objId === id);
+  UpdateJobList(roomName, jobs);
+
   delete Memory.structures[id];
-  Memory.cache.structures.data[roomName] = remove(
-    Memory.cache.structures.data[roomName],
-    (s) => s.id
-  );
 
   Log(
     LogTypes.Debug,
@@ -50,21 +61,16 @@ export const RemoveRoom = FuncWrapper(function RemoveRoom(
 ): FunctionReturn {
   forOwn(Memory.structures, (str: StructureMemory, key: string) => {
     if (str.room === roomName) {
-      RemoveStructure(key, roomName);
+      RemoveStructure(key as Id<Structure>, roomName);
     }
   });
   forOwn(Memory.creeps, (crp: CreepMemory, key: string) => {
     if (crp.commandRoom === roomName) {
-      RemoveCreep(key, roomName);
+      RemoveCreep(key as Id<Creep>, roomName);
     }
   });
 
   delete Memory.rooms[roomName];
-  Memory.cache.rooms.data = remove(
-    Memory.cache.rooms.data,
-    (s) => s === roomName
-  );
-
   ResetRoomStats(roomName);
 
   Log(

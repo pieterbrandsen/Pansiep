@@ -12,7 +12,12 @@ import {
   AddPoly,
   AddTextWPos,
   AddTextWCoords,
+  RoomVisuals,
 } from "./visuals";
+
+JSON.stringify = jest.fn(() => {
+  return "stringify";
+});
 
 jest.mock("../utils/config/room", () => {
   return {
@@ -30,6 +35,8 @@ describe("Visuals", () => {
             return 1;
           },
         },
+        gcl: { progress: 0, progressTotal: 0, level: 0 },
+        gpl: { progress: 0, progressTotal: 0, level: 0 },
       },
       true
     );
@@ -87,8 +94,8 @@ describe("Visuals", () => {
         VisualDisplayLevels.Info
       );
 
-      expect(addLineWPos.code === FunctionReturnCodes.OK).toBeTruthy();
-      expect(addLineWCoords.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(addLineWPos.code).toBe(FunctionReturnCodes.OK);
+      expect(addLineWCoords.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       const addLineWPos = AddLineWPos(
@@ -126,8 +133,8 @@ describe("Visuals", () => {
         VisualDisplayLevels.Info
       );
 
-      expect(addCircleWPos.code === FunctionReturnCodes.OK).toBeTruthy();
-      expect(addCircleWCoords.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(addCircleWPos.code).toBe(FunctionReturnCodes.OK);
+      expect(addCircleWCoords.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       const addCircleWPos = AddCircleWPos(room, pos1, VisualDisplayLevels.All);
@@ -166,8 +173,8 @@ describe("Visuals", () => {
         VisualDisplayLevels.Info
       );
 
-      expect(addRectWPos.code === FunctionReturnCodes.OK).toBeTruthy();
-      expect(addRectWCoords.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(addRectWPos.code).toBe(FunctionReturnCodes.OK);
+      expect(addRectWCoords.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       const addRectWPos = AddRectWPos(
@@ -209,8 +216,8 @@ describe("Visuals", () => {
         VisualDisplayLevels.Info
       );
 
-      expect(addPoly.code === FunctionReturnCodes.OK).toBeTruthy();
-      expect(addPoly2.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(addPoly.code).toBe(FunctionReturnCodes.OK);
+      expect(addPoly2.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       const addPoly = AddPoly(room, [pos1, pos2], VisualDisplayLevels.All);
@@ -249,8 +256,8 @@ describe("Visuals", () => {
         VisualDisplayLevels.Info
       );
 
-      expect(addTextWPos.code === FunctionReturnCodes.OK).toBeTruthy();
-      expect(addTextWCoords.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(addTextWPos.code).toBe(FunctionReturnCodes.OK);
+      expect(addTextWCoords.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return TARGET_IS_ON_DELAY_OR_OFF", () => {
       const addTextWPos = AddTextWPos(
@@ -273,6 +280,37 @@ describe("Visuals", () => {
       expect(
         addTextWCoords.code === FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
       ).toBeTruthy();
+    });
+  });
+  describe("RoomVisuals method", () => {
+    const room = mockInstanceOf<Room>({
+      name: "room",
+      visual: { text: jest.fn(), rect: jest.fn() },
+      controller: { level: 1, progress: 1, progressTotal: 10 },
+    });
+    it("should return OK", () => {
+      mockGlobal<Memory>(
+        "Memory",
+        {
+          creeps: {},
+          structures: {},
+          cache: {
+            structures: { data: { room: [] } },
+            creeps: { data: { room: [] } },
+          },
+        },
+        true
+      );
+      let roomVisuals = RoomVisuals(room);
+      expect(roomVisuals.code).toBe(FunctionReturnCodes.OK);
+
+      const room2 = mockInstanceOf<Room>({
+        name: "room2",
+        visual: { text: jest.fn(), rect: jest.fn() },
+        controller: undefined,
+      });
+      roomVisuals = RoomVisuals(room2);
+      expect(roomVisuals.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });

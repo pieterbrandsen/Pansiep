@@ -1,3 +1,5 @@
+export const AverageValueOverAmountTicks = 1000;
+
 export const LogTypes: StringMap<LogType> = {
   None: { code: 0, value: { name: "None", color: "None" } },
   Error: { code: 10, value: { name: "Error", color: "Crimson" } },
@@ -15,6 +17,7 @@ export const FunctionReturnCodes = {
   NO_CONTENT: 204,
   NOT_MODIFIED: 205,
   NOT_MY_ROOM: 206,
+  NOT_FITTING: 207,
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
@@ -27,11 +30,10 @@ export const CacheNextCheckIncrement = {
   rooms: 50,
   structures: 50,
   creeps: 50,
+  jobs: 50,
 };
 
 export const SaveUnloadedObjectForAmountTicks = 500;
-
-export const AverageValueOverAmountTicks = 10000;
 
 export const StatsDigitCount =
   5 + AverageValueOverAmountTicks.toString().length;

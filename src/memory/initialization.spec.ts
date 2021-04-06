@@ -1,4 +1,4 @@
-import { mockGlobal } from "screeps-jest";
+import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import {
   AreCustomPrototypesInitialized,
@@ -45,7 +45,7 @@ describe("Initialize memory", () => {
       global.deleteCreepMemory = jest.fn();
 
       const areHeapVarsValid = AreHeapVarsValid();
-      expect(areHeapVarsValid.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(areHeapVarsValid.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return NO_CONTENT", () => {
       (global.help as unknown) = undefined;
@@ -58,7 +58,7 @@ describe("Initialize memory", () => {
   describe("InitializeHeapVars method", () => {
     it("should return OK", () => {
       const initializeHeapVars = InitializeHeapVars();
-      expect(initializeHeapVars.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(initializeHeapVars.code).toBe(FunctionReturnCodes.OK);
     });
   });
   describe("AreCustomPrototypesInitialized method", () => {
@@ -112,7 +112,7 @@ describe("Initialize memory", () => {
     });
     it("should return OK", () => {
       const initializeRoomMemory = InitializeRoomMemory("roomName");
-      expect(initializeRoomMemory.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(initializeRoomMemory.code).toBe(FunctionReturnCodes.OK);
       expect(Memory.rooms.roomName).not.toBeUndefined();
     });
   });
@@ -136,6 +136,10 @@ describe("Initialize memory", () => {
       Memory.creeps = {};
     });
     it("should return OK", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn().mockReturnValue(0),
+      });
+      Game.creeps = { id: creep };
       const initializeCreepMemory = InitializeCreepMemory("id", "roomName");
       expect(
         initializeCreepMemory.code === FunctionReturnCodes.OK
@@ -171,20 +175,26 @@ describe("Initialize memory", () => {
       Memory.cache.structures.data.roomName = [
         { id: "id", structureType: STRUCTURE_CONTROLLER },
       ];
-      const isStructureMemoryInitialized = IsStructureMemoryInitialized("id");
+      const isStructureMemoryInitialized = IsStructureMemoryInitialized(
+        "id" as Id<Structure>
+      );
       expect(
         isStructureMemoryInitialized.code === FunctionReturnCodes.OK
       ).toBeTruthy();
     });
     it("should return NO_CONTENT", () => {
-      let isStructureMemoryInitialized = IsStructureMemoryInitialized("id");
+      let isStructureMemoryInitialized = IsStructureMemoryInitialized(
+        "id" as Id<Structure>
+      );
       expect(
         isStructureMemoryInitialized.code === FunctionReturnCodes.NO_CONTENT
       ).toBeTruthy();
 
       InitializeStructureMemory("id", "roomName");
       (Memory.structures.id.room as unknown) = undefined;
-      isStructureMemoryInitialized = IsStructureMemoryInitialized("id");
+      isStructureMemoryInitialized = IsStructureMemoryInitialized(
+        "id" as Id<Structure>
+      );
       expect(
         isStructureMemoryInitialized.code === FunctionReturnCodes.NO_CONTENT
       ).toBeTruthy();
@@ -195,8 +205,12 @@ describe("Initialize memory", () => {
       InitializeGlobalMemory();
     });
     it("should return OK", () => {
+      const creep = mockInstanceOf<Creep>({
+        getActiveBodyparts: jest.fn().mockReturnValue(0),
+      });
+      Game.creeps = { id: creep };
       InitializeCreepMemory("id", "roomName");
-      Memory.cache.creeps.data.roomName = [{ id: "id", creepType: "None" }];
+      Memory.cache.creeps.data.roomName = [{ id: "id" }];
       const isCreepMemoryInitialized = IsCreepMemoryInitialized("id");
       expect(
         isCreepMemoryInitialized.code === FunctionReturnCodes.OK

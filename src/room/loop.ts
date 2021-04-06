@@ -7,6 +7,8 @@ import { RoomStatsPreProcessing, RoomStats } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { TryToExecuteRoomPlanner } from "./planner";
+import { RoomVisuals } from "./overviewVisual";
 
 export const RunRoom = FuncWrapper(function RunRoom(
   id: string
@@ -21,6 +23,9 @@ export const RunRoom = FuncWrapper(function RunRoom(
   RunStructures(id);
   RunCreeps(id);
   RoomStats(room);
+
+  TryToExecuteRoomPlanner(room);
+  RoomVisuals(room);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

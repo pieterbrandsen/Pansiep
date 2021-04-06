@@ -1,6 +1,7 @@
 import { mockGlobal, mockInstanceOf } from "screeps-jest";
 import { isUndefined } from "lodash";
 import {
+  GetObjectsFromIDs,
   GetRoom,
   GetRoomIds,
   GetRoomMemoryUsingName,
@@ -29,7 +30,7 @@ describe("Room helper", () => {
       Game.rooms = { room };
 
       const getRoom = GetRoom("room");
-      expect(getRoom.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getRoom.code).toBe(FunctionReturnCodes.OK);
       expect(getRoom.response === room).toBeTruthy();
     });
     it("should return NOT_FOUND", () => {
@@ -47,7 +48,7 @@ describe("Room helper", () => {
     it("should return OK", () => {
       const room = mockInstanceOf<Room>({ controller: { my: true } });
       const isMyOwnedRoom = IsMyOwnedRoom(room);
-      expect(isMyOwnedRoom.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(isMyOwnedRoom.code).toBe(FunctionReturnCodes.OK);
     });
     it("should return NOT_MY_ROOM", () => {
       const room = mockInstanceOf<Room>({ controller: { my: false } });
@@ -69,7 +70,7 @@ describe("Room helper", () => {
       mockGlobal<Memory>("Memory", { rooms: {} });
     });
     it("should return OK", () => {
-      const roomMemory = {};
+      const roomMemory = { jobs: [] };
       Memory.rooms = { room: roomMemory };
 
       const getRoomMemoryUsingName = GetRoomMemoryUsingName("room");
@@ -110,7 +111,7 @@ describe("Room helper", () => {
       });
 
       let isMyReservedRoom = IsMyReservedRoom(room);
-      expect(isMyReservedRoom.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(isMyReservedRoom.code).toBe(FunctionReturnCodes.OK);
 
       isMyReservedRoom = IsMyReservedRoom(room2);
       expect(
@@ -130,13 +131,30 @@ describe("Room helper", () => {
       Memory.cache.rooms.data = rooms;
 
       let getRoomIds = GetRoomIds();
-      expect(getRoomIds.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getRoomIds.code).toBe(FunctionReturnCodes.OK);
       expect(getRoomIds.response).toHaveLength(3);
 
       Memory.cache.rooms.data = [];
       getRoomIds = GetRoomIds();
-      expect(getRoomIds.code === FunctionReturnCodes.OK).toBeTruthy();
+      expect(getRoomIds.code).toBe(FunctionReturnCodes.OK);
       expect(getRoomIds.response).toHaveLength(0);
+    });
+  });
+  describe("GetObjectsFromIDs method", () => {
+    it("should return OK", () => {
+      Game.getObjectById = (key: string) => {
+        return Game.structures[key] ? Game.structures[key] : null;
+      };
+      const structure = mockInstanceOf<Structure>();
+      const structure2 = mockInstanceOf<Structure>();
+      const structure3 = mockInstanceOf<Structure>();
+      Game.structures = { structure, structure2, structure3 };
+
+      const getObjectsFromIDs = GetObjectsFromIDs<Structure>([
+        "structure",
+        "null",
+      ]);
+      expect(getObjectsFromIDs.code).toBe(FunctionReturnCodes.OK);
     });
   });
 });

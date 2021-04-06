@@ -1,7 +1,7 @@
-import { VisualLevel } from "../utils/config/room";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
+import { VisualLevel } from "../utils/config/room";
 
 export const ShouldVisualsBeDisplayed = FuncWrapper(
   function ShouldVisualsBeDisplayed(visualLevel: number): FunctionReturn {

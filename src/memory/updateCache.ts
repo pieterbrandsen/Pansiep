@@ -18,8 +18,28 @@ import { CachedStructureTypes } from "../utils/constants/structure";
 import { FuncWrapper } from "../utils/wrapper";
 import { RemoveCreep, RemoveRoom, RemoveStructure } from "./garbageCollection";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
+import {
+  DeleteJobById,
+  UpdateJobById,
+  GetJobById,
+  UnassignJob,
+} from "../room/jobs/handler";
+import { GetConstructionSitesInRange } from "../room/reading";
+import { GetRoom } from "../room/helper";
+import { CreateMoveJob } from "../room/jobs/create";
 
-type RoomObjTypes = StringMap<StructureCache[]> | StringMap<CreepCache[]>;
+export const TryToCreateMoveJob = FuncWrapper(function TryToCreateMoveJob(
+  jobId: Id<Job>,
+  roomName: string
+) {
+  if (GetJobById(jobId, roomName).code === FunctionReturnCodes.NOT_FOUND) {
+    CreateMoveJob(jobId, roomName);
+    return FunctionReturnHelper(FunctionReturnCodes.CREATED);
+  }
+  return FunctionReturnHelper(FunctionReturnCodes.OK);
+});
+
+type RoomObjTypes = StringMap<StructureCache[] | CreepCache[]>;
 export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
   currentCache: RoomObjTypes,
   newCache: RoomObjTypes,
@@ -27,6 +47,8 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
 ): FunctionReturn {
   const returnCache = newCache;
   Object.keys(currentCache).forEach((key) => {
+    const noVisionJobId = `move-25/25-${key}` as Id<Job>;
+
     if (!returnCache[key]) returnCache[key] = [];
     const newCacheArr = returnCache[key];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,12 +61,24 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
       ) {
         newCacheArr.push(obj);
 
-        if (isUndefined(roomObject[obj.id].isNotSeenSince))
+        if (isUndefined(roomObject[obj.id].isNotSeenSince)) {
           // eslint-disable-next-line no-param-reassign
           roomObject[obj.id].isNotSeenSince = Game.time;
-        else if (
+
+          const firstJobId: Id<Job> | undefined = roomObject[obj.id]
+            .jobId as Id<Job>;
+          if (firstJobId) {
+            UnassignJob(firstJobId, obj.id, key);
+          }
+          const secondJobId: Id<Job> | undefined = (roomObject[
+            obj.id
+          ] as CreepMemory).secondJobId as Id<Job>;
+          if (secondJobId) {
+            UnassignJob(secondJobId, obj.id, key);
+          }
+        } else if (
           (roomObject[obj.id].isNotSeenSince as number) +
-            SaveUnloadedObjectForAmountTicks <
+            SaveUnloadedObjectForAmountTicks <=
           Game.time
         ) {
           if ((roomObject[obj.id] as StructureMemory).room !== undefined)
@@ -56,6 +90,7 @@ export const ReturnCompleteCache = FuncWrapper(function ReturnCompleteCache(
         roomObject[obj.id] &&
         roomObject[obj.id].isNotSeenSince !== undefined
       ) {
+        DeleteJobById(noVisionJobId, key);
         // eslint-disable-next-line no-param-reassign
         delete roomObject[obj.id].isNotSeenSince;
       }
@@ -80,6 +115,7 @@ export const UpdateRoomsCache = FuncWrapper(
     forEach(Object.keys(Game.rooms), (key: string) => {
       if (IsRoomMemoryInitialized(key).code !== FunctionReturnCodes.OK)
         InitializeRoomMemory(key);
+
       cache.push(key);
     });
 
@@ -92,7 +128,7 @@ export const UpdateRoomsCache = FuncWrapper(
           roomMem.isNotSeenSince = Game.time;
         } else if (
           (roomMem.isNotSeenSince as number) +
-            SaveUnloadedObjectForAmountTicks * 2 <
+            SaveUnloadedObjectForAmountTicks * 2 <=
           Game.time
         ) {
           RemoveRoom(key);
@@ -128,17 +164,36 @@ export const UpdateStructuresCache = FuncWrapper(
       Game.time + CacheNextCheckIncrement.structures;
 
     const cache: StringMap<StructureCache[]> = {};
-    forOwn(Game.structures, (str: Structure, key: string) => {
-      let strMem = Memory.structures[key];
+    forEach(Game.rooms, (room: Room) => {
+      forEach(
+        room.find(FIND_STRUCTURES, {
+          filter: (str: Structure) => {
+            return (
+              str.structureType === STRUCTURE_CONTAINER ||
+              str.structureType === STRUCTURE_ROAD
+            );
+          },
+        }),
+        (str: Structure) => {
+          Game.structures[str.id] = str;
+        }
+      );
+    });
+
+    forOwn(Game.structures, (str: Structure, id: string) => {
+      let strMem = Memory.structures[id];
       if (CachedStructureTypes.includes(str.structureType)) {
-        if (IsStructureMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
-          InitializeStructureMemory(key, str.room.name);
-          strMem = Memory.structures[key];
+        if (
+          IsStructureMemoryInitialized(id as Id<Structure>).code !==
+          FunctionReturnCodes.OK
+        ) {
+          InitializeStructureMemory(id, str.room.name);
+          strMem = Memory.structures[id];
         }
 
         if (!cache[strMem.room]) cache[strMem.room] = [];
         cache[strMem.room].push({
-          id: key,
+          id,
           structureType: str.structureType,
         });
       }
@@ -175,15 +230,15 @@ export const UpdateCreepsCache = FuncWrapper(
       Game.time + CacheNextCheckIncrement.creeps;
 
     const cache: StringMap<CreepCache[]> = {};
-    forOwn(Game.creeps, (creep: Creep, key: string) => {
-      let creepMemory = Memory.creeps[key];
-      if (IsCreepMemoryInitialized(key).code !== FunctionReturnCodes.OK) {
-        InitializeCreepMemory(key, creep.room.name);
-        creepMemory = Memory.creeps[key];
+    forOwn(Game.creeps, (creep: Creep, name: string) => {
+      let creepMemory = Memory.creeps[name];
+      if (IsCreepMemoryInitialized(name).code !== FunctionReturnCodes.OK) {
+        InitializeCreepMemory(name, creep.room.name);
+        creepMemory = Memory.creeps[name];
       }
 
       if (!cache[creepMemory.commandRoom]) cache[creepMemory.commandRoom] = [];
-      cache[creepMemory.commandRoom].push({ id: key, creepType: "None" });
+      cache[creepMemory.commandRoom].push({ id: name });
     });
 
     const returnCompleteCache = ReturnCompleteCache(
@@ -206,10 +261,58 @@ export const UpdateCreepsCache = FuncWrapper(
   }
 );
 
+export const UpdateJobsCache = FuncWrapper(
+  function UpdateJobsCache(): FunctionReturn {
+    forOwn(Memory.rooms, (mem: RoomMemory, key: string) => {
+      const getRoom = GetRoom(key);
+      if (
+        isUndefined(mem.isNotSeenSince) &&
+        getRoom.code === FunctionReturnCodes.OK
+      ) {
+        const room: Room = getRoom.response;
+        for (let i = 0; i < mem.jobs.length; i += 1) {
+          const job = mem.jobs[i];
+          if (job.updateJobAtTick <= Game.time) {
+            let obj: Structure | ConstructionSite | Creep;
+            switch (job.action) {
+              case "build":
+                if (job.objId === "undefined" && job.position) {
+                  const pos: RoomPosition = job.position;
+                  const csSites: ConstructionSite[] = GetConstructionSitesInRange(
+                    pos,
+                    0,
+                    room
+                  ).response;
+                  if (csSites.length > 0) job.objId = csSites[0].id;
+                }
+                obj = Game.getObjectById(job.objId) as ConstructionSite;
+                if (obj) {
+                  job.energyRequired =
+                    (obj.progressTotal - obj.progress) / BUILD_POWER;
+                  job.updateJobAtTick =
+                    Game.time + CacheNextCheckIncrement.jobs;
+                  UpdateJobById(job.id, job, key);
+                } else {
+                  DeleteJobById(job.id, key);
+                  UpdateStructuresCache();
+                }
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }
+    });
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
 export const Update = FuncWrapper(function Update() {
   UpdateRoomsCache();
   UpdateStructuresCache();
   UpdateCreepsCache();
+  UpdateJobsCache();
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
