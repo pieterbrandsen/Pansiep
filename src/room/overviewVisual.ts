@@ -8,106 +8,120 @@ import { AddRectWCoords, AddTextWCoords } from "./visuals";
 export const RoomVisuals = FuncWrapper(function RoomVisuals(
   room: Room
 ): FunctionReturn {
-  AddRectWCoords(room, 1, 1, 9, 14, VisualDisplayLevels.Info, {
+  const textXPos = 1.3;
+  let topLeftPos = 1;
+  AddRectWCoords(room, topLeftPos, topLeftPos, 9, 14, VisualDisplayLevels.Info, {
     opacity: 0.65,
     fill: "Grey",
   });
 
   // Empire
-  AddTextWCoords(room, "Empire:", 1.3, 2, VisualDisplayLevels.Info, {
+  topLeftPos+=1;
+  AddTextWCoords(room, "Empire:", textXPos, topLeftPos, VisualDisplayLevels.Info, {
     align: "left",
     font: 1,
   });
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `GCL lvl: ${Game.gcl.level}`,
-    1.3,
-    3,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `GCL progress: ${(
       (Game.gcl.progress / Game.gcl.progressTotal) *
       100
     ).toFixed(2)}%`,
-    1.3,
-    4,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `GPL lvl: ${Game.gpl.level}`,
-    1.3,
-    5,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `GPL progress: ${(
       (Game.gpl.progress / Game.gpl.progressTotal) *
       100
     ).toFixed(2)}%`,
-    1.3,
-    6,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Structure count: ${Object.keys(Memory.structures).length}`,
-    1.3,
-    7,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Creep count: ${Object.keys(Memory.creeps).length}`,
-    1.3,
-    8,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
 
   // Room
-  AddTextWCoords(room, "Room:", 1.3, 10, VisualDisplayLevels.Info, {
+  topLeftPos+=2;
+  AddTextWCoords(room, "Room:", textXPos, 10, VisualDisplayLevels.Info, {
     align: "left",
     font: 1,
   });
+  topLeftPos+=1;
   if (room.controller) {
-    AddTextWCoords(
+  AddTextWCoords(
       room,
       `RCL lvl: ${room.controller.level}`,
-      1.3,
-      11,
+      textXPos,
+      topLeftPos,
       VisualDisplayLevels.Info,
       { align: "left" }
     );
-    AddTextWCoords(
+  topLeftPos+=1;
+  AddTextWCoords(
       room,
       `RCL progress: ${(
         (room.controller.progress / room.controller.progressTotal) *
         100
       ).toFixed(2)}%`,
-      1.3,
-      12,
+      textXPos,
+      topLeftPos,
       VisualDisplayLevels.Info,
       { align: "left" }
     );
   } else {
-    AddTextWCoords(
+  AddTextWCoords(
       room,
       `RCL: No controller`,
-      1.3,
-      11,
+      textXPos,
+      topLeftPos,
       VisualDisplayLevels.Info,
       { align: "left" }
     );
+    topLeftPos+=1;
   }
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Structure count: ${
@@ -115,11 +129,12 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
         ? Memory.cache.structures.data[room.name].length
         : 0
     }`,
-    1.3,
-    13,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
+  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Creep count: ${
@@ -127,8 +142,8 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
         ? Memory.cache.creeps.data[room.name].length
         : 0
     }`,
-    1.3,
-    14,
+    textXPos,
+    topLeftPos,
     VisualDisplayLevels.Info,
     { align: "left" }
   );
