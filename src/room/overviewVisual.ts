@@ -10,28 +10,34 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
 ): FunctionReturn {
   const defaultX = 1;
   const textXPos = defaultX + 0.3;
+  const titleTextStyle: TextStyle = {
+    align: "left",
+    font: 1,
+  };
+  const subTitleTextStyle: TextStyle = {
+    align: "left",
+    font: 0.9,
+  };
+  const textStyle:TextStyle = {
+    align: "left",
+  }
   let topLeftPos = 5;
-  AddRectWCoords(room, defaultX, topLeftPos, 9, 14, VisualDisplayLevels.Info, {
+  AddRectWCoords(room, defaultX, topLeftPos++, 9, 16, VisualDisplayLevels.Info, {
     opacity: 0.65,
     fill: "Grey",
   });
 
   // Empire
-  topLeftPos+=1;
-  AddTextWCoords(room, "Empire:", textXPos, topLeftPos, VisualDisplayLevels.Info, {
-    align: "left",
-    font: 1,
-  });
-  topLeftPos+=1;
+  AddTextWCoords(room, "Empire:", textXPos, topLeftPos++, VisualDisplayLevels.Info, titleTextStyle);
+  AddTextWCoords(room, "> Main", textXPos, topLeftPos++, VisualDisplayLevels.Info, subTitleTextStyle);
   AddTextWCoords(
     room,
     `GCL lvl: ${Game.gcl.level}`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
-  topLeftPos+=1;
   AddTextWCoords(
     room,
     `GCL progress: ${(
@@ -39,20 +45,18 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
       100
     ).toFixed(2)}%`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
-  topLeftPos+=1;
   AddTextWCoords(
     room,
     `GPL lvl: ${Game.gpl.level}`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
-  topLeftPos+=1;
   AddTextWCoords(
     room,
     `GPL progress: ${(
@@ -60,46 +64,40 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
       100
     ).toFixed(2)}%`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
-  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Structure count: ${Object.keys(Memory.structures).length}`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
-  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Creep count: ${Object.keys(Memory.creeps).length}`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
 
   // Room
-  topLeftPos+=2;
-  AddTextWCoords(room, "Room:", textXPos, topLeftPos, VisualDisplayLevels.Info, {
-    align: "left",
-    font: 1,
-  });
   topLeftPos+=1;
+  AddTextWCoords(room, "Room:", textXPos, topLeftPos++, VisualDisplayLevels.Info, titleTextStyle);
+  AddTextWCoords(room, "> Main", textXPos, topLeftPos++, VisualDisplayLevels.Info, subTitleTextStyle);
   if (room.controller) {
   AddTextWCoords(
       room,
       `RCL lvl: ${room.controller.level}`,
       textXPos,
-      topLeftPos,
+      topLeftPos++,
       VisualDisplayLevels.Info,
-      { align: "left" }
+    textStyle
     );
-  topLeftPos+=1;
   AddTextWCoords(
       room,
       `RCL progress: ${(
@@ -107,22 +105,20 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
         100
       ).toFixed(2)}%`,
       textXPos,
-      topLeftPos,
+      topLeftPos++,
       VisualDisplayLevels.Info,
-      { align: "left" }
+    textStyle
     );
   } else {
   AddTextWCoords(
       room,
       `RCL: No controller`,
       textXPos,
-      topLeftPos,
+      topLeftPos+=2,
       VisualDisplayLevels.Info,
-      { align: "left" }
+    textStyle
     );
-    topLeftPos+=1;
   }
-  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Structure count: ${
@@ -131,11 +127,10 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
         : 0
     }`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
-  topLeftPos+=1;
   AddTextWCoords(
     room,
     `Creep count: ${
@@ -144,9 +139,9 @@ export const RoomVisuals = FuncWrapper(function RoomVisuals(
         : 0
     }`,
     textXPos,
-    topLeftPos,
+    topLeftPos++,
     VisualDisplayLevels.Info,
-    { align: "left" }
+    textStyle
   );
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
