@@ -594,7 +594,7 @@ export const GetCompleteBasePlanned = FuncWrapper(
     ).response;
     const positions: RoomPosition[] = [];
     forEach(freePositions, (pos: RoomPosition) => {
-      const walls: RoomPosition[] = GetTerrainInRange(pos, 3, room, ["wall"])
+      const walls: RoomPosition[] = GetTerrainInRange(pos, 2, room, ["wall"])
         .response;
       if (walls.length === 0) positions.push(pos);
     });
@@ -602,8 +602,8 @@ export const GetCompleteBasePlanned = FuncWrapper(
     let usedPositions: RoomPosition[] = [];
     const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
     if (isUndefined(mem.base)) mem.base = { extension: [] };
-    for (let i = 0; i < positions.length; i += 1) {
-      const pos = positions[i];
+
+    forEach(positions, (pos: RoomPosition) => {
       const baseStructures: BaseStructure[] = GetHearthOfBase(pos, [
         STRUCTURE_ROAD,
       ]).response;
@@ -620,99 +620,98 @@ export const GetCompleteBasePlanned = FuncWrapper(
         );
         usedPositions = usedPositions.concat(baseStructurePositions);
         mem.base.hearth = pos;
+      }
+    });
+
+    if (isUndefined(mem.base.hearth))
+      return FunctionReturnHelper(FunctionReturnCodes.NOT_FITTING);
+
+    const labPositions: RoomPosition[] = GetSurroundingRoomPositions(
+      mem.base.hearth,
+      3,
+      5,
+      { n: 5, e: 5, s: 5, w: 6 }
+    ).response;
+
+    for (let i = 0; i < labPositions.length; i += 1) {
+      const pos = labPositions[i];
+      const labStructures: BaseStructure[] = GetLabPartOfBase(pos, [
+        STRUCTURE_ROAD,
+      ]).response;
+      if (
+        DoesPositionsOfBaseFit(
+          room,
+          labStructures.map((s) => s.pos)
+        ).code === FunctionReturnCodes.OK
+      ) {
+        usedPositions = usedPositions.concat(labStructures.map((s) => s.pos));
+        mem.base.lab = pos;
         break;
       }
     }
 
-    if (mem.base.hearth) {
-      const hearthPos: RoomPosition = mem.base.hearth;
-      const labPositions: RoomPosition[] = GetSurroundingRoomPositions(
-        hearthPos,
-        3,
-        5,
-        { n: 5, e: 5, s: 5, w: 6 }
-      ).response;
-      for (let i = 0; i < labPositions.length; i += 1) {
-        const pos = labPositions[i];
-        const labStructures: BaseStructure[] = GetLabPartOfBase(
-          pos,
-          [STRUCTURE_ROAD]
-        ).response;
-        if (
-          DoesPositionsOfBaseFit(
-            room,
-            labStructures.map((s) => s.pos)
-          ).code === FunctionReturnCodes.OK
-        ) {
-          usedPositions = usedPositions.concat(
-            labStructures.map((s: BaseStructure) => s.pos)
-          );
-          mem.base.lab = pos;
-          break;
-        }
+    mem.base.extension = [];
+    const hearthExtensionPositions: RoomPosition[] = GetSurroundingRoomPositions(
+      mem.base.hearth,
+      4,
+      4,
+      { n: 5, e: 4, s: 5, w: 5 }
+    ).response;
+
+    for (let i = 0; i < hearthExtensionPositions.length; i += 1) {
+      if (mem.base && mem.base.extension.length === 12) {
+        break;
       }
-    }
 
-    if (mem.base.hearth) {
-      const hearthPos: RoomPosition = mem.base.hearth;
-      mem.base.extension = [];
+      const extensionHearthPos = hearthExtensionPositions[i];
+      let extensionStructures: BaseStructure[] = GetExtensionPartOfBase(
+        extensionHearthPos
+      ).response.filter((s) => s.type !== STRUCTURE_ROAD);
+      if (
+        mem.base &&
+        DoesPositionsOfBaseFit(
+          room,
+          extensionStructures.map((s) => s.pos),
+          usedPositions
+        ).code === FunctionReturnCodes.OK
+      ) {
+        usedPositions = usedPositions.concat(
+          extensionStructures.map((s) => s.pos)
+        );
+        mem.base.extension.push(extensionHearthPos);
 
-      const hearthExtensionPositions: RoomPosition[] = GetSurroundingRoomPositions(
-        hearthPos,
-        4,
-        4,
-        { n: 5, e: 4, s: 5, w: 5 }
-      ).response;
-      for (let i = 0; i < hearthExtensionPositions.length; i += 1) {
         if (mem.base.extension.length === 12) {
           break;
         }
 
-        const pos = hearthExtensionPositions[i];
-        let extensionStructures: BaseStructure[] = GetExtensionPartOfBase(
-          pos
-        ).response.filter((s) => s.type !== STRUCTURE_ROAD);
         if (
-          DoesPositionsOfBaseFit(
-            room,
-            extensionStructures.map((s) => s.pos),
-            usedPositions
-          ).code === FunctionReturnCodes.OK
+          extensionHearthPos.x > 5 &&
+          extensionHearthPos.x < 45 &&
+          extensionHearthPos.y > 5 &&
+          extensionHearthPos.y < 45
         ) {
-          usedPositions = usedPositions.concat(
-            extensionStructures.map((s: BaseStructure) => s.pos)
-          );
-          mem.base.extension.push(pos);
-
-          if (mem.base.extension.length === 12) {
-            break;
-          }
-
-          if (pos.x > 5 && pos.x < 45 && pos.y > 5 && pos.y < 45) {
-            const extensionPositions: RoomPosition[] = GetDiagonalExtensionRoomPositions(
-              pos,
-              3,
-              3
-            ).response.filter((s) => s.type !== STRUCTURE_ROAD);
-            for (let j = 0; j < extensionPositions.length; j += 1) {
-              const posJ = extensionPositions[j];
-              extensionStructures = GetExtensionPartOfBase(posJ, [
-                STRUCTURE_ROAD,
-              ]).response;
-              if (
-                DoesPositionsOfBaseFit(
-                  room,
-                  extensionStructures.map((s) => s.pos),
-                  usedPositions
-                ).code === FunctionReturnCodes.OK
-              ) {
-                usedPositions = usedPositions.concat(
-                  extensionStructures.map((s: BaseStructure) => s.pos)
-                );
-                mem.base.extension.push(posJ);
-                if (mem.base.extension.length === 12) {
-                  break;
-                }
+          const extensionPositions: RoomPosition[] = GetDiagonalExtensionRoomPositions(
+            extensionHearthPos,
+            3,
+            3
+          ).response.filter((s) => s.type !== STRUCTURE_ROAD);
+          for (let j = 0; j < extensionPositions.length; j += 1) {
+            const posJ = extensionPositions[j];
+            extensionStructures = GetExtensionPartOfBase(posJ, [STRUCTURE_ROAD])
+              .response;
+            if (
+              DoesPositionsOfBaseFit(
+                room,
+                extensionStructures.map((s) => s.pos),
+                usedPositions
+              ).code === FunctionReturnCodes.OK
+            ) {
+              usedPositions = usedPositions.concat(
+                extensionStructures.map((s) => s.pos)
+              );
+              mem.base.extension.push(posJ);
+              if (mem.base.extension.length === 12) {
+                break;
               }
             }
           }
@@ -765,7 +764,7 @@ export const GetBaseBuild = FuncWrapper(function GetBaseBuild(
       const extensionBaseStructures: BaseStructure[] = GetExtensionPartOfBase(
         extensionPartPos
       ).response;
-      forEach(extensionBaseStructures, (str: BaseStructure) => {
+      forEach(extensionBaseStructures, (str) => {
         BuildStructure(room, str.pos, str.type);
       });
     }
@@ -796,7 +795,7 @@ export const TryToExecuteRoomPlanner = FuncWrapper(
         ? room.controller.owner.username === Username
         : false)
     ) {
-      if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
+    if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
         Controller(room);
       }
       const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
