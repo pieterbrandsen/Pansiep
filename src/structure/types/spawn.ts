@@ -1,7 +1,7 @@
 import { forEach, forOwn, reduce, isUndefined } from "lodash";
 import { GetCreepsMemory } from "../../creep/helper";
 import { InitializeCreepMemory } from "../../memory/initialization";
-import { GetRoom } from "../../room/helper";
+import { GetRoom, GetRoomMemoryUsingName } from "../../room/helper";
 import { GetAllJobs } from "../../room/jobs/handler";
 import { FunctionReturnCodes, LogTypes } from "../../utils/constants/global";
 import { MaxCreepsPerCreepType } from "../../utils/constants/room";
@@ -258,6 +258,11 @@ export const SpawnCreep = FuncWrapper(function SpawnCreep(
     }
     return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED, spawnCreep);
   }
+
+  const spawnExpenses =
+    global.preProcessingStats.rooms[spawn.room.name].expenses.spawn;
+  if (isUndefined(spawnExpenses[creepType])) spawnExpenses[creepType] = 0;
+  spawnExpenses[creepType] += body.bodyCost;
 
   Log(
     LogTypes.Debug,

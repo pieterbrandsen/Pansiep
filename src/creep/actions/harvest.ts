@@ -1,3 +1,4 @@
+import { isUndefined } from "lodash";
 import {
   UnassignJob,
   AssignNewJobForCreep,
@@ -36,6 +37,10 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
   switch (creep.harvest(source)) {
     case OK:
       creep.say("harvest");
+      if (isUndefined(creepMem.parts[WORK]))
+        creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+      global.preProcessingStats.rooms[creep.room.name].income.harvest +=
+        creepMem.parts[WORK] * 2;
       break;
     case ERR_INVALID_TARGET:
     case ERR_NOT_ENOUGH_RESOURCES:

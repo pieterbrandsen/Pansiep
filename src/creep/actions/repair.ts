@@ -1,3 +1,4 @@
+import { isUndefined } from "lodash";
 import {
   AssignNewJobForCreep,
   DeleteJobById,
@@ -25,7 +26,11 @@ export const ExecuteRepair = FuncWrapper(function ExecuteRepair(
 
   switch (creep.repair(str)) {
     case OK:
-      creep.say("repair");
+      creep.say("Repair");
+      if (isUndefined(creepMem.parts[WORK]))
+      creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+    global.preProcessingStats.rooms[creep.room.name].income.dismantle +=
+      creepMem.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (

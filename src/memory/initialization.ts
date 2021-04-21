@@ -12,6 +12,7 @@ import { TrackedIntents as TrackedCreepIntents } from "../utils/constants/creep"
 import { GetCreep, GetType as GetCreepType } from "../creep/helper";
 import { GetRoom } from "../room/helper";
 import { TryToExecuteRoomPlanner } from "../room/planner";
+import { GetSources } from "../room/reading";
 
 export const AreHeapVarsValid = FuncWrapper(
   function AreHeapVarsValid(): FunctionReturn {
@@ -145,6 +146,7 @@ export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
   Memory.rooms[roomName] = {
     jobs: [],
     spawnQueue: [],
+    sourceCount: 0,
   };
   const getRoom = GetRoom(roomName);
   if (getRoom.code === FunctionReturnCodes.OK) {
@@ -153,6 +155,8 @@ export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
     forEach(csSites, (site: ConstructionSite) => {
       site.remove();
     });
+    const sources: Source[] | undefined = GetSources(room).response;
+    Memory.rooms[roomName].sourceCount = sources ? sources.length : 0;
     TryToExecuteRoomPlanner(room, true);
   }
 
@@ -193,6 +197,7 @@ export const InitializeCreepMemory = FuncWrapper(function InitializeCreepMemory(
   Memory.creeps[name] = {
     commandRoom: roomName,
     type: creepType || GetCreepType(creep).response,
+    parts: {},
   };
 
   if (addToCache) {

@@ -795,7 +795,7 @@ export const TryToExecuteRoomPlanner = FuncWrapper(
         ? room.controller.owner.username === Username
         : false)
     ) {
-    if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
+      if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
         Controller(room);
       }
       const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;

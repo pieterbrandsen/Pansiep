@@ -32,6 +32,11 @@ export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
       creep.say("upgrade");
       _job.energyRequired -= creep.getActiveBodyparts(WORK) * 2;
       UpdateJobById(job.id, _job, job.roomName);
+
+      if (isUndefined(creepMem.parts[WORK]))
+      creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+    global.preProcessingStats.rooms[creep.room.name].expenses.upgrade +=
+      creepMem.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (

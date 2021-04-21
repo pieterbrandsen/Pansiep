@@ -39,6 +39,8 @@ export const ResetPreProcessingRoomStats = FuncWrapper(
       creepCount: 0,
       structureCount: 0,
       rcl: { progress: 0, progressTotal: 0, level: 0 },
+      expenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
+      income: { dismantle: 0, harvest: 0 },
     };
 
     return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -52,6 +54,8 @@ export const ResetRoomStats = FuncWrapper(function ResetRoomStats(
     creepCount: 0,
     structureCount: 0,
     rcl: { progress: 0, progressTotal: 0, level: 0 },
+    expenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
+    income: { dismantle: 0, harvest: 0 },
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -121,8 +125,54 @@ export const RoomStats = FuncWrapper(function RoomStats(
           level: room.controller.level,
         }
       : { progress: 0, progressTotal: 0, level: 0 },
+    expenses: {
+      build: GetAveragedValue(
+        roomStats.expenses.build,
+        preProcessingRoomStats.expenses.build
+      ).response,
+      repair: GetAveragedValue(
+        roomStats.expenses.repair,
+        preProcessingRoomStats.expenses.repair
+      ).response,
+      upgrade: GetAveragedValue(
+        roomStats.expenses.upgrade,
+        preProcessingRoomStats.expenses.upgrade
+      ).response,
+      spawn: {},
+    },
+    income: {
+      dismantle: GetAveragedValue(
+        roomStats.income.dismantle,
+        preProcessingRoomStats.income.dismantle
+      ).response,
+      harvest: GetAveragedValue(
+        roomStats.income.harvest,
+        preProcessingRoomStats.income.harvest
+      ).response,
+    },
   };
 
+  const averageCostList: StringMap<number> = {};
+  union(
+    Object.keys(roomStats.expenses.spawn),
+    Object.keys(preProcessingRoomStats.expenses.spawn)
+  ).forEach((name: string) => {
+    const currentCallCount =
+      roomStats.expenses.spawn[name] !== undefined
+        ? roomStats.expenses.spawn[name]
+        : 0;
+    const newCallCount =
+      preProcessingRoomStats.expenses.spawn[name] !== undefined
+        ? preProcessingRoomStats.expenses.spawn[name]
+        : 0;
+
+    averageCostList[name] = GetAveragedValue(
+      currentCallCount,
+      newCallCount
+    ).response;
+  });
+
+  Memory.stats.rooms[room.name].expenses.spawn = averageCostList;
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
@@ -174,6 +224,7 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
   Memory.stats.ticksStatsCollecting += 1;
   Memory.stats.gcl = Game.gcl;
 
+  const { preProcessingStats } = global;
   const averagedIntentCallsList: StringMap<{
     callCount: number;
     cpuUsed: number;
@@ -181,23 +232,23 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
 
   union(
     Object.keys(Memory.stats.intentCalls),
-    Object.keys(global.preProcessingStats.intentCalls)
+    Object.keys(preProcessingStats.intentCalls)
   ).forEach((name: string) => {
     const currentCallCount =
       Memory.stats.intentCalls[name] !== undefined
         ? Memory.stats.intentCalls[name].callCount
         : 0;
     const newCallCount =
-      global.preProcessingStats.intentCalls[name] !== undefined
-        ? global.preProcessingStats.intentCalls[name].callCount
+      preProcessingStats.intentCalls[name] !== undefined
+        ? preProcessingStats.intentCalls[name].callCount
         : 0;
     const currentCpuUsed =
       Memory.stats.intentCalls[name] !== undefined
         ? Memory.stats.intentCalls[name].cpuUsed
         : 0;
     const newCpuUsed =
-      global.preProcessingStats.intentCalls[name] !== undefined
-        ? global.preProcessingStats.intentCalls[name].cpuUsed
+      preProcessingStats.intentCalls[name] !== undefined
+        ? preProcessingStats.intentCalls[name].cpuUsed
         : 0;
 
     const callCount = GetAveragedValue(currentCallCount, newCallCount);
@@ -217,23 +268,23 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
 
   union(
     Object.keys(Memory.stats.funcCalls),
-    Object.keys(global.preProcessingStats.funcCalls)
+    Object.keys(preProcessingStats.funcCalls)
   ).forEach((name: string) => {
     const currentCallCount =
       Memory.stats.funcCalls[name] !== undefined
         ? Memory.stats.funcCalls[name].callCount
         : 0;
     const newCallCount =
-      global.preProcessingStats.funcCalls[name] !== undefined
-        ? global.preProcessingStats.funcCalls[name].callCount
+      preProcessingStats.funcCalls[name] !== undefined
+        ? preProcessingStats.funcCalls[name].callCount
         : 0;
     const currentCpuUsed =
       Memory.stats.funcCalls[name] !== undefined
         ? Memory.stats.funcCalls[name].cpuUsed
         : 0;
     const newCpuUsed =
-      global.preProcessingStats.funcCalls[name] !== undefined
-        ? global.preProcessingStats.funcCalls[name].cpuUsed
+      preProcessingStats.funcCalls[name] !== undefined
+        ? preProcessingStats.funcCalls[name].cpuUsed
         : 0;
 
     const callCount = GetAveragedValue(currentCallCount, newCallCount);

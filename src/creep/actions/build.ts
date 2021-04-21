@@ -9,6 +9,8 @@ import {
 } from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { GetCreepMemory } from "../helper";
+import { GetRoomMemoryUsingName } from "../../room/helper";
+import { isUndefined } from "lodash";
 
 // eslint-disable-next-line
 export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
@@ -21,7 +23,11 @@ export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
 
   switch (creep.build(csSite)) {
     case OK:
-      creep.say("build");
+      creep.say("Build");
+      if (isUndefined(creepMem.parts[WORK]))
+      creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+    global.preProcessingStats.rooms[creep.room.name].expenses.build +=
+      creepMem.parts[WORK] * 5;
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (

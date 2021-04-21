@@ -44,9 +44,23 @@ interface FunctionReturn {
   response?: any;
 }
 
+interface RoomIncomes {
+  harvest: number;
+  dismantle: number;
+}
+
+interface RoomExpenses {
+  build: number;
+  repair: number;
+  spawn: StringMap<number>;
+  upgrade: number;
+}
+
 interface RoomStats {
   creepCount: number;
   structureCount: number;
+  income: RoomIncomes;
+  expenses: RoomExpenses;
   rcl: GlobalControlLevel;
 }
 
@@ -113,6 +127,7 @@ interface BaseStructure {
 interface RoomMemory {
   spawnQueue: CreepTypes[];
   jobs: Job[];
+  sourceCount: number;
 
   // Base
   lastControllerLevelAtRoomPlanner?: number;
@@ -128,6 +143,7 @@ interface RoomMemory {
 interface CreepMemory {
   type: CreepTypes;
   commandRoom: string;
+  parts: StringMap<number>;
 
   walkPath?: PathStep[];
   isNotSeenSince?: number;
