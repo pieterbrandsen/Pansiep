@@ -62,6 +62,7 @@ interface RoomStats {
   income: RoomIncomes;
   expenses: RoomExpenses;
   rcl: GlobalControlLevel;
+  jobs: StringMap<number>;
 }
 
 interface StatsMemory {

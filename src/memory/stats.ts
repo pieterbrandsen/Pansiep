@@ -1,4 +1,4 @@
-import { union } from "lodash";
+import { forEach, groupBy, union, pickBy } from "lodash";
 import {
   AverageValueOverAmountTicks,
   FunctionReturnCodes,
@@ -7,6 +7,7 @@ import {
 import { GetUpdateStatsVar } from "../utils/config/global";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { GetRoomMemoryUsingName } from "../room/helper";
 
 export const ResetPreProcessingStats = FuncWrapper(
   function ResetPreProcessingStats(): FunctionReturn {
@@ -41,6 +42,7 @@ export const ResetPreProcessingRoomStats = FuncWrapper(
       rcl: { progress: 0, progressTotal: 0, level: 0 },
       expenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
       income: { dismantle: 0, harvest: 0 },
+      jobs: {}
     };
 
     return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -56,6 +58,7 @@ export const ResetRoomStats = FuncWrapper(function ResetRoomStats(
     rcl: { progress: 0, progressTotal: 0, level: 0 },
     expenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
     income: { dismantle: 0, harvest: 0 },
+    jobs: {}
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -94,7 +97,8 @@ export const RoomStats = FuncWrapper(function RoomStats(
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
   let preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
-  let roomStats = Memory.stats.rooms[room.name];
+  let roomMem:RoomMemory = GetRoomMemoryUsingName(room.name).response;
+  let roomStats:RoomStats = Memory.stats.rooms[room.name];
 
   if (preProcessingRoomStats === undefined) {
     ResetPreProcessingRoomStats(room.name);
@@ -150,9 +154,23 @@ export const RoomStats = FuncWrapper(function RoomStats(
         preProcessingRoomStats.income.harvest
       ).response,
     },
+    jobs: {}
   };
 
-  const averageCostList: StringMap<number> = {};
+  const jobCounts: StringMap<number> = {};
+  const currentJobs = groupBy(roomMem.jobs,(j:Job)=> j.action);
+  union(
+    Object.keys(roomStats.jobs),
+    Object.keys(currentJobs)
+  ).forEach((name:string)=> {
+      jobCounts[name] = GetAveragedValue(
+        roomStats.jobs[name] ? roomStats.jobs[name] : 0,
+        currentJobs[name] ? currentJobs[name].length : 0
+      ).response;
+    });
+    Memory.stats.rooms[room.name].jobs = jobCounts;
+
+    const spawnCosts:StringMap<number> = {}
   union(
     Object.keys(roomStats.expenses.spawn),
     Object.keys(preProcessingRoomStats.expenses.spawn)
@@ -166,13 +184,13 @@ export const RoomStats = FuncWrapper(function RoomStats(
         ? preProcessingRoomStats.expenses.spawn[name]
         : 0;
 
-    averageCostList[name] = GetAveragedValue(
+        spawnCosts[name] = GetAveragedValue(
       currentCallCount,
       newCallCount
     ).response;
   });
 
-  Memory.stats.rooms[room.name].expenses.spawn = averageCostList;
+  Memory.stats.rooms[room.name].expenses.spawn = spawnCosts;
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
