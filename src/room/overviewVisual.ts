@@ -284,7 +284,7 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
     if (globalEnergyIncome.length < 5) topLeftSecondRowPos += 5-globalEnergyExpenses.length;
 
         // Room
-    topLeftPos += 3;
+    topLeftPos += 4;
     AddTextWCoords(
       room,
       "> Net Profit",
@@ -314,7 +314,7 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
       });
       if (energyIncome.length < 5) topLeftPos += 5-energyIncome.length;
 
-  topLeftSecondRowPos += 4;
+  topLeftSecondRowPos += 5;
   AddTextWCoords(
   room,
   "Expenses:",

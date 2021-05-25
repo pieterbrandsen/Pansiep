@@ -1,4 +1,4 @@
-import { forEach, intersectionWith, isUndefined } from "lodash";
+import { forEach, intersectionWith, isUndefined, sortBy } from "lodash";
 import { BuildStructure } from "../structure/helper";
 import { FunctionReturnCodes, Username } from "../utils/constants/global";
 import {
@@ -9,7 +9,7 @@ import {
 import { ExecuteEachTick } from "../utils/helper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
-import { GetRoomMemoryUsingName, UpdateRoomMemory } from "./helper";
+import { GetRoomMemoryUsingName, IsMyOwnedRoom, UpdateRoomMemory } from "./helper";
 import { CreateHarvestJob } from "./jobs/create";
 import { GetJobById } from "./jobs/handler";
 import {
@@ -17,6 +17,7 @@ import {
   HasPositionEnergyStructures,
   GetBestEnergyStructurePosAroundPosition,
   GetTerrainInRange,
+  GetStructures,
 } from "./reading";
 
 export const Sources = FuncWrapper(function Sources(
@@ -84,15 +85,6 @@ export const Controller = FuncWrapper(function Controller(
   ).response;
   BuildStructure(room, pos, strType, true);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-export const GetBaseHearthLocation = FuncWrapper(function GetBaseHearthLocation(
-  room: Room
-): FunctionReturn {
-  return FunctionReturnHelper(
-    FunctionReturnCodes.OK,
-    new RoomPosition(20, 20, room.name)
-  );
 });
 
 export const GetExtensionPartOfBase = FuncWrapper(
@@ -601,8 +593,15 @@ export const GetCompleteBasePlanned = FuncWrapper(
 
     let usedPositions: RoomPosition[] = [];
     const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
+
+    const getStructures = GetStructures(room.name,[STRUCTURE_SPAWN]);
+    if (getStructures.code !== FunctionReturnCodes.OK)return FunctionReturnHelper(getStructures.code);
+
     if (isUndefined(mem.base)) mem.base = { extension: [] };
 
+    const spawns:StructureSpawn[] = getStructures.response;
+    if (spawns.length > 0) mem.base.hearth = sortBy(spawns,(s=>s.name))[0].pos;
+    else {
     forEach(positions, (pos: RoomPosition) => {
       const baseStructures: BaseStructure[] = GetHearthOfBase(pos, [
         STRUCTURE_ROAD,
@@ -622,6 +621,7 @@ export const GetCompleteBasePlanned = FuncWrapper(
         mem.base.hearth = pos;
       }
     });
+  }
 
     if (isUndefined(mem.base.hearth))
       return FunctionReturnHelper(FunctionReturnCodes.NOT_FITTING);
@@ -789,12 +789,7 @@ export const TryToExecuteRoomPlanner = FuncWrapper(
     if (ExecuteEachTick(RoomSourcePlannerDelay, forceExecute).response) {
       Sources(room);
     }
-    if (
-      room.controller &&
-      (room.controller.owner
-        ? room.controller.owner.username === Username
-        : false)
-    ) {
+    if (IsMyOwnedRoom(room).code === FunctionReturnCodes.OK && room.controller) {
       if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
         Controller(room);
       }
@@ -806,7 +801,7 @@ export const TryToExecuteRoomPlanner = FuncWrapper(
       if (
         ExecuteEachTick(
           RoomBasePlannerDelay,
-          forceExecute || lastControllerLevel < controllerLevel
+          lastControllerLevel < controllerLevel
         ).response
       ) {
         ExecuteBasePlanner(room);

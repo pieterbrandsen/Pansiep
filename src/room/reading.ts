@@ -112,13 +112,15 @@ export const GetStructures = FuncWrapper(function GetStructures(
   roomName: string,
   filterOnStrTypes?: StructureConstant[]
 ): FunctionReturn {
-  return GetObjectsFromIDs<Structure>(
+  if (Memory.cache.structures.data[roomName] !== undefined) return GetObjectsFromIDs<Structure>(
     Memory.cache.structures.data[roomName]
       .filter((s) =>
         filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
       )
       .map((s) => s.id)
-  );
+  )
+
+  return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
 });
 
 export const GetDangerousStructures = FuncWrapper(
