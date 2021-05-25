@@ -31,8 +31,8 @@ export const AddLineWPos = FuncWrapper(function AddLineWPos(
 export const AddLineWCoords = FuncWrapper(function AddLineWCoords(
   room: Room,
   x1: number,
-  x2: number,
   y1: number,
+  x2: number,
   y2: number,
   visualLevel: number,
   style?: LineStyle
@@ -43,7 +43,7 @@ export const AddLineWCoords = FuncWrapper(function AddLineWCoords(
   )
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-  room.visual.line(x1, x2, y1, y2, style);
+  room.visual.line(x1, y1, x2, y2, style);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 

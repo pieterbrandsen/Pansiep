@@ -1,10 +1,9 @@
-import { groupBy, forEach } from 'lodash';
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { VisualDisplayLevels } from "../utils/constants/room";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
-import { GetRoomMemoryUsingName } from "./helper";
-import { AddRectWCoords, AddTextWCoords } from "./visuals";
+import { AddLineWCoords, AddRectWCoords, AddTextWCoords } from "./visuals";
+import { forEach, groupBy } from 'lodash';
 
 // eslint-disable-next-line import/prefer-default-export
 export const MainVisuals = FuncWrapper(function RoomMainVisuals(
@@ -29,7 +28,7 @@ export const MainVisuals = FuncWrapper(function RoomMainVisuals(
     defaultX,
     (topLeftPos += 1),
     8,
-    16,
+    20,
     VisualDisplayLevels.Info,
     {
       opacity: 0.65,
@@ -110,7 +109,7 @@ export const MainVisuals = FuncWrapper(function RoomMainVisuals(
   );
 
   // Room
-  topLeftPos += 1;
+  topLeftPos += 3;
   AddTextWCoords(
     room,
     "Room:",
@@ -184,10 +183,12 @@ export const MainVisuals = FuncWrapper(function RoomMainVisuals(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
-export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:RoomStats) {
+export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVisuals(room:Room, roomStats:RoomStats) {
   const defaultX = 9;
-  // const secondRowX = 18;
   const textXPos = defaultX + 0.3;
+
+  const secondRowX = defaultX + 8;
+  const textSecondRowXPos = secondRowX + 0.3;
   const subTitleTextStyle: TextStyle = {
     align: "left",
     font: 0.9,
@@ -196,12 +197,102 @@ export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:R
     align: "left",
   };
   let topLeftPos = 5;
+  let topLeftSecondRowPos = 5;
+  AddLineWCoords(room, defaultX, topLeftPos+1,defaultX,topLeftPos+21, VisualDisplayLevels.Info, {opacity:1})
   AddRectWCoords(
     room,
     defaultX,
     (topLeftPos += 1),
-    16,
-    16,
+    18,
+  20,
+    VisualDisplayLevels.Info,
+    {
+      opacity: 0.65,
+      fill: "Grey",
+    }
+  );
+
+    // Empire
+    topLeftPos += 1
+    AddTextWCoords(
+      room,
+      "> Net Profit",
+      textXPos,
+      (topLeftPos += 1),
+      VisualDisplayLevels.Info,
+      subTitleTextStyle
+      );
+
+      AddTextWCoords(
+        room,
+        "Income:",
+        textXPos,
+        (topLeftPos += 1),
+        VisualDisplayLevels.Info,
+        textStyle
+        );
+
+    topLeftPos += 9;
+    AddTextWCoords(
+      room,
+      "> Net Profit",
+      textXPos,
+      (topLeftPos += 1),
+      VisualDisplayLevels.Info,
+      subTitleTextStyle
+      );
+    AddTextWCoords(
+      room,
+      "Income:",
+      textXPos,
+      (topLeftPos += 1),
+      VisualDisplayLevels.Info,
+      textStyle
+      );
+
+      topLeftSecondRowPos += 3;
+    AddTextWCoords(
+    room,
+    "Expense:",
+    textSecondRowXPos,
+    (topLeftSecondRowPos += 1),
+    VisualDisplayLevels.Info,
+    textStyle
+  );
+
+  topLeftSecondRowPos += 10;
+  AddTextWCoords(
+  room,
+  "Expense:",
+  textSecondRowXPos,
+  (topLeftSecondRowPos += 1),
+  VisualDisplayLevels.Info,
+  textStyle
+);
+});
+
+export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:RoomStats) {
+  const defaultX = 27;
+  const textXPos = defaultX + 0.3;
+
+  const secondRowX = defaultX + 8;
+  const textSecondRowXPos = secondRowX + 0.3;
+  const subTitleTextStyle: TextStyle = {
+    align: "left",
+    font: 0.9,
+  };
+  const textStyle: TextStyle = {
+    align: "left",
+  };
+  let topLeftPos = 5;
+  let topLeftSecondRowPos = 8;
+  AddLineWCoords(room, defaultX, topLeftPos+1,defaultX,topLeftPos+21, VisualDisplayLevels.Debug, {opacity:1})
+  AddRectWCoords(
+    room,
+    defaultX,
+    (topLeftPos += 1),
+    18,
+  20,
     VisualDisplayLevels.Debug,
     {
       opacity: 0.65,
@@ -219,35 +310,117 @@ export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:R
     VisualDisplayLevels.Debug,
     subTitleTextStyle
   );
-  // AddTextWCoords(
-  //   room,
-  //   `Types:`,
-  //   textXPos,
-  //   (topLeftPos += 1),
-  //   VisualDisplayLevels.Debug,
-  //   textStyle
-  // );
-  // largest 5 only displayed!
-  forEach(Object.entries(roomStats.jobs),([key, value]) => {
+  AddTextWCoords(
+    room,
+    `Active Job Types:`,
+    textXPos,
+    (topLeftPos += 1),
+    VisualDisplayLevels.Debug,
+    textStyle
+  );
+  const jobList: {activeJobs:StringMap<number>,creepCountPerJob:StringMap<number>} = {activeJobs:{},creepCountPerJob:{}};
+  forEach(Object.values(Memory.stats.rooms),(rs:RoomStats)=>{
+    forEach(Object.entries(rs.activeJobs), ([key,value])=> {
+      jobList.activeJobs[key] ?   jobList.activeJobs[key]+=value :   jobList.activeJobs[key] = value;
+    });
+    forEach(Object.entries(rs.creepCountPerJob), ([key,value])=> {
+      jobList.creepCountPerJob[key] ?   jobList.creepCountPerJob[key]+=value :   jobList.creepCountPerJob[key] = value;
+    });
+  });
+  const globalActiveJobs =Object.entries(jobList.activeJobs).slice(0,5).sort((a,b) => b[1]-a[1]);
+const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,5).sort((a,b) => b[1]-a[1]);
+
+  forEach(globalActiveJobs,([key, value]) => {
     AddTextWCoords(
       room,
-      `${key}: ${value.toFixed(2)}`,
+      `${key}: ${value.toFixed(3)}`,
       textXPos,
       (topLeftPos += 1),
       VisualDisplayLevels.Debug,
       textStyle
     );
-  })
-});
+  });
+  if (globalActiveJobs.length < 5) topLeftPos += 5-globalActiveJobs.length;
 
-export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVisuals(room:Room, roomStats:RoomStats) {
- 
+  AddTextWCoords(
+    room,
+    `Creep Count Per Job Type:`,
+    textSecondRowXPos,
+    (topLeftSecondRowPos += 1),
+    VisualDisplayLevels.Debug,
+    textStyle
+  );
+  forEach(globalCreepCountPerJob,([key, value]) => {
+    AddTextWCoords(
+      room,
+      `${key}: ${value.toFixed(3)}`,
+      textSecondRowXPos,
+      (topLeftSecondRowPos += 1),
+      VisualDisplayLevels.Debug,
+      textStyle
+    );
+  });
+  if (globalCreepCountPerJob.length < 5) topLeftSecondRowPos += 5-globalCreepCountPerJob.length;
+
+  // Room
+  topLeftPos += 4;
+  AddTextWCoords(
+    room,
+    "> Job",
+    textXPos,
+    (topLeftPos += 1),
+    VisualDisplayLevels.Debug,
+    subTitleTextStyle
+  );
+  AddTextWCoords(
+    room,
+    `Active Job Types:`,
+    textXPos,
+    (topLeftPos += 1),
+    VisualDisplayLevels.Debug,
+    textStyle
+  );
+  const activeJobs = Object.entries(roomStats.activeJobs).slice(0,5).sort((a,b) => b[1]-a[1]);
+  forEach(activeJobs,([key, value]) => {
+    AddTextWCoords(
+      room,
+      `${key}: ${value.toFixed(3)}`,
+      textXPos,
+      (topLeftPos += 1),
+      VisualDisplayLevels.Debug,
+      textStyle
+    );
+  });
+  if (activeJobs.length < 5) topLeftPos += 5-activeJobs.length;
+
+  topLeftSecondRowPos += 5;
+  AddTextWCoords(
+    room,
+    `Creep Count Per Job Type:`,
+    textSecondRowXPos,
+    (topLeftSecondRowPos += 1),
+    VisualDisplayLevels.Debug,
+    textStyle
+  );
+  const creepCountPerJob = Object.entries(roomStats.creepCountPerJob).slice(0,5).sort((a,b) => b[1]-a[1]);
+  forEach(creepCountPerJob,([key, value]) => {
+    AddTextWCoords(
+      room,
+      `${key}: ${value.toFixed(3)}`,
+      textSecondRowXPos,
+      (topLeftSecondRowPos += 1),
+      VisualDisplayLevels.Debug,
+      textStyle
+    );
+  });
+  if (creepCountPerJob.length < 5) topLeftSecondRowPos += 5-creepCountPerJob.length;
 });
 
 export const RoomVisuals = FuncWrapper(function RoomVisuals(room:Room) {
   MainVisuals(room);
- 
-  const roomStats:RoomStats = Memory.stats.rooms[room.name]; 
-  JobVisuals(room,roomStats);
+
+
+  const roomStats:RoomStats = Memory.stats.rooms[room.name];
   IncomeAndExpensesVisuals(room,roomStats);
+  JobVisuals(room,roomStats);
 });
