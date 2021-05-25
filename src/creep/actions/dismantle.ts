@@ -20,7 +20,7 @@ export const ExecuteDismantle = FuncWrapper(function ExecuteDismantle(
       creep.say("Dismantle");
       if (isUndefined(creepMem.parts[WORK]))
       creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
-    global.preProcessingStats.rooms[creep.room.name].income.dismantle +=
+    global.preProcessingStats.rooms[creep.room.name].energyIncome.dismantle +=
       creepMem.parts[WORK] * 0.25;
       break;
     case ERR_NOT_IN_RANGE:

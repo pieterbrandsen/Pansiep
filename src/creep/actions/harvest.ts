@@ -39,7 +39,7 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
       creep.say("harvest");
       if (isUndefined(creepMem.parts[WORK]))
         creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
-      global.preProcessingStats.rooms[creep.room.name].income.harvest +=
+      global.preProcessingStats.rooms[creep.room.name].energyIncome.harvest +=
         creepMem.parts[WORK] * 2;
       break;
     case ERR_INVALID_TARGET:

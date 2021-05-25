@@ -40,8 +40,8 @@ export const ResetPreProcessingRoomStats = FuncWrapper(
       creepCount: 0,
       structureCount: 0,
       rcl: { progress: 0, progressTotal: 0, level: 0 },
-      expenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
-      income: { dismantle: 0, harvest: 0 },
+      energyExpenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
+      energyIncome: { dismantle: 0, harvest: 0 },
       activeJobs: {},
       creepCountPerJob: {}
     };
@@ -57,8 +57,8 @@ export const ResetRoomStats = FuncWrapper(function ResetRoomStats(
     creepCount: 0,
     structureCount: 0,
     rcl: { progress: 0, progressTotal: 0, level: 0 },
-    expenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
-    income: { dismantle: 0, harvest: 0 },
+    energyExpenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
+    energyIncome: { dismantle: 0, harvest: 0 },
     activeJobs: {},
     creepCountPerJob: {}
   };
@@ -131,29 +131,29 @@ export const RoomStats = FuncWrapper(function RoomStats(
           level: room.controller.level,
         }
       : { progress: 0, progressTotal: 0, level: 0 },
-    expenses: {
+      energyExpenses: {
       build: GetAveragedValue(
-        roomStats.expenses.build,
-        preProcessingRoomStats.expenses.build
+        roomStats.energyExpenses.build,
+        preProcessingRoomStats.energyExpenses.build
       ).response,
       repair: GetAveragedValue(
-        roomStats.expenses.repair,
-        preProcessingRoomStats.expenses.repair
+        roomStats.energyExpenses.repair,
+        preProcessingRoomStats.energyExpenses.repair
       ).response,
       upgrade: GetAveragedValue(
-        roomStats.expenses.upgrade,
-        preProcessingRoomStats.expenses.upgrade
+        roomStats.energyExpenses.upgrade,
+        preProcessingRoomStats.energyExpenses.upgrade
       ).response,
       spawn: {},
     },
-    income: {
+    energyIncome: {
       dismantle: GetAveragedValue(
-        roomStats.income.dismantle,
-        preProcessingRoomStats.income.dismantle
+        roomStats.energyIncome.dismantle,
+        preProcessingRoomStats.energyIncome.dismantle
       ).response,
       harvest: GetAveragedValue(
-        roomStats.income.harvest,
-        preProcessingRoomStats.income.harvest
+        roomStats.energyIncome.harvest,
+        preProcessingRoomStats.energyIncome.harvest
       ).response,
     },
     activeJobs: {},
@@ -184,16 +184,16 @@ export const RoomStats = FuncWrapper(function RoomStats(
 
     const spawnCosts:StringMap<number> = {}
   union(
-    Object.keys(roomStats.expenses.spawn),
-    Object.keys(preProcessingRoomStats.expenses.spawn)
+    Object.keys(roomStats.energyExpenses.spawn),
+    Object.keys(preProcessingRoomStats.energyExpenses.spawn)
   ).forEach((name: string) => {
     const currentCallCount =
-      roomStats.expenses.spawn[name] !== undefined
-        ? roomStats.expenses.spawn[name]
+      roomStats.energyExpenses.spawn[name] !== undefined
+        ? roomStats.energyExpenses.spawn[name]
         : 0;
     const newCallCount =
-      preProcessingRoomStats.expenses.spawn[name] !== undefined
-        ? preProcessingRoomStats.expenses.spawn[name]
+      preProcessingRoomStats.energyExpenses.spawn[name] !== undefined
+        ? preProcessingRoomStats.energyExpenses.spawn[name]
         : 0;
 
         spawnCosts[name] = GetAveragedValue(
@@ -202,7 +202,7 @@ export const RoomStats = FuncWrapper(function RoomStats(
     ).response;
   });
 
-  Memory.stats.rooms[room.name].expenses.spawn = spawnCosts;
+  Memory.stats.rooms[room.name].energyExpenses.spawn = spawnCosts;
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 

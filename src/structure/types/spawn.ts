@@ -260,7 +260,7 @@ export const SpawnCreep = FuncWrapper(function SpawnCreep(
   }
 
   const spawnExpenses =
-    global.preProcessingStats.rooms[spawn.room.name].expenses.spawn;
+    global.preProcessingStats.rooms[spawn.room.name].energyExpenses.spawn;
   if (isUndefined(spawnExpenses[creepType])) spawnExpenses[creepType] = 0;
   spawnExpenses[creepType] += body.bodyCost;
 

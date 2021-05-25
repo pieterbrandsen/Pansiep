@@ -223,6 +223,25 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
       subTitleTextStyle
       );
 
+      const energyIncomeAndExpensesList: {income:StringMap<number>,expenses:StringMap<number>} = {income:{},expenses:{}};
+      forEach(Object.values(Memory.stats.rooms),(rs:RoomStats)=>{
+        forEach(Object.entries(rs.energyIncome), ([key,value])=> {
+          energyIncomeAndExpensesList.income[key] ?   energyIncomeAndExpensesList.income[key]+=value :   energyIncomeAndExpensesList.income[key] = value;
+        });
+        forEach(Object.entries(rs.energyExpenses), ([key,value])=> {
+          let number = 0;
+          if (typeof value === "number") {
+            number = value;
+          }
+          else {
+            number = Object.values(value).reduce<number>((acc,curr)=> acc+=(curr as number), 0);
+          }
+          energyIncomeAndExpensesList.expenses[key] ?   energyIncomeAndExpensesList.expenses[key]+=number :   energyIncomeAndExpensesList.expenses[key] = number;
+        });
+      });
+      const globalEnergyIncome =Object.entries(energyIncomeAndExpensesList.income).slice(0,5).sort((a,b) => b[1]-a[1]);
+    const globalEnergyExpenses = Object.entries(energyIncomeAndExpensesList.expenses).slice(0,5).sort((a,b) => b[1]-a[1]);
+
       AddTextWCoords(
         room,
         "Income:",
@@ -231,8 +250,41 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
         VisualDisplayLevels.Info,
         textStyle
         );
+        forEach(globalEnergyIncome,([key, value]) => {
+          AddTextWCoords(
+            room,
+            `${key}: ${value.toFixed(3)}`,
+            textXPos,
+            (topLeftPos += 1),
+            VisualDisplayLevels.Info,
+            textStyle
+          );
+        });
+        if (globalEnergyIncome.length < 5) topLeftPos += 5-globalEnergyIncome.length;
 
-    topLeftPos += 9;
+      topLeftSecondRowPos += 3;
+      AddTextWCoords(
+      room,
+      "Expenses:",
+      textSecondRowXPos,
+      (topLeftSecondRowPos += 1),
+      VisualDisplayLevels.Info,
+      textStyle
+    );
+    forEach(globalEnergyExpenses,([key, value]) => {
+      AddTextWCoords(
+        room,
+        `${key}: ${value.toFixed(3)}`,
+        textSecondRowXPos,
+        (topLeftSecondRowPos += 1),
+        VisualDisplayLevels.Info,
+        textStyle
+      );
+    });
+    if (globalEnergyIncome.length < 5) topLeftSecondRowPos += 5-globalEnergyExpenses.length;
+
+        // Room
+    topLeftPos += 3;
     AddTextWCoords(
       room,
       "> Net Profit",
@@ -249,26 +301,45 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
       VisualDisplayLevels.Info,
       textStyle
       );
+      const energyIncome = Object.entries(roomStats.energyIncome).slice(0,5).sort((a,b) => b[1]-a[1]);
+      forEach(energyIncome,([key, value]) => {
+        AddTextWCoords(
+          room,
+          `${key}: ${value.toFixed(3)}`,
+          textXPos,
+          (topLeftPos += 1),
+          VisualDisplayLevels.Info,
+          textStyle
+        );
+      });
+      if (energyIncome.length < 5) topLeftPos += 5-energyIncome.length;
 
-      topLeftSecondRowPos += 3;
-    AddTextWCoords(
-    room,
-    "Expense:",
-    textSecondRowXPos,
-    (topLeftSecondRowPos += 1),
-    VisualDisplayLevels.Info,
-    textStyle
-  );
-
-  topLeftSecondRowPos += 10;
+  topLeftSecondRowPos += 4;
   AddTextWCoords(
   room,
-  "Expense:",
+  "Expenses:",
   textSecondRowXPos,
   (topLeftSecondRowPos += 1),
   VisualDisplayLevels.Info,
   textStyle
 );
+const energyExpenses = Object.entries(roomStats.energyExpenses).map(o=>{
+  if (typeof o[1] !== "number") {
+    o[1] = Object.values(o[1]).reduce<number>((acc,curr)=> acc+=(curr as number), 0);;
+  }
+  return o;
+}).slice(0,5).sort((a,b) => b[1]-a[1]);
+forEach(energyExpenses,([key, value]) => {
+  AddTextWCoords(
+    room,
+    `${key}: ${value.toFixed(3)}`,
+    textSecondRowXPos,
+    (topLeftSecondRowPos += 1),
+    VisualDisplayLevels.Info,
+    textStyle
+  );
+});
+if (energyIncome.length < 5) topLeftSecondRowPos += 5-energyExpenses.length;
 });
 
 export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:RoomStats) {

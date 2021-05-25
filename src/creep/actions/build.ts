@@ -26,7 +26,7 @@ export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
       creep.say("Build");
       if (isUndefined(creepMem.parts[WORK]))
       creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
-    global.preProcessingStats.rooms[creep.room.name].expenses.build +=
+    global.preProcessingStats.rooms[creep.room.name].energyExpenses.build +=
       creepMem.parts[WORK] * 5;
       break;
     case ERR_NOT_ENOUGH_RESOURCES:

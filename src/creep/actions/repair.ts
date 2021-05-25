@@ -29,7 +29,7 @@ export const ExecuteRepair = FuncWrapper(function ExecuteRepair(
       creep.say("Repair");
       if (isUndefined(creepMem.parts[WORK]))
       creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
-    global.preProcessingStats.rooms[creep.room.name].income.dismantle +=
+    global.preProcessingStats.rooms[creep.room.name].energyExpenses.repair +=
       creepMem.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:

@@ -44,12 +44,12 @@ interface FunctionReturn {
   response?: any;
 }
 
-interface RoomIncomes {
+interface RoomEnergyIncome {
   harvest: number;
   dismantle: number;
 }
 
-interface RoomExpenses {
+interface RoomEnergyExpenses {
   build: number;
   repair: number;
   spawn: StringMap<number>;
@@ -59,8 +59,8 @@ interface RoomExpenses {
 interface RoomStats {
   creepCount: number;
   structureCount: number;
-  income: RoomIncomes;
-  expenses: RoomExpenses;
+  energyIncome: RoomEnergyIncome;
+  energyExpenses: RoomEnergyExpenses;
   rcl: GlobalControlLevel;
   activeJobs: StringMap<number>;
   creepCountPerJob:StringMap<number>;
