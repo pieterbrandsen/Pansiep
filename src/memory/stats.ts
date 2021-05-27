@@ -8,6 +8,7 @@ import { GetUpdateStatsVar } from "../utils/config/global";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnHelper } from "../utils/statusGenerator";
 import { GetRoomMemoryUsingName } from "../room/helper";
+import { GetUsedCapacity } from '../structure/types/helper';
 
 export const ResetPreProcessingStats = FuncWrapper(
   function ResetPreProcessingStats(): FunctionReturn {
@@ -17,6 +18,7 @@ export const ResetPreProcessingStats = FuncWrapper(
       rooms: {},
       ticksStatsCollecting: 0,
       gcl: Game.gcl,
+      cpu: {bucket: {}, usage: {}}
     };
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
@@ -29,6 +31,7 @@ export const ResetStats = FuncWrapper(function ResetStats(): FunctionReturn {
     rooms: {},
     ticksStatsCollecting: 0,
     gcl: { progress: 0, progressTotal: 0, level: 0 },
+    cpu: {bucket: {}, usage: {}}
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -43,7 +46,12 @@ export const ResetPreProcessingRoomStats = FuncWrapper(
       energyExpenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
       energyIncome: { dismantle: 0, harvest: 0 },
       activeJobs: {},
-      creepCountPerJob: {}
+      creepCountPerJob: {},
+      energyInStorages: {
+        containers: 0,
+        storage: 0,
+        terminal: 0,
+      }
     };
 
     return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -60,7 +68,12 @@ export const ResetRoomStats = FuncWrapper(function ResetRoomStats(
     energyExpenses: { build: 0, repair: 0, upgrade: 0, spawn: {} },
     energyIncome: { dismantle: 0, harvest: 0 },
     activeJobs: {},
-    creepCountPerJob: {}
+    creepCountPerJob: {},
+    energyInStorages: {
+      containers:0,
+      storage: 0,
+      terminal: 0,
+    }
   };
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
@@ -157,7 +170,21 @@ export const RoomStats = FuncWrapper(function RoomStats(
       ).response,
     },
     activeJobs: {},
-    creepCountPerJob: {}
+    creepCountPerJob: {},
+    energyInStorages: {
+      containers: GetAveragedValue(
+        roomStats.energyInStorages.containers,
+        preProcessingRoomStats.energyInStorages.containers
+      ).response,
+      storage: GetAveragedValue(
+        roomStats.energyInStorages.storage,
+        preProcessingRoomStats.energyInStorages.storage
+      ).response,
+      terminal: GetAveragedValue(
+        roomStats.energyInStorages.terminal,
+        preProcessingRoomStats.energyInStorages.terminal
+      ).response
+    },
   };
 
   const activeJobsCount: StringMap<number> = {};
@@ -216,6 +243,20 @@ export const StructureStatsPreProcessing = FuncWrapper(
     const roomStats = global.preProcessingStats.rooms[structure.room.name];
     roomStats.structureCount += 1;
 
+    switch (structure.structureType) {
+      case STRUCTURE_STORAGE:
+        roomStats.energyInStorages.storage = (structure as StructureStorage).store.energy;
+        break;
+      case STRUCTURE_TERMINAL:
+        roomStats.energyInStorages.terminal = (structure as StructureTerminal).store.energy;
+      break;
+      case STRUCTURE_CONTAINER:
+        roomStats.energyInStorages.containers > 0 ? roomStats.energyInStorages.containers += (structure as StructureContainer).store.energy : roomStats.energyInStorages.containers = (structure as StructureContainer).store.energy;
+        break;
+      default:
+        break;
+    }
+
     return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
 );
@@ -253,6 +294,10 @@ export const GlobalStats = FuncWrapper(function GlobalStats(): FunctionReturn {
 
   Memory.stats.ticksStatsCollecting += 1;
   Memory.stats.gcl = Game.gcl;
+
+  const cpuStats = Memory.stats.cpu;
+  cpuStats.bucket[Game.shard.name] = GetAveragedValue(cpuStats.bucket[Game.shard.name], Game.cpu.bucket).response;
+  cpuStats.usage[Game.shard.name] = GetAveragedValue(cpuStats.usage[Game.shard.name], Game.cpu.getUsed()).response;
 
   const { preProcessingStats } = global;
   const averagedIntentCallsList: StringMap<{

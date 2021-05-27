@@ -1,4 +1,4 @@
-export const AverageValueOverAmountTicks = 10000;
+export const AverageValueOverAmountTicks = 2500;
 
 export const LogTypes: StringMap<LogType> = {
   None: { code: 0, value: { name: "None", color: "None" } },

@@ -56,7 +56,14 @@ interface RoomEnergyExpenses {
   upgrade: number;
 }
 
+interface EnergyInStorages {
+  terminal: number;
+  storage: number;
+  containers: number;
+}
+
 interface RoomStats {
+  energyInStorages: EnergyInStorages;
   creepCount: number;
   structureCount: number;
   energyIncome: RoomEnergyIncome;
@@ -66,12 +73,18 @@ interface RoomStats {
   creepCountPerJob:StringMap<number>;
 }
 
+interface GlobalCpuUsage {
+  usage: StringMap<number>;
+  bucket: StringMap<number>;
+}
+
 interface StatsMemory {
   intentCalls: StringMap<{ callCount: number; cpuUsed: number }>;
   funcCalls: StringMap<{ callCount: number; cpuUsed: number }>;
   ticksStatsCollecting: number;
   gcl: GlobalControlLevel;
   rooms: StringMap<RoomStats>;
+  cpu: GlobalCpuUsage;
 }
 
 type JobActionTypes =
