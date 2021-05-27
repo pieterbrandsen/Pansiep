@@ -8,6 +8,7 @@
     "lint": "eslint **/*",
     "lint-fix": "eslint **/* --fix",
     "push-main": "rollup -c --environment DEST:main",
+    "push-s+": "rollup -c --environment DEST:s+",
     "push-pserver": "rollup -c --environment DEST:pserver",
     "push-sim": "rollup -c --environment DEST:sim",
     "push-seasonal": "rollup -c --environment DEST:seasonal",
