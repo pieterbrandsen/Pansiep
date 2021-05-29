@@ -1,5 +1,5 @@
 import { isUndefined, forOwn } from "lodash";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { GetJobById } from "../room/jobs/handler";
@@ -61,6 +61,7 @@ export const ExecuteJob = FuncWrapper(function ExecuteJob(
     UpdateCreepMemory(creep.name, mem);
     return FunctionReturnHelper(getJobById.code);
   }
+
   const job = getJobById.response;
   switch (job.action) {
     case "attack":

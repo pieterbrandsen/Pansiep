@@ -1,6 +1,6 @@
 import { isUndefined, first, forEach, remove } from "lodash";
 import { FuncWrapper } from "../../utils/wrapper";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { GetCreepMemory, UpdateCreepMemory } from "../../creep/helper";
 import {

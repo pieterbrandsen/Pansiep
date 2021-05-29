@@ -1,12 +1,12 @@
 import { forEach, forOwn, reduce, isUndefined } from "lodash";
 import { GetCreepsMemory } from "../../creep/helper";
 import { InitializeCreepMemory } from "../../memory/initialization";
-import { GetRoom, GetRoomMemoryUsingName } from "../../room/helper";
+import { GetRoom } from "../../room/helper";
 import { GetAllJobs } from "../../room/jobs/handler";
 import { FunctionReturnCodes, LogTypes } from "../../utils/constants/global";
 import { MaxCreepsPerCreepType } from "../../utils/constants/room";
 import { Log } from "../../utils/logger";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { TryToCreateRepairJob, TryToCreateTransferJob } from "./helper";
 

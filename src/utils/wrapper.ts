@@ -3,8 +3,10 @@ import { Log } from "./logger";
 import { LogTypes } from "./constants/global";
 
 /**
- * @param func
- * @returns {F} Function
+ * Returns monkey patched function that tracks call count and cpu usage.
+ *
+ * @param {f} func currFunction
+ * @returns {F} Money patched function
  */
 // eslint-disable-next-line
 export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
@@ -40,7 +42,9 @@ export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
 };
 
 /**
- * @param functions
+ * Wrap multiple functions using the FuncWrapper function wrapper.
+ *
+ * @param {T} functions
  */
 export const WrapFunctions = FuncWrapper(function WrapFunctions<
   // eslint-disable-next-line

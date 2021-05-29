@@ -1,9 +1,9 @@
+import { forEach } from "lodash";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { VisualDisplayLevels } from "../utils/constants/room";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { AddLineWCoords, AddRectWCoords, AddTextWCoords } from "./visuals";
-import { forEach, groupBy } from 'lodash';
 
 // eslint-disable-next-line import/prefer-default-export
 export const MainVisuals = FuncWrapper(function RoomMainVisuals(
@@ -183,37 +183,46 @@ export const MainVisuals = FuncWrapper(function RoomMainVisuals(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
-export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVisuals(room:Room, roomStats:RoomStats) {
-  const defaultX = 9;
-  const textXPos = defaultX + 0.3;
+export const IncomeAndExpensesVisuals = FuncWrapper(
+  function IncomeAndExpensesVisuals(room: Room, roomStats: RoomStats) {
+    const defaultX = 9;
+    const textXPos = defaultX + 0.3;
 
-  const secondRowX = defaultX + 8;
-  const textSecondRowXPos = secondRowX + 0.3;
-  const subTitleTextStyle: TextStyle = {
-    align: "left",
-    font: 0.9,
-  };
-  const textStyle: TextStyle = {
-    align: "left",
-  };
-  let topLeftPos = 5;
-  let topLeftSecondRowPos = 5;
-  AddLineWCoords(room, defaultX, topLeftPos+1,defaultX,topLeftPos+21, VisualDisplayLevels.Info, {opacity:1})
-  AddRectWCoords(
-    room,
-    defaultX,
-    (topLeftPos += 1),
-    18,
-  20,
-    VisualDisplayLevels.Info,
-    {
-      opacity: 0.65,
-      fill: "Grey",
-    }
-  );
+    const secondRowX = defaultX + 8;
+    const textSecondRowXPos = secondRowX + 0.3;
+    const subTitleTextStyle: TextStyle = {
+      align: "left",
+      font: 0.9,
+    };
+    const textStyle: TextStyle = {
+      align: "left",
+    };
+    let topLeftPos = 5;
+    let topLeftSecondRowPos = 5;
+    AddLineWCoords(
+      room,
+      defaultX,
+      topLeftPos + 1,
+      defaultX,
+      topLeftPos + 21,
+      VisualDisplayLevels.Info,
+      { opacity: 1 }
+    );
+    AddRectWCoords(
+      room,
+      defaultX,
+      (topLeftPos += 1),
+      18,
+      20,
+      VisualDisplayLevels.Info,
+      {
+        opacity: 0.65,
+        fill: "Grey",
+      }
+    );
 
     // Empire
-    topLeftPos += 1
+    topLeftPos += 1;
     AddTextWCoords(
       room,
       "> Net Profit",
@@ -221,49 +230,68 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
       (topLeftPos += 1),
       VisualDisplayLevels.Info,
       subTitleTextStyle
-      );
+    );
 
-      const energyIncomeAndExpensesList: {income:StringMap<number>,expenses:StringMap<number>} = {income:{},expenses:{}};
-      forEach(Object.values(Memory.stats.rooms),(rs:RoomStats)=>{
-        forEach(Object.entries(rs.energyIncome), ([key,value])=> {
-          energyIncomeAndExpensesList.income[key] ?   energyIncomeAndExpensesList.income[key]+=value :   energyIncomeAndExpensesList.income[key] = value;
-        });
-        forEach(Object.entries(rs.energyExpenses), ([key,value])=> {
-          let number = 0;
-          if (typeof value === "number") {
-            number = value;
-          }
-          else {
-            number = Object.values(value).reduce<number>((acc,curr)=> acc+=(curr as number), 0);
-          }
-          energyIncomeAndExpensesList.expenses[key] ?   energyIncomeAndExpensesList.expenses[key]+=number :   energyIncomeAndExpensesList.expenses[key] = number;
-        });
+    const energyIncomeAndExpensesList: {
+      income: StringMap<number>;
+      expenses: StringMap<number>;
+    } = { income: {}, expenses: {} };
+    forEach(Object.values(Memory.stats.rooms), (rs: RoomStats) => {
+      forEach(Object.entries(rs.energyIncome), ([key, value]) => {
+        if (energyIncomeAndExpensesList.income[key])
+          energyIncomeAndExpensesList.income[key] += value;
+        else energyIncomeAndExpensesList.income[key] = value;
       });
-      const globalEnergyIncome =Object.entries(energyIncomeAndExpensesList.income).slice(0,5).sort((a,b) => b[1]-a[1]);
-    const globalEnergyExpenses = Object.entries(energyIncomeAndExpensesList.expenses).slice(0,5).sort((a,b) => b[1]-a[1]);
+      forEach(Object.entries(rs.energyExpenses), ([key, value]) => {
+        let number = 0;
+        if (typeof value === "number") {
+          number = value;
+        } else {
+          number = Object.values(value).reduce<number>((acc, curr) => {
+            // eslint-disable-next-line no-param-reassign
+            acc += curr as number;
+            return acc;
+          }, 0);
+        }
+        if (energyIncomeAndExpensesList.expenses[key])
+          energyIncomeAndExpensesList.expenses[key] += number;
+        else energyIncomeAndExpensesList.expenses[key] = number;
+      });
+    });
+    const globalEnergyIncome = Object.entries(
+      energyIncomeAndExpensesList.income
+    )
+      .slice(0, 5)
+      .sort((a, b) => b[1] - a[1]);
+    const globalEnergyExpenses = Object.entries(
+      energyIncomeAndExpensesList.expenses
+    )
+      .slice(0, 5)
+      .sort((a, b) => b[1] - a[1]);
 
+    AddTextWCoords(
+      room,
+      "Income:",
+      textXPos,
+      (topLeftPos += 1),
+      VisualDisplayLevels.Info,
+      textStyle
+    );
+    forEach(globalEnergyIncome, ([key, value]) => {
       AddTextWCoords(
         room,
-        "Income:",
+        `${key}: ${value.toFixed(3)}`,
         textXPos,
         (topLeftPos += 1),
         VisualDisplayLevels.Info,
         textStyle
-        );
-        forEach(globalEnergyIncome,([key, value]) => {
-          AddTextWCoords(
-            room,
-            `${key}: ${value.toFixed(3)}`,
-            textXPos,
-            (topLeftPos += 1),
-            VisualDisplayLevels.Info,
-            textStyle
-          );
-        });
-        if (globalEnergyIncome.length < 5) topLeftPos += 5-globalEnergyIncome.length;
+      );
+    });
+    if (globalEnergyIncome.length < 5)
+      topLeftPos += 5 - globalEnergyIncome.length;
 
-      topLeftSecondRowPos += 3;
-      AddTextWCoords(
+    topLeftSecondRowPos += 3;
+    AddTextWCoords(
       room,
       "Expenses:",
       textSecondRowXPos,
@@ -271,7 +299,7 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
       VisualDisplayLevels.Info,
       textStyle
     );
-    forEach(globalEnergyExpenses,([key, value]) => {
+    forEach(globalEnergyExpenses, ([key, value]) => {
       AddTextWCoords(
         room,
         `${key}: ${value.toFixed(3)}`,
@@ -281,9 +309,10 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
         textStyle
       );
     });
-    if (globalEnergyIncome.length < 5) topLeftSecondRowPos += 5-globalEnergyExpenses.length;
+    if (globalEnergyIncome.length < 5)
+      topLeftSecondRowPos += 5 - globalEnergyExpenses.length;
 
-        // Room
+    // Room
     topLeftPos += 4;
     AddTextWCoords(
       room,
@@ -292,7 +321,7 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
       (topLeftPos += 1),
       VisualDisplayLevels.Info,
       subTitleTextStyle
-      );
+    );
     AddTextWCoords(
       room,
       "Income:",
@@ -300,49 +329,64 @@ export const IncomeAndExpensesVisuals = FuncWrapper(function IncomeAndExpensesVi
       (topLeftPos += 1),
       VisualDisplayLevels.Info,
       textStyle
+    );
+    const energyIncome = Object.entries(roomStats.energyIncome)
+      .slice(0, 5)
+      .sort((a, b) => b[1] - a[1]);
+    forEach(energyIncome, ([key, value]) => {
+      AddTextWCoords(
+        room,
+        `${key}: ${value.toFixed(3)}`,
+        textXPos,
+        (topLeftPos += 1),
+        VisualDisplayLevels.Info,
+        textStyle
       );
-      const energyIncome = Object.entries(roomStats.energyIncome).slice(0,5).sort((a,b) => b[1]-a[1]);
-      forEach(energyIncome,([key, value]) => {
-        AddTextWCoords(
-          room,
-          `${key}: ${value.toFixed(3)}`,
-          textXPos,
-          (topLeftPos += 1),
-          VisualDisplayLevels.Info,
-          textStyle
-        );
-      });
-      if (energyIncome.length < 5) topLeftPos += 5-energyIncome.length;
+    });
+    if (energyIncome.length < 5) topLeftPos += 5 - energyIncome.length;
 
-  topLeftSecondRowPos += 5;
-  AddTextWCoords(
-  room,
-  "Expenses:",
-  textSecondRowXPos,
-  (topLeftSecondRowPos += 1),
-  VisualDisplayLevels.Info,
-  textStyle
-);
-const energyExpenses = Object.entries(roomStats.energyExpenses).map(o=>{
-  if (typeof o[1] !== "number") {
-    o[1] = Object.values(o[1]).reduce<number>((acc,curr)=> acc+=(curr as number), 0);;
+    topLeftSecondRowPos += 5;
+    AddTextWCoords(
+      room,
+      "Expenses:",
+      textSecondRowXPos,
+      (topLeftSecondRowPos += 1),
+      VisualDisplayLevels.Info,
+      textStyle
+    );
+    const energyExpenses = Object.entries(roomStats.energyExpenses)
+      .map((o) => {
+        if (typeof o[1] !== "number") {
+          // eslint-disable-next-line no-param-reassign
+          o[1] = Object.values(o[1]).reduce<number>((acc, curr) => {
+            // eslint-disable-next-line no-param-reassign
+            acc += curr as number;
+            return acc;
+          }, 0);
+        }
+        return o;
+      })
+      .slice(0, 5)
+      .sort((a, b) => b[1] - a[1]);
+    forEach(energyExpenses, ([key, value]) => {
+      AddTextWCoords(
+        room,
+        `${key}: ${value.toFixed(3)}`,
+        textSecondRowXPos,
+        (topLeftSecondRowPos += 1),
+        VisualDisplayLevels.Info,
+        textStyle
+      );
+    });
+    if (energyIncome.length < 5)
+      topLeftSecondRowPos += 5 - energyExpenses.length;
   }
-  return o;
-}).slice(0,5).sort((a,b) => b[1]-a[1]);
-forEach(energyExpenses,([key, value]) => {
-  AddTextWCoords(
-    room,
-    `${key}: ${value.toFixed(3)}`,
-    textSecondRowXPos,
-    (topLeftSecondRowPos += 1),
-    VisualDisplayLevels.Info,
-    textStyle
-  );
-});
-if (energyIncome.length < 5) topLeftSecondRowPos += 5-energyExpenses.length;
-});
+);
 
-export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:RoomStats) {
+export const JobVisuals = FuncWrapper(function JobVisuals(
+  room: Room,
+  roomStats: RoomStats
+) {
   const defaultX = 27;
   const textXPos = defaultX + 0.3;
 
@@ -357,13 +401,21 @@ export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:R
   };
   let topLeftPos = 5;
   let topLeftSecondRowPos = 8;
-  AddLineWCoords(room, defaultX, topLeftPos+1,defaultX,topLeftPos+21, VisualDisplayLevels.Debug, {opacity:1})
+  AddLineWCoords(
+    room,
+    defaultX,
+    topLeftPos + 1,
+    defaultX,
+    topLeftPos + 21,
+    VisualDisplayLevels.Debug,
+    { opacity: 1 }
+  );
   AddRectWCoords(
     room,
     defaultX,
     (topLeftPos += 1),
     18,
-  20,
+    20,
     VisualDisplayLevels.Debug,
     {
       opacity: 0.65,
@@ -372,7 +424,7 @@ export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:R
   );
 
   // Empire
-  topLeftPos += 1
+  topLeftPos += 1;
   AddTextWCoords(
     room,
     "> Job",
@@ -389,19 +441,28 @@ export const JobVisuals = FuncWrapper(function JobVisuals(room:Room, roomStats:R
     VisualDisplayLevels.Debug,
     textStyle
   );
-  const jobList: {activeJobs:StringMap<number>,creepCountPerJob:StringMap<number>} = {activeJobs:{},creepCountPerJob:{}};
-  forEach(Object.values(Memory.stats.rooms),(rs:RoomStats)=>{
-    forEach(Object.entries(rs.activeJobs), ([key,value])=> {
-      jobList.activeJobs[key] ?   jobList.activeJobs[key]+=value :   jobList.activeJobs[key] = value;
+  const jobList: {
+    activeJobs: StringMap<number>;
+    creepCountPerJob: StringMap<number>;
+  } = { activeJobs: {}, creepCountPerJob: {} };
+  forEach(Object.values(Memory.stats.rooms), (rs: RoomStats) => {
+    forEach(Object.entries(rs.activeJobs), ([key, value]) => {
+      if (jobList.activeJobs[key]) jobList.activeJobs[key] += value;
+      else jobList.activeJobs[key] = value;
     });
-    forEach(Object.entries(rs.creepCountPerJob), ([key,value])=> {
-      jobList.creepCountPerJob[key] ?   jobList.creepCountPerJob[key]+=value :   jobList.creepCountPerJob[key] = value;
+    forEach(Object.entries(rs.creepCountPerJob), ([key, value]) => {
+      if (jobList.creepCountPerJob[key]) jobList.creepCountPerJob[key] += value;
+      else jobList.creepCountPerJob[key] = value;
     });
   });
-  const globalActiveJobs =Object.entries(jobList.activeJobs).slice(0,5).sort((a,b) => b[1]-a[1]);
-const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,5).sort((a,b) => b[1]-a[1]);
+  const globalActiveJobs = Object.entries(jobList.activeJobs)
+    .slice(0, 5)
+    .sort((a, b) => b[1] - a[1]);
+  const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob)
+    .slice(0, 5)
+    .sort((a, b) => b[1] - a[1]);
 
-  forEach(globalActiveJobs,([key, value]) => {
+  forEach(globalActiveJobs, ([key, value]) => {
     AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
@@ -411,7 +472,7 @@ const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,
       textStyle
     );
   });
-  if (globalActiveJobs.length < 5) topLeftPos += 5-globalActiveJobs.length;
+  if (globalActiveJobs.length < 5) topLeftPos += 5 - globalActiveJobs.length;
 
   AddTextWCoords(
     room,
@@ -421,7 +482,7 @@ const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,
     VisualDisplayLevels.Debug,
     textStyle
   );
-  forEach(globalCreepCountPerJob,([key, value]) => {
+  forEach(globalCreepCountPerJob, ([key, value]) => {
     AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
@@ -431,7 +492,8 @@ const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,
       textStyle
     );
   });
-  if (globalCreepCountPerJob.length < 5) topLeftSecondRowPos += 5-globalCreepCountPerJob.length;
+  if (globalCreepCountPerJob.length < 5)
+    topLeftSecondRowPos += 5 - globalCreepCountPerJob.length;
 
   // Room
   topLeftPos += 4;
@@ -451,8 +513,10 @@ const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,
     VisualDisplayLevels.Debug,
     textStyle
   );
-  const activeJobs = Object.entries(roomStats.activeJobs).slice(0,5).sort((a,b) => b[1]-a[1]);
-  forEach(activeJobs,([key, value]) => {
+  const activeJobs = Object.entries(roomStats.activeJobs)
+    .slice(0, 5)
+    .sort((a, b) => b[1] - a[1]);
+  forEach(activeJobs, ([key, value]) => {
     AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
@@ -462,7 +526,7 @@ const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,
       textStyle
     );
   });
-  if (activeJobs.length < 5) topLeftPos += 5-activeJobs.length;
+  if (activeJobs.length < 5) topLeftPos += 5 - activeJobs.length;
 
   topLeftSecondRowPos += 5;
   AddTextWCoords(
@@ -473,8 +537,10 @@ const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,
     VisualDisplayLevels.Debug,
     textStyle
   );
-  const creepCountPerJob = Object.entries(roomStats.creepCountPerJob).slice(0,5).sort((a,b) => b[1]-a[1]);
-  forEach(creepCountPerJob,([key, value]) => {
+  const creepCountPerJob = Object.entries(roomStats.creepCountPerJob)
+    .slice(0, 5)
+    .sort((a, b) => b[1] - a[1]);
+  forEach(creepCountPerJob, ([key, value]) => {
     AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
@@ -484,14 +550,14 @@ const globalCreepCountPerJob = Object.entries(jobList.creepCountPerJob).slice(0,
       textStyle
     );
   });
-  if (creepCountPerJob.length < 5) topLeftSecondRowPos += 5-creepCountPerJob.length;
+  if (creepCountPerJob.length < 5)
+    topLeftSecondRowPos += 5 - creepCountPerJob.length;
 });
 
-export const RoomVisuals = FuncWrapper(function RoomVisuals(room:Room) {
+export const RoomVisuals = FuncWrapper(function RoomVisuals(room: Room) {
   MainVisuals(room);
 
-
-  const roomStats:RoomStats = Memory.stats.rooms[room.name];
-  IncomeAndExpensesVisuals(room,roomStats);
-  JobVisuals(room,roomStats);
+  const roomStats: RoomStats = Memory.stats.rooms[room.name];
+  IncomeAndExpensesVisuals(room, roomStats);
+  JobVisuals(room, roomStats);
 });

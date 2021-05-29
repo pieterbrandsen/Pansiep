@@ -9,7 +9,7 @@ import {
 import { GetObject } from "../../structure/helper";
 import { GetUsedCapacity } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 import { GetCreepMemory } from "../helper";
@@ -25,6 +25,7 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
     DeleteJobById(job.id, job.roomName);
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
+
 
   const resourceType = job.resourceType as ResourceConstant;
   const str: Structure = GetObject(job.objId).response as Structure;

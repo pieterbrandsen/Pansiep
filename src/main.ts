@@ -10,30 +10,39 @@ import { Update } from "./memory/updateCache";
 import { Run as RunRooms } from "./room/loop";
 import { GlobalStatsPreProcessing, GlobalStats } from "./memory/stats";
 import { FunctionReturnCodes } from "./utils/constants/global";
-import { FunctionReturnHelper } from "./utils/statusGenerator";
+import { FunctionReturnHelper } from "./utils/functionStatusGenerator";
+import { LoadMemory } from "./utils/helper";
+import { ErrorMapper } from "./utils/external/errorMapper";
 
 /**
- * @returns {FunctionReturn} HTTP response
+ * @returns {FunctionReturn} HTTP response with code and data
  */
 // eslint-disable-next-line import/prefer-default-export
-export function loop(): FunctionReturn {
+export const loop = ErrorMapper.wrapLoop(() => {
+  // LoadMemory();
+
+  let areCustomPrototypesInitialized = AreCustomPrototypesInitialized();
   if (
-    AreCustomPrototypesInitialized().code === FunctionReturnCodes.NO_CONTENT
+    areCustomPrototypesInitialized.code === FunctionReturnCodes.NO_CONTENT
   ) {
     InitializeCustomPrototypes();
-    const areCustomPrototypesInitialized = AreCustomPrototypesInitialized();
+    areCustomPrototypesInitialized = AreCustomPrototypesInitialized();
     if (areCustomPrototypesInitialized.code === FunctionReturnCodes.NO_CONTENT)
       return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
-  if (AreHeapVarsValid().code === FunctionReturnCodes.NO_CONTENT) {
+
+  let areHeapVarsValid = AreHeapVarsValid();
+  if (areHeapVarsValid.code === FunctionReturnCodes.NO_CONTENT) {
     InitializeHeapVars();
-    const areHeapVarsValid = AreHeapVarsValid();
+    areHeapVarsValid = AreHeapVarsValid();
     if (areHeapVarsValid.code === FunctionReturnCodes.NO_CONTENT)
       return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
-  if (IsGlobalMemoryInitialized().code === FunctionReturnCodes.NO_CONTENT) {
+
+  let isGlobalMemoryInitialized = IsGlobalMemoryInitialized();
+  if (isGlobalMemoryInitialized.code === FunctionReturnCodes.NO_CONTENT) {
     InitializeGlobalMemory();
-    const isGlobalMemoryInitialized = IsGlobalMemoryInitialized();
+    isGlobalMemoryInitialized = IsGlobalMemoryInitialized();
     if (isGlobalMemoryInitialized.code === FunctionReturnCodes.NO_CONTENT)
       return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
   }
@@ -44,4 +53,4 @@ export function loop(): FunctionReturn {
   if (globalStatsPreProcessing.code === FunctionReturnCodes.OK) GlobalStats();
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
-}
+});

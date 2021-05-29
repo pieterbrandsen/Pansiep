@@ -6,7 +6,7 @@ import { IsRoomMemoryInitialized } from "../memory/initialization";
 import { RoomStatsPreProcessing, RoomStats } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { TryToExecuteRoomPlanner } from "./planner";
 import { RoomVisuals } from "./overviewVisual";
 

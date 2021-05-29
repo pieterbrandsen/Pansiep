@@ -5,7 +5,7 @@ import { ResetStats, ResetPreProcessingStats } from "./stats";
 import { FuncWrapper, IntentWrapper } from "../utils/wrapper";
 import { AssignCommandsToHeap } from "../utils/consoleCommands";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { TrackedIntents as TrackedRoomIntents } from "../utils/constants/room";
 import { TrackedIntents as TrackedStructureIntents } from "../utils/constants/structure";
 import { TrackedIntents as TrackedCreepIntents } from "../utils/constants/creep";

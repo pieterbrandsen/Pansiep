@@ -3,7 +3,7 @@ import { Log } from "../utils/logger";
 import { ResetRoomStats } from "./stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { GetAllJobs, UpdateJobById, UpdateJobList } from "../room/jobs/handler";
 
 export const RemoveCreep = FuncWrapper(function RemoveCreep(

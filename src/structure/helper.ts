@@ -2,7 +2,7 @@ import { isUndefined } from "lodash";
 import { CreateBuildJob } from "../room/jobs/create";
 import { GetStructuresInRange } from "../room/reading";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { ExecuteContainer } from "./types/container";
 import { ExecuteController } from "./types/controller";

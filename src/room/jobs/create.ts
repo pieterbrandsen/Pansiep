@@ -1,6 +1,6 @@
 import { isUndefined } from "lodash";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetAccesSpotsAroundPosition } from "../reading";
 import { UpdateJobById } from "./handler";

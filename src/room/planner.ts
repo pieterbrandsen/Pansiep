@@ -1,15 +1,19 @@
 import { forEach, intersectionWith, isUndefined, sortBy } from "lodash";
 import { BuildStructure } from "../structure/helper";
-import { FunctionReturnCodes, Username } from "../utils/constants/global";
+import { FunctionReturnCodes } from "../utils/constants/global";
 import {
   RoomBasePlannerDelay,
   RoomControllerPlannerDelay,
   RoomSourcePlannerDelay,
 } from "../utils/constants/room";
 import { ExecuteEachTick } from "../utils/helper";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
-import { GetRoomMemoryUsingName, IsMyOwnedRoom, UpdateRoomMemory } from "./helper";
+import {
+  GetRoomMemoryUsingName,
+  IsMyOwnedRoom,
+  UpdateRoomMemory,
+} from "./helper";
 import { CreateHarvestJob } from "./jobs/create";
 import { GetJobById } from "./jobs/handler";
 import {
@@ -594,34 +598,36 @@ export const GetCompleteBasePlanned = FuncWrapper(
     let usedPositions: RoomPosition[] = [];
     const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
 
-    const getStructures = GetStructures(room.name,[STRUCTURE_SPAWN]);
-    if (getStructures.code !== FunctionReturnCodes.OK)return FunctionReturnHelper(getStructures.code);
+    const getStructures = GetStructures(room.name, [STRUCTURE_SPAWN]);
+    if (getStructures.code !== FunctionReturnCodes.OK)
+      return FunctionReturnHelper(getStructures.code);
 
     if (isUndefined(mem.base)) mem.base = { extension: [] };
 
-    const spawns:StructureSpawn[] = getStructures.response;
-    if (spawns.length > 0) mem.base.hearth = sortBy(spawns,(s=>s.name))[0].pos;
+    const spawns: StructureSpawn[] = getStructures.response;
+    if (spawns.length > 0)
+      mem.base.hearth = sortBy(spawns, (s) => s.name)[0].pos;
     else {
-    forEach(positions, (pos: RoomPosition) => {
-      const baseStructures: BaseStructure[] = GetHearthOfBase(pos, [
-        STRUCTURE_ROAD,
-      ]).response;
-      if (
-        mem.base &&
-        DoesPositionsOfBaseFit(
-          room,
-          baseStructures.map((s) => s.pos),
-          usedPositions
-        ).code === FunctionReturnCodes.OK
-      ) {
-        const baseStructurePositions = baseStructures.map(
-          (s: BaseStructure) => s.pos
-        );
-        usedPositions = usedPositions.concat(baseStructurePositions);
-        mem.base.hearth = pos;
-      }
-    });
-  }
+      forEach(positions, (pos: RoomPosition) => {
+        const baseStructures: BaseStructure[] = GetHearthOfBase(pos, [
+          STRUCTURE_ROAD,
+        ]).response;
+        if (
+          mem.base &&
+          DoesPositionsOfBaseFit(
+            room,
+            baseStructures.map((s) => s.pos),
+            usedPositions
+          ).code === FunctionReturnCodes.OK
+        ) {
+          const baseStructurePositions = baseStructures.map(
+            (s: BaseStructure) => s.pos
+          );
+          usedPositions = usedPositions.concat(baseStructurePositions);
+          mem.base.hearth = pos;
+        }
+      });
+    }
 
     if (isUndefined(mem.base.hearth))
       return FunctionReturnHelper(FunctionReturnCodes.NOT_FITTING);
@@ -789,7 +795,10 @@ export const TryToExecuteRoomPlanner = FuncWrapper(
     if (ExecuteEachTick(RoomSourcePlannerDelay, forceExecute).response) {
       Sources(room);
     }
-    if (IsMyOwnedRoom(room).code === FunctionReturnCodes.OK && room.controller) {
+    if (
+      IsMyOwnedRoom(room).code === FunctionReturnCodes.OK &&
+      room.controller
+    ) {
       if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
         Controller(room);
       }

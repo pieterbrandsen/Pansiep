@@ -2,7 +2,7 @@ import { isUndefined } from "lodash";
 import { DeleteJobById } from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";
@@ -19,9 +19,9 @@ export const ExecuteDismantle = FuncWrapper(function ExecuteDismantle(
     case OK:
       creep.say("Dismantle");
       if (isUndefined(creepMem.parts[WORK]))
-      creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
-    global.preProcessingStats.rooms[creep.room.name].energyIncome.dismantle +=
-      creepMem.parts[WORK] * 0.25;
+        creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+      global.preProcessingStats.rooms[creep.room.name].energyIncome.dismantle +=
+        creepMem.parts[WORK] * 0.25;
       break;
     case ERR_NOT_IN_RANGE:
       ExecuteMove(creep, job);

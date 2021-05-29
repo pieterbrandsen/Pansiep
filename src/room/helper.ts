@@ -1,6 +1,6 @@
 import { forEach, isUndefined } from "lodash";
 import { FunctionReturnCodes, Username } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 
 export const GetRoom = FuncWrapper(function GetRoom(

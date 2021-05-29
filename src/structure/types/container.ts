@@ -1,6 +1,6 @@
 import { GetSourcesInRange } from "../../room/reading";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ControllerEnergyStructureRange } from "../../utils/constants/structure";
 import {

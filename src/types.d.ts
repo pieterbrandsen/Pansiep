@@ -70,7 +70,7 @@ interface RoomStats {
   energyExpenses: RoomEnergyExpenses;
   rcl: GlobalControlLevel;
   activeJobs: StringMap<number>;
-  creepCountPerJob:StringMap<number>;
+  creepCountPerJob: StringMap<number>;
 }
 
 interface GlobalCpuUsage {

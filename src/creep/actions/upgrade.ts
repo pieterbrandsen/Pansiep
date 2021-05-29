@@ -6,7 +6,7 @@ import {
   UpdateJobById,
 } from "../../room/jobs/handler";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory, UpdateCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";
@@ -34,9 +34,9 @@ export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
       UpdateJobById(job.id, _job, job.roomName);
 
       if (isUndefined(creepMem.parts[WORK]))
-      creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
-    global.preProcessingStats.rooms[creep.room.name].energyExpenses.upgrade +=
-      creepMem.parts[WORK];
+        creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+      global.preProcessingStats.rooms[creep.room.name].energyExpenses.upgrade +=
+        creepMem.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (

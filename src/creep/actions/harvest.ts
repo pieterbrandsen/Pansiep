@@ -6,7 +6,7 @@ import {
 } from "../../room/jobs/handler";
 import { GetObject } from "../../structure/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory, UpdateCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";

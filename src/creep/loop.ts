@@ -9,7 +9,7 @@ import { IsCreepMemoryInitialized } from "../memory/initialization";
 import { CreepStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { AssignNewJobForCreep } from "../room/jobs/handler";
 
 export const RunCreep = FuncWrapper(function RunCreep(
@@ -21,9 +21,9 @@ export const RunCreep = FuncWrapper(function RunCreep(
   const creep = getCreep.response as Creep;
   const creepMem = Memory.creeps[name];
   if (isUndefined(creepMem.jobId)) {
-    AssignNewJobForCreep(creep);
+  AssignNewJobForCreep(creep);
   } else {
-    ExecuteJob(creep, creepMem);
+  ExecuteJob(creep, creepMem);
   }
 
   TryToCreateHealJob(creep);

@@ -7,7 +7,7 @@ import {
 import { GetObject } from "../../structure/helper";
 import { IsStructureDamaged } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";
@@ -28,9 +28,9 @@ export const ExecuteRepair = FuncWrapper(function ExecuteRepair(
     case OK:
       creep.say("Repair");
       if (isUndefined(creepMem.parts[WORK]))
-      creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
-    global.preProcessingStats.rooms[creep.room.name].energyExpenses.repair +=
-      creepMem.parts[WORK];
+        creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+      global.preProcessingStats.rooms[creep.room.name].energyExpenses.repair +=
+        creepMem.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (

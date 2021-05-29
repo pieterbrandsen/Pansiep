@@ -4,7 +4,7 @@ import {
   AssignNewJobForStructure,
 } from "../../room/jobs/handler";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetObject, GetStructureMemory } from "../helper";
 import {

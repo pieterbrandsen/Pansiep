@@ -1,6 +1,6 @@
 import { first, forEach, union } from "lodash";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { GetObjectsFromIDs } from "./helper";
 import {
@@ -112,13 +112,14 @@ export const GetStructures = FuncWrapper(function GetStructures(
   roomName: string,
   filterOnStrTypes?: StructureConstant[]
 ): FunctionReturn {
-  if (Memory.cache.structures.data[roomName] !== undefined) return GetObjectsFromIDs<Structure>(
-    Memory.cache.structures.data[roomName]
-      .filter((s) =>
-        filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
-      )
-      .map((s) => s.id)
-  )
+  if (Memory.cache.structures.data[roomName] !== undefined)
+    return GetObjectsFromIDs<Structure>(
+      Memory.cache.structures.data[roomName]
+        .filter((s) =>
+          filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
+        )
+        .map((s) => s.id)
+    );
 
   return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
 });
