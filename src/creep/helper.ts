@@ -124,7 +124,7 @@ export const GetCreepMemory = FuncWrapper(function GetCreepMemory(
   return FunctionReturnHelper(FunctionReturnCodes.OK, creepMem);
 });
 
-export const GetCreepsMemory = FuncWrapper(function GetAllCreepMemory(
+export const GetAllCreepsMemory = FuncWrapper(function GetAllCreepMemory(
   id: string,
   filterOnType?: CreepTypes[]
 ): FunctionReturn {

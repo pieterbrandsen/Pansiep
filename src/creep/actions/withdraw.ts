@@ -26,7 +26,6 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
 
-
   const resourceType = job.resourceType as ResourceConstant;
   const str: Structure = GetObject(job.objId).response as Structure;
 

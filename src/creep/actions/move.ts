@@ -16,10 +16,11 @@ export const ExecuteMove = FuncWrapper(function ExecuteMove(
   // range = 2
 ): FunctionReturn {
   // const creepMem: CreepMemory = GetCreepMemory(creep.id).response;
-  const targetPos: RoomPosition =
-    job.position ? CreateRoomPosition(job.position).response : new RoomPosition(25, 25, job.roomName);
+  const targetPos: RoomPosition = job.position
+    ? CreateRoomPosition(job.position).response
+    : new RoomPosition(25, 25, job.roomName);
 
-    switch (
+  switch (
     creep.moveTo(targetPos, {
       visualizePathStyle: {
         fill: "transparent",

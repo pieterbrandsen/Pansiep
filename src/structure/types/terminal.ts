@@ -2,16 +2,22 @@ import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import {
-  TryToCreateRepairJob,
+  RepairIfDamagedStructure,
   TryToCreateWithdrawJob,
   TryToCreateTransferJob,
 } from "./helper";
 
-// eslint-disable-next-line
-export const ExecuteTerminal = FuncWrapper(function ExecuteTerminal(
+/**
+ * Execute an terminal
+ *
+ * @param {StructureTerminal} str - Terminal structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+export default FuncWrapper(function ExecuteTerminal(
   str: StructureTerminal
 ): FunctionReturn {
-  TryToCreateRepairJob(str);
+  RepairIfDamagedStructure(str);
   TryToCreateWithdrawJob(str, 35);
   TryToCreateTransferJob(str, 20, RESOURCE_ENERGY, true);
   return FunctionReturnHelper(FunctionReturnCodes.OK);

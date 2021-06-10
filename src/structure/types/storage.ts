@@ -2,16 +2,22 @@ import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import {
-  TryToCreateRepairJob,
+  RepairIfDamagedStructure,
   TryToCreateWithdrawJob,
   TryToCreateTransferJob,
 } from "./helper";
 
-// eslint-disable-next-line
-export const ExecuteStorage = FuncWrapper(function ExecuteStorage(
+/**
+ * Execute an storage
+ *
+ * @param {StructureObserver} str - Storage structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+export default FuncWrapper(function ExecuteStorage(
   str: StructureStorage
 ): FunctionReturn {
-  TryToCreateRepairJob(str);
+  RepairIfDamagedStructure(str);
   TryToCreateWithdrawJob(str, 50);
   TryToCreateTransferJob(str, 20);
   return FunctionReturnHelper(FunctionReturnCodes.OK);

@@ -3,19 +3,27 @@ import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import {
   TryToCreateTransferJob,
-  TryToCreateRepairJob,
+  RepairIfDamagedStructure,
   TryToCreateWithdrawJob,
 } from "./helper";
 import { ControllerEnergyStructureRange } from "../../utils/constants/structure";
 import { GetSourcesInRange } from "../../room/reading";
 
-// eslint-disable-next-line
-export const ExecuteLink = FuncWrapper(function ExecuteLink(
+/**
+ * Execute an link
+ *
+ * @param {StructureLink} str - link structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+export default FuncWrapper(function ExecuteLink(
   str: StructureLink
 ): FunctionReturn {
-  TryToCreateRepairJob(str);
+  RepairIfDamagedStructure(str);
 
-  const sources: Source[] = GetSourcesInRange(str.pos, 2, str.room).response;
+  const getSourcesInRange = GetSourcesInRange(str.pos, 2, str.room);
+  if (getSourcesInRange.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getSourcesInRange.code);
+  const sources: Source[] = getSourcesInRange.response;
   if (
     str.room.controller &&
     str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)

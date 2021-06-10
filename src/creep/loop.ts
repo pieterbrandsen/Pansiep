@@ -21,9 +21,9 @@ export const RunCreep = FuncWrapper(function RunCreep(
   const creep = getCreep.response as Creep;
   const creepMem = Memory.creeps[name];
   if (isUndefined(creepMem.jobId)) {
-  AssignNewJobForCreep(creep);
+    AssignNewJobForCreep(creep);
   } else {
-  ExecuteJob(creep, creepMem);
+    ExecuteJob(creep, creepMem);
   }
 
   TryToCreateHealJob(creep);

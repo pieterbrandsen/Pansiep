@@ -1,11 +1,11 @@
 import { forEach } from "lodash";
-import { GetAllStructureIds, GetObject, ExecuteStructure } from "./helper";
+import { GetAllStructureIds, ExecuteStructure } from "./helper";
 import { IsStructureMemoryInitialized } from "../memory/initialization";
 import { StructureStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
-
+import { GetObject } from "../utils/helper";
 
 /**
  * Execute an structure using its ID.
@@ -22,7 +22,7 @@ export const RunStructure = FuncWrapper(function RunStructure(
   const getObject = GetObject(id);
   if (getObject.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  const str:Structure = getObject.response;
+  const str: Structure = getObject.response;
 
   StructureStatsPreProcessing(str);
   ExecuteStructure(str);

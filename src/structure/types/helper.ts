@@ -1,7 +1,7 @@
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
-import { GetAllJobs, GetJobById } from "../../room/jobs/handler";
+import { DeleteJobById, GetAllJobs, GetJobById } from "../../room/jobs/handler";
 import {
   CreateRepairJob,
   CreateWithdrawJob,
@@ -9,55 +9,104 @@ import {
   CreateUpgradeJob,
 } from "../../room/jobs/create";
 
+/**
+ * Send in an structure and return if the hit points is lower than the maximum.
+ *
+ * @param {Structure} str - An structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const IsStructureDamaged = FuncWrapper(function IsStructureDamaged(
   str: Structure
 ): FunctionReturn {
   return FunctionReturnHelper(FunctionReturnCodes.OK, str.hits < str.hitsMax);
 });
 
-export const TryToCreateRepairJob = FuncWrapper(function TryToCreateRepairJob(
-  str: Structure
-): FunctionReturn {
-  const jobId: Id<Job> = `repair-${str.pos.x}/${str.pos.x}-${str.structureType}` as Id<Job>;
-  if (
-    IsStructureDamaged(str).response &&
-    GetJobById(jobId, str.room.name).code === FunctionReturnCodes.NOT_FOUND
-  ) {
-    CreateRepairJob(str, jobId);
-  }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+/**
+ * Create an repair job for inputted structure if its damaged.
+ *
+ * @param {Structure} str - An structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+export const RepairIfDamagedStructure = FuncWrapper(
+  function TryToCreateRepairJob(str: Structure): FunctionReturn {
+    const jobId: Id<Job> = `repair-${str.pos.x}/${str.pos.x}-${str.structureType}` as Id<Job>;
+    const isStructureDamaged = IsStructureDamaged(str);
+    if (isStructureDamaged.code !== FunctionReturnCodes.OK) {
+      return FunctionReturnHelper(isStructureDamaged.code);
+    }
 
+    const getJobById = GetJobById(jobId, str.room.name);
+    if (
+      isStructureDamaged.response &&
+      getJobById.code === FunctionReturnCodes.NOT_FOUND
+    ) {
+      CreateRepairJob(str, jobId);
+    }
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+);
+
+/**
+ * Return structure capacity.
+ *
+ * @param {Structure} str - Structure
+ * @param {ResourceConstant} resourceType - An resourceType
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetCapacity = FuncWrapper(function GetCapacity(
   str: Structure,
   resourceType: ResourceConstant
 ): FunctionReturn {
-  return FunctionReturnHelper(
-    FunctionReturnCodes.OK,
-    (str as StructureStorage).store.getCapacity(resourceType)
-  );
+  const capacity = (str as StructureStorage).store.getCapacity(resourceType);
+  return FunctionReturnHelper(FunctionReturnCodes.OK, capacity);
 });
 
+/**
+ * Return structure free capacity.
+ *
+ * @param {Structure} str - Structure
+ * @param {ResourceConstant} resourceType - An resourceType
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetFreeCapacity = FuncWrapper(function GetFreeCapacity(
   str: Structure,
   resourceType: ResourceConstant
 ): FunctionReturn {
-  return FunctionReturnHelper(
-    FunctionReturnCodes.OK,
-    (str as StructureStorage).store.getFreeCapacity(resourceType)
+  const freeCapacity = (str as StructureStorage).store.getFreeCapacity(
+    resourceType
   );
+  return FunctionReturnHelper(FunctionReturnCodes.OK, freeCapacity);
 });
 
+/**
+ * Return structure used capacity.
+ *
+ * @param {Structure} str - Structure
+ * @param {ResourceConstant} resourceType - An resourceType
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetUsedCapacity = FuncWrapper(function GetUsedCapacity(
   str: Structure,
   resourceType: ResourceConstant
 ): FunctionReturn {
-  return FunctionReturnHelper(
-    FunctionReturnCodes.OK,
-    (str as StructureStorage).store.getUsedCapacity(resourceType)
+  const usedCapacity = (str as StructureStorage).store.getUsedCapacity(
+    resourceType
   );
+  return FunctionReturnHelper(FunctionReturnCodes.OK, usedCapacity);
 });
 
+/**
+ * Return if the used capacity is higher inputted {requiredPercentageFull}.
+ *
+ * @param {StructureContainer} str - Container structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const IsStructureFullEnough = FuncWrapper(function IsStructureFullEnough(
   str: Structure,
   requiredPercentageFull: number,
@@ -75,6 +124,16 @@ export const IsStructureFullEnough = FuncWrapper(function IsStructureFullEnough(
   });
 });
 
+/**
+ * Create withdraw job if resource count is higher then required.
+ *
+ * @param {Structure} str - Container
+ * @param {number} requiredPercentageFull - Percentage of resource count to be left in structure after withdrawing.
+ * @param {ResourceConstant} [resourceType] - Container structure
+ * @param {JobActionTypes} [action] - Job action type
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const TryToCreateWithdrawJob = FuncWrapper(
   function TryToCreateWithdrawJob(
     str: Structure,
@@ -83,19 +142,23 @@ export const TryToCreateWithdrawJob = FuncWrapper(
     action: JobActionTypes = "withdraw"
   ): FunctionReturn {
     const jobId: Id<Job> = `${action}-${str.pos.x}/${str.pos.y}-${str.structureType}` as Id<Job>;
-    const isStructureFullEnough: {
-      hasOverflow: boolean;
-      overflowAmount: number;
-    } = IsStructureFullEnough(str, requiredPercentageFull, resourceType)
-      .response;
+    const isStructureFullEnough = IsStructureFullEnough(
+      str,
+      requiredPercentageFull,
+      resourceType
+    );
+    if (isStructureFullEnough.code !== FunctionReturnCodes.NOT_FOUND)
+      return FunctionReturnHelper(isStructureFullEnough.code);
+
+    const getJobById = GetJobById(jobId, str.room.name);
     if (
-      isStructureFullEnough.hasOverflow &&
-      GetJobById(jobId, str.room.name).code === FunctionReturnCodes.NOT_FOUND
+      isStructureFullEnough.response.hasOverflow === true &&
+      getJobById.code === FunctionReturnCodes.NOT_FOUND
     ) {
       CreateWithdrawJob(
         str,
         jobId,
-        isStructureFullEnough.overflowAmount,
+        isStructureFullEnough.response.overflowAmount,
         resourceType,
         action,
         false
@@ -105,6 +168,17 @@ export const TryToCreateWithdrawJob = FuncWrapper(
   }
 );
 
+/**
+ * Create transfer job if resource count is lower then required.
+ *
+ * @param {Structure} str - Container
+ * @param {number} requiredPercentageFull - Percentage of resource count to be transferred into structure.
+ * @param {ResourceConstant} [resourceType] - Container structure
+ * @param {boolean} [hasPriority] - Gets max priority of all jobs
+ * @param {JobActionTypes} [action] - Job action type
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const TryToCreateTransferJob = FuncWrapper(
   function TryToCreateTransferJob(
     str: Structure,
@@ -114,20 +188,23 @@ export const TryToCreateTransferJob = FuncWrapper(
     action: JobActionTypes = "transfer"
   ): FunctionReturn {
     const jobId: Id<Job> = `${action}-${str.pos.x}/${str.pos.y}-${str.structureType}` as Id<Job>;
-    const isStructureFullEnough: {
-      hasOverflow: boolean;
-      overflowAmount: number;
-    } = IsStructureFullEnough(str, requiredPercentageFull, resourceType)
-      .response;
+    const isStructureFullEnough = IsStructureFullEnough(
+      str,
+      requiredPercentageFull,
+      resourceType
+    );
+    if (isStructureFullEnough.code !== FunctionReturnCodes.NOT_FOUND)
+      return FunctionReturnHelper(isStructureFullEnough.code);
 
+    const getJobById = GetJobById(jobId, str.room.name);
     if (
-      !isStructureFullEnough.hasOverflow &&
-      GetJobById(jobId, str.room.name).code === FunctionReturnCodes.NOT_FOUND
+      isStructureFullEnough.response.hasOverflow === false &&
+      getJobById.code === FunctionReturnCodes.NOT_FOUND
     ) {
       CreateTransferJob(
         str,
         jobId,
-        isStructureFullEnough.overflowAmount,
+        isStructureFullEnough.response.overflowAmount,
         resourceType,
         hasPriority,
         action
@@ -137,24 +214,33 @@ export const TryToCreateTransferJob = FuncWrapper(
   }
 );
 
+/**
+ * Create upgrade job if there is not yet any or controller is near downgrade.
+ *
+ * @param {Room} room - Room object
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const TryToCreateUpgradeJob = FuncWrapper(function TryToCreateUpgradeJob(
   room: Room
 ): FunctionReturn {
-  const spendJobs: Job[] = GetAllJobs(room.name, [
-    "build",
-    "dismantle",
-    "upgrade",
-  ]).response;
+  const getAllJJobs = GetAllJobs(room.name, ["build", "dismantle", "upgrade"]);
+  const spendJobs: Job[] = getAllJJobs.response;
   const upgradeJobs: Job[] = spendJobs.filter((j) => j.action === "upgrade");
 
-  if (
-    upgradeJobs.length === 0 &&
-    (room.controller as StructureController).ticksToDowngrade < 10 * 1000
-  ) {
+  if (upgradeJobs.length === 0) {
     CreateUpgradeJob(room, true);
   } else if (spendJobs.length === 0) {
     CreateUpgradeJob(room);
     return FunctionReturnHelper(FunctionReturnCodes.CREATED);
+  } else if (
+    (room.controller as StructureController).ticksToDowngrade <
+    10 * 1000
+  ) {
+    const deleteJobById = DeleteJobById(spendJobs[0].id, room.name);
+    if (deleteJobById.code === FunctionReturnCodes.OK) {
+      CreateUpgradeJob(room, true);
+    }
   }
   return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
 });

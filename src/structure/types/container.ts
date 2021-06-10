@@ -5,17 +5,27 @@ import { FuncWrapper } from "../../utils/wrapper";
 import { ControllerEnergyStructureRange } from "../../utils/constants/structure";
 import {
   TryToCreateWithdrawJob,
-  TryToCreateRepairJob,
+  RepairIfDamagedStructure,
   TryToCreateTransferJob,
 } from "./helper";
 
-// eslint-disable-next-line
-export const ExecuteContainer = FuncWrapper(function ExecuteContainer(
+/**
+ * Execute an container
+ *
+ * @param {StructureContainer} str - Container structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+export default FuncWrapper(function ExecuteContainer(
   str: StructureContainer
 ): FunctionReturn {
-  TryToCreateRepairJob(str);
-  const sourcesInRange: Source[] = GetSourcesInRange(str.pos, 2, str.room)
-    .response;
+  RepairIfDamagedStructure(str);
+  const getSourcesInRange = GetSourcesInRange(str.pos, 2, str.room);
+  if (getSourcesInRange.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getSourcesInRange.code);
+  }
+
+  const sourcesInRange: Source[] = getSourcesInRange.response;
   if (
     str.room.controller &&
     str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)
