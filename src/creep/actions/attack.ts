@@ -1,7 +1,7 @@
 import { DeleteJobById } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
+import { GetObject } from "../../utils/helper";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 

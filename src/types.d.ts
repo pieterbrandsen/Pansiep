@@ -107,9 +107,9 @@ interface Job {
   action: JobActionTypes;
   updateJobAtTick: number;
 
-  assignedCreepsIds: string[];
+  assignedCreepsNames: string[];
   maxCreeps: number;
-  assignedStructuresIds: string[];
+  assignedStructuresIds: Id<Structure>[];
   maxStructures: number;
 
   roomName: string;
@@ -162,8 +162,8 @@ interface CreepMemory {
 
   walkPath?: PathStep[];
   isNotSeenSince?: number;
-  jobId?: string;
-  secondJobId?: string;
+  jobId?: Id<Job>;
+  secondJobId?: Id<Job>;
 }
 
 interface StructureMemory {

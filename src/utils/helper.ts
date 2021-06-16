@@ -12,7 +12,6 @@ import { FuncWrapper } from "./wrapper";
  * @example
  *     ExecuteEachTick(100)
  */
-// eslint-disable-next-line import/prefer-default-export
 export const ExecuteEachTick = FuncWrapper(function ExecuteEachTick(
   tickAmount: number,
   forceExecute = false

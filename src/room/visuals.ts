@@ -3,14 +3,34 @@ import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { VisualLevel } from "../utils/config/room";
 
+/**
+ * Returns an boolean value indicating if room visuals are going to be displayed
+ *
+ * @param {number} visualLevel - Current visual level
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const ShouldVisualsBeDisplayed = FuncWrapper(
   function ShouldVisualsBeDisplayed(visualLevel: number): FunctionReturn {
-    if (visualLevel <= VisualLevel)
-      return FunctionReturnHelper(FunctionReturnCodes.OK);
-    return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
+    if (visualLevel > VisualLevel)
+      return FunctionReturnHelper(
+        FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF
+      );
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
   }
 );
 
+/**
+ * Draw a line based on inputted positions
+ *
+ * @param {Room} room - Room that the line is going to be drawn in
+ * @param {RoomPosition} pos1 - First position
+ * @param {RoomPosition} pos2 - Second position
+ * @param {number} visualLevel - Current visual level
+ * @param {LineStyle} [style] - Styling of line
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddLineWPos = FuncWrapper(function AddLineWPos(
   room: Room,
   pos1: RoomPosition,
@@ -28,6 +48,19 @@ export const AddLineWPos = FuncWrapper(function AddLineWPos(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw a line based on inputted coords
+ *
+ * @param {Room} room - Room that the line is going to be drawn in
+ * @param {number} x1 - First x coord
+ * @param {number} y1 - First y coord
+ * @param {number} x2 - Second x coord
+ * @param {number} y2 - Second y coord
+ * @param {number} visualLevel - Current visual level
+ * @param {LineStyle} [style] - Styling of line
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddLineWCoords = FuncWrapper(function AddLineWCoords(
   room: Room,
   x1: number,
@@ -47,6 +80,16 @@ export const AddLineWCoords = FuncWrapper(function AddLineWCoords(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw a circle based on inputted positions
+ *
+ * @param {Room} room - Room that the circle is going to be drawn in
+ * @param {RoomPosition} pos - Position of circle
+ * @param {number} visualLevel - Current visual level
+ * @param {CircleStyle} [style] - Styling of circle
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddCircleWPos = FuncWrapper(function AddCircleWPos(
   room: Room,
   pos: RoomPosition,
@@ -63,6 +106,17 @@ export const AddCircleWPos = FuncWrapper(function AddCircleWPos(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw a circle based on inputted coords
+ *
+ * @param {Room} room - Room that the circle is going to be drawn in
+ * @param {number} x - X coord
+ * @param {number} y - Y coord
+ * @param {number} visualLevel - Current visual level
+ * @param {CircleStyle} [style] - Styling of circle
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddCircleWCoords = FuncWrapper(function AddCircleWCoords(
   room: Room,
   x: number,
@@ -80,6 +134,18 @@ export const AddCircleWCoords = FuncWrapper(function AddCircleWCoords(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw a rectangle based on inputted position
+ *
+ * @param {Room} room - Room that the rectangle is going to be drawn in
+ * @param {RoomPosition} topLeftPos - Top left position of circle
+ * @param {number} width - How wide the rectangle is on X coord
+ * @param {number} height - How long the rectangle is on Y coord
+ * @param {number} visualLevel - Current visual level
+ * @param {PolyStyle} [style] - Styling of rectangle
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddRectWPos = FuncWrapper(function AddRectWPos(
   room: Room,
   topLeftPos: RoomPosition,
@@ -98,6 +164,19 @@ export const AddRectWPos = FuncWrapper(function AddRectWPos(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw a rectangle based on inputted coords
+ *
+ * @param {Room} room - Room that the rectangle is going to be drawn in
+ * @param {number} x - X coord
+ * @param {number} y - Y coord
+ * @param {number} width - How wide the rectangle is on X coord
+ * @param {number} height - How long the rectangle is on Y coord
+ * @param {number} visualLevel - Current visual level
+ * @param {PolyStyle} [style] - Styling of rectangle
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddRectWCoords = FuncWrapper(function AddRectWCoords(
   room: Room,
   x: number,
@@ -117,6 +196,16 @@ export const AddRectWCoords = FuncWrapper(function AddRectWCoords(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw a polygon based on inputted points array
+ *
+ * @param {Room} room - Room that the polygon is going to be drawn in
+ * @param {Array<[number, number] | RoomPosition>} points - Array of Array<number,number> or room positions
+ * @param {number} visualLevel - Current visual level
+ * @param {CircleStyle} [style] - Styling of polygon
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddPoly = FuncWrapper(function AddPoly(
   room: Room,
   points: Array<[number, number] | RoomPosition>,
@@ -133,6 +222,17 @@ export const AddPoly = FuncWrapper(function AddPoly(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw text based on inputted position
+ *
+ * @param {Room} room - Room that the text is going to be drawn in
+ * @param {string} text - Text that is going to be displayed
+ * @param {RoomPosition} pos - Position of text
+ * @param {number} visualLevel - Current visual level
+ * @param {TextStyle} [style] - Styling of circle
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddTextWPos = FuncWrapper(function AddTextWPos(
   room: Room,
   text: string,
@@ -150,6 +250,18 @@ export const AddTextWPos = FuncWrapper(function AddTextWPos(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw text based on inputted position
+ *
+ * @param {Room} room - Room that the text is going to be drawn in
+ * @param {string} text - Text that is going to be displayed
+ * @param {number} x - X coord
+ * @param {number} y - Y coord
+ * @param {number} visualLevel - Current visual level
+ * @param {TextStyle} [style] - Styling of circle
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const AddTextWCoords = FuncWrapper(function AddTextWCoords(
   room: Room,
   text: string,

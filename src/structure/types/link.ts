@@ -22,7 +22,8 @@ export default FuncWrapper(function ExecuteLink(
   RepairIfDamagedStructure(str);
 
   const getSourcesInRange = GetSourcesInRange(str.pos, 2, str.room);
-  if (getSourcesInRange.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getSourcesInRange.code);
+  if (getSourcesInRange.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getSourcesInRange.code);
   const sources: Source[] = getSourcesInRange.response;
   if (
     str.room.controller &&

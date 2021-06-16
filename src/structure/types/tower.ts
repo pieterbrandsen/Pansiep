@@ -27,7 +27,8 @@ export const ExecuteTowerAttack = FuncWrapper(function ExecuteTowerAttack(
   job: Job
 ): FunctionReturn {
   const getObject = GetObject(job.objId);
-  if (getObject.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getObject.code);
+  if (getObject.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getObject.code);
   const creep: Creep = getObject.response as Creep;
 
   switch (str.attack(creep)) {
@@ -53,7 +54,8 @@ export const ExecuteTowerHeal = FuncWrapper(function ExecuteTowerHeal(
   job: Job
 ): FunctionReturn {
   const getObject = GetObject(job.objId);
-  if (getObject.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getObject.code);
+  if (getObject.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getObject.code);
   const creep: Creep = getObject.response as Creep;
 
   switch (str.heal(creep)) {
@@ -79,7 +81,8 @@ export const ExecuteTowerRepair = FuncWrapper(function ExecuteTowerRepair(
   job: Job
 ): FunctionReturn {
   const getObject = GetObject(job.objId);
-  if (getObject.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getObject.code);
+  if (getObject.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getObject.code);
   const targetStr: Structure = getObject.response as Structure;
 
   if (!IsStructureDamaged(targetStr).response) {
@@ -118,7 +121,8 @@ export const ExecuteTower = FuncWrapper(function ExecuteTower(
   TryToCreateTransferJob(str, 100, RESOURCE_ENERGY, true);
 
   const getStructureMemory = GetStructureMemory(str.id);
-  if (getStructureMemory.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getStructureMemory.code);
+  if (getStructureMemory.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getStructureMemory.code);
   const strMem: StructureMemory = getStructureMemory.response;
 
   if (strMem.jobId) {

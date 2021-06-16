@@ -4,7 +4,7 @@ import {
   DeleteJobById,
   UnassignJob,
 } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
+import { GetObject } from "../../utils/helper";
 import { IsStructureDamaged } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";

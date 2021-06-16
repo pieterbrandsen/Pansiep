@@ -6,13 +6,13 @@ import {
   UpdateJobById,
   SwitchCreepSavedJobIds,
 } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
 import { GetUsedCapacity } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
 import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 import { GetCreepMemory } from "../helper";
+import { GetObject } from "../../utils/helper";
 
 // eslint-disable-next-line
 export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(

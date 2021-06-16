@@ -4,8 +4,15 @@ import { VisualDisplayLevels } from "../utils/constants/room";
 import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { AddLineWCoords, AddRectWCoords, AddTextWCoords } from "./visuals";
+import { GetRoomMemoryUsingName } from "./helper";
 
-// eslint-disable-next-line import/prefer-default-export
+/**
+ * Draw all main visuals
+ *
+ * @param {Room} room - Room where the visuals should be drawn
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const MainVisuals = FuncWrapper(function RoomMainVisuals(
   room: Room
 ): FunctionReturn {
@@ -183,6 +190,13 @@ export const MainVisuals = FuncWrapper(function RoomMainVisuals(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Draw all income and expenses visuals
+ *
+ * @param {Room} room - Room where the visuals should be drawn
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const IncomeAndExpensesVisuals = FuncWrapper(
   function IncomeAndExpensesVisuals(room: Room, roomStats: RoomStats) {
     const defaultX = 9;
@@ -383,6 +397,13 @@ export const IncomeAndExpensesVisuals = FuncWrapper(
   }
 );
 
+/**
+ * Draw all job visuals
+ *
+ * @param {Room} room - Room where the job visuals should be drawn
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const JobVisuals = FuncWrapper(function JobVisuals(
   room: Room,
   roomStats: RoomStats
@@ -554,10 +575,20 @@ export const JobVisuals = FuncWrapper(function JobVisuals(
     topLeftSecondRowPos += 5 - creepCountPerJob.length;
 });
 
+/**
+ * Draw all room visuals
+ *
+ * @param {Room} room - Room where the visuals should be drawn
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const RoomVisuals = FuncWrapper(function RoomVisuals(room: Room) {
   MainVisuals(room);
 
-  const roomStats: RoomStats = Memory.stats.rooms[room.name];
+  const getRoomMemoryUsingName = GetRoomMemoryUsingName(room.name);
+  if (getRoomMemoryUsingName.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getRoomMemoryUsingName.code);
+  const roomStats: RoomStats = getRoomMemoryUsingName.response;
   IncomeAndExpensesVisuals(room, roomStats);
   JobVisuals(room, roomStats);
 });

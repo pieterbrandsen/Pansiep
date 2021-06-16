@@ -24,10 +24,19 @@ import {
   GetStructures,
 } from "./reading";
 
+/**
+ * Checks if source is missing energy structure, if this is true then try to build an link if the controller level is high enough otherwise an container.
+ *
+ * @param {Room} room - Check sources in this room
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const Sources = FuncWrapper(function Sources(
   room: Room
 ): FunctionReturn {
-  const sources: Source[] = GetSources(room).response;
+  const getSources = GetSources(room);
+  if (getSources.code) return FunctionReturnHelper(getSources.code);
+  const sources: Source[] = getSources.response;
   forEach(sources, (source: Source) => {
     const harvestJobId: Id<Job> = `harvest-${source.pos.x}/${source.pos.y}` as Id<Job>;
     if (
@@ -62,6 +71,13 @@ export const Sources = FuncWrapper(function Sources(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Checks if controller is missing energy structure, if this is true then try to build an link if the controller level is high enough otherwise an container.
+ *
+ * @param {Room} room - Check sources in this room
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const Controller = FuncWrapper(function Controller(
   room: Room
 ): FunctionReturn {
@@ -91,10 +107,18 @@ export const Controller = FuncWrapper(function Controller(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Return an planned extension part to use in base building
+ *
+ * @param {RoomPosition} pos - Middle position of part
+ * @param {StructureConstant[]} [filterOnStrTypes] - Filter on structureTypes if inputted
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetExtensionPartOfBase = FuncWrapper(
   function GetExtensionPartOfBase(
     pos: RoomPosition,
-    filterOnStrType?: StructureConstant[]
+    filterOnStrTypes?: StructureConstant[]
   ): FunctionReturn {
     const extension: BaseStructure = {
       type: STRUCTURE_EXTENSION,
@@ -165,12 +189,20 @@ export const GetExtensionPartOfBase = FuncWrapper(
       road7,
       road8,
     ].filter((s) =>
-      filterOnStrType ? filterOnStrType.includes(s.type) : true
+      filterOnStrTypes ? filterOnStrTypes.includes(s.type) : true
     );
     return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
   }
 );
 
+/**
+ * Return an planned lab part to use in base building
+ *
+ * @param {RoomPosition} pos - Middle position of part
+ * @param {StructureConstant[]} [filterOnStrTypes] - Filter on structureTypes if inputted
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetLabPartOfBase = FuncWrapper(function GetLabPartOfBase(
   pos: RoomPosition,
   filterOnStrType?: StructureConstant[]
@@ -257,6 +289,14 @@ export const GetLabPartOfBase = FuncWrapper(function GetLabPartOfBase(
   return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
 });
 
+/**
+ * Return an planned heart part to use in base building
+ *
+ * @param {RoomPosition} pos - Middle position of part
+ * @param {StructureConstant[]} [filterOnStrTypes] - Filter on structureTypes if inputted
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetHearthOfBase = FuncWrapper(function GetHearthOfBase(
   pos: RoomPosition,
   filterOnStrType?: StructureConstant[]
@@ -483,6 +523,15 @@ export const GetHearthOfBase = FuncWrapper(function GetHearthOfBase(
   return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
 });
 
+/**
+ * Return an boolean indicating if the inputted positions will fit in the currently placed base
+ *
+ * @param {Room} room - Room of part
+ * @param {RoomPosition[]} positions - Positions to check
+ * @param {RoomPosition[]} [blackListedPositions] - Already placed positions from parts
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const DoesPositionsOfBaseFit = FuncWrapper(
   function DoesPositionsOfBaseFit(
     room: Room,
@@ -515,11 +564,19 @@ export const DoesPositionsOfBaseFit = FuncWrapper(
   }
 );
 
+/**
+ * Return room position array where parts can be placed around this position
+ *
+ * @param {RoomPosition} pos - Middle position
+ * @param {number} height - Height of part
+ * @param {{ n: number; e: number; s: number; w: number }} directionDistance - Minimum distance for each direction
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetSurroundingRoomPositions = FuncWrapper(
   function GetSurroundingRoomPositions(
     pos: RoomPosition,
     height: number,
-    width: number,
     directionDistance: { n: number; e: number; s: number; w: number }
   ): FunctionReturn {
     const positions: RoomPosition[] = [];
@@ -557,61 +614,78 @@ export const GetSurroundingRoomPositions = FuncWrapper(
   }
 );
 
+/**
+ * Return all positions in diagonal direction.
+ *
+ * @param {RoomPosition} pos - Middle position
+ * @param {number} height - Height away from middle
+ * @param {number} width - Width away from middle
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetDiagonalExtensionRoomPositions = FuncWrapper(
   function GetDiagonalExtensionRoomPositions(
     pos: RoomPosition,
     height: number,
     width: number
   ): FunctionReturn {
-    const positions: RoomPosition[] = [];
-    positions.push(
-      new RoomPosition(pos.x - width + 1, pos.y + height - 1, pos.roomName)
-    );
-    positions.push(
-      new RoomPosition(pos.x + width - 1, pos.y + height - 1, pos.roomName)
-    );
-    positions.push(
-      new RoomPosition(pos.x - width + 1, pos.y - height + 1, pos.roomName)
-    );
-    positions.push(
-      new RoomPosition(pos.x + width - 1, pos.y - height + 1, pos.roomName)
-    );
+    const positions: RoomPosition[] = [
+      new RoomPosition(pos.x - width + 1, pos.y + height - 1, pos.roomName),
+      new RoomPosition(pos.x + width - 1, pos.y + height - 1, pos.roomName),
+      new RoomPosition(pos.x - width + 1, pos.y - height + 1, pos.roomName),
+      new RoomPosition(pos.x + width - 1, pos.y - height + 1, pos.roomName),
+    ];
     return FunctionReturnHelper(FunctionReturnCodes.OK, positions);
   }
 );
 
+/**
+ * Sets hearth, labs and hearth part in memory
+ *
+ * @param {Room} room - Room supposed to be planned
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetCompleteBasePlanned = FuncWrapper(
   function GetCompleteBasePlanned(room: Room): FunctionReturn {
-    const freePositions: RoomPosition[] = GetTerrainInRange(
+    let getTerrainInRange = GetTerrainInRange(
       new RoomPosition(25, 25, room.name),
       10,
       room,
       ["plain", "swamp"]
-    ).response;
+    );
+    if (getTerrainInRange.code !== FunctionReturnCodes.OK)
+      return FunctionReturnHelper(getTerrainInRange.code);
+    const freePositions: RoomPosition[] = getTerrainInRange.response;
     const positions: RoomPosition[] = [];
+
     forEach(freePositions, (pos: RoomPosition) => {
-      const walls: RoomPosition[] = GetTerrainInRange(pos, 2, room, ["wall"])
-        .response;
+      getTerrainInRange = GetTerrainInRange(pos, 2, room, ["wall"]);
+      const walls: RoomPosition[] = getTerrainInRange.response;
       if (walls.length === 0) positions.push(pos);
     });
 
     let usedPositions: RoomPosition[] = [];
-    const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
+    const getRoomMemoryUsingName = GetRoomMemoryUsingName(room.name);
+    if (getRoomMemoryUsingName.code !== FunctionReturnCodes.OK)
+      return FunctionReturnHelper(getRoomMemoryUsingName.code);
+    const mem: RoomMemory = getRoomMemoryUsingName.response;
 
     const getStructures = GetStructures(room.name, [STRUCTURE_SPAWN]);
     if (getStructures.code !== FunctionReturnCodes.OK)
       return FunctionReturnHelper(getStructures.code);
+    const spawns: StructureSpawn[] = getStructures.response;
 
     if (isUndefined(mem.base)) mem.base = { extension: [] };
-
-    const spawns: StructureSpawn[] = getStructures.response;
     if (spawns.length > 0)
       mem.base.hearth = sortBy(spawns, (s) => s.name)[0].pos;
     else {
+      // eslint-disable-next-line consistent-return
       forEach(positions, (pos: RoomPosition) => {
-        const baseStructures: BaseStructure[] = GetHearthOfBase(pos, [
-          STRUCTURE_ROAD,
-        ]).response;
+        const getHearthOfBase = GetHearthOfBase(pos, [STRUCTURE_ROAD]);
+        if (getHearthOfBase.code !== FunctionReturnCodes.OK)
+          return FunctionReturnHelper(getHearthOfBase.code);
+        const baseStructures: BaseStructure[] = getHearthOfBase.response;
         if (
           mem.base &&
           DoesPositionsOfBaseFit(
@@ -632,18 +706,21 @@ export const GetCompleteBasePlanned = FuncWrapper(
     if (isUndefined(mem.base.hearth))
       return FunctionReturnHelper(FunctionReturnCodes.NOT_FITTING);
 
-    const labPositions: RoomPosition[] = GetSurroundingRoomPositions(
+    let getSurroundingRoomPositions = GetSurroundingRoomPositions(
       mem.base.hearth,
       3,
-      5,
       { n: 5, e: 5, s: 5, w: 6 }
-    ).response;
+    );
+    if (getSurroundingRoomPositions.code !== FunctionReturnCodes.OK)
+      return FunctionReturnHelper(getSurroundingRoomPositions.code);
+    const labPositions: RoomPosition[] = getSurroundingRoomPositions.response;
 
     for (let i = 0; i < labPositions.length; i += 1) {
       const pos = labPositions[i];
-      const labStructures: BaseStructure[] = GetLabPartOfBase(pos, [
-        STRUCTURE_ROAD,
-      ]).response;
+      const getLabPartOfBase = GetLabPartOfBase(pos, [STRUCTURE_ROAD]);
+      if (getLabPartOfBase.code !== FunctionReturnCodes.OK)
+        return FunctionReturnHelper(getLabPartOfBase.code);
+      const labStructures: BaseStructure[] = getLabPartOfBase.response;
       if (
         DoesPositionsOfBaseFit(
           room,
@@ -657,12 +734,15 @@ export const GetCompleteBasePlanned = FuncWrapper(
     }
 
     mem.base.extension = [];
-    const hearthExtensionPositions: RoomPosition[] = GetSurroundingRoomPositions(
+    getSurroundingRoomPositions = GetSurroundingRoomPositions(
       mem.base.hearth,
       4,
-      4,
       { n: 5, e: 4, s: 5, w: 5 }
-    ).response;
+    );
+    if (getSurroundingRoomPositions.code !== FunctionReturnCodes.OK)
+      return FunctionReturnHelper(getSurroundingRoomPositions.code);
+    const hearthExtensionPositions: RoomPosition[] =
+      getSurroundingRoomPositions.response;
 
     for (let i = 0; i < hearthExtensionPositions.length; i += 1) {
       if (mem.base && mem.base.extension.length === 12) {
@@ -670,9 +750,12 @@ export const GetCompleteBasePlanned = FuncWrapper(
       }
 
       const extensionHearthPos = hearthExtensionPositions[i];
-      let extensionStructures: BaseStructure[] = GetExtensionPartOfBase(
-        extensionHearthPos
-      ).response.filter((s) => s.type !== STRUCTURE_ROAD);
+      let getExtensionPartOfBase = GetExtensionPartOfBase(extensionHearthPos);
+      if (getExtensionPartOfBase.code !== FunctionReturnCodes.OK)
+        return FunctionReturnHelper(getExtensionPartOfBase.code);
+      let extensionStructures: BaseStructure[] = getExtensionPartOfBase.response.filter(
+        (s) => s.type !== STRUCTURE_ROAD
+      );
       if (
         mem.base &&
         DoesPositionsOfBaseFit(
@@ -696,15 +779,22 @@ export const GetCompleteBasePlanned = FuncWrapper(
           extensionHearthPos.y > 5 &&
           extensionHearthPos.y < 45
         ) {
-          const extensionPositions: RoomPosition[] = GetDiagonalExtensionRoomPositions(
+          const getDiagonalExtensionRoomPositions = GetDiagonalExtensionRoomPositions(
             extensionHearthPos,
             3,
             3
-          ).response.filter((s) => s.type !== STRUCTURE_ROAD);
+          );
+          if (getDiagonalExtensionRoomPositions.code !== FunctionReturnCodes.OK)
+            return FunctionReturnHelper(getDiagonalExtensionRoomPositions.code);
+          const extensionPositions: RoomPosition[] =
+            getDiagonalExtensionRoomPositions.response;
           for (let j = 0; j < extensionPositions.length; j += 1) {
             const posJ = extensionPositions[j];
-            extensionStructures = GetExtensionPartOfBase(posJ, [STRUCTURE_ROAD])
-              .response;
+            getExtensionPartOfBase = GetExtensionPartOfBase(posJ, [
+              STRUCTURE_ROAD,
+            ]);
+            if (getExtensionPartOfBase.code !== FunctionReturnCodes.OK) break;
+            extensionStructures = getExtensionPartOfBase.response;
             if (
               DoesPositionsOfBaseFit(
                 room,
@@ -729,33 +819,58 @@ export const GetCompleteBasePlanned = FuncWrapper(
   }
 );
 
+/**
+ * Execute complete base planner if its not yet known in the memory
+ *
+ * @param {Room} room - Room supposed to be planned
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetBasePlanned = FuncWrapper(function Base(
   room: Room
 ): FunctionReturn {
-  const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
+  const getRoomMemoryUsingName = GetRoomMemoryUsingName(room.name);
+  if (getRoomMemoryUsingName.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getRoomMemoryUsingName.code);
+  const mem: RoomMemory = getRoomMemoryUsingName.response;
+
   if (isUndefined(mem.base)) {
     GetCompleteBasePlanned(room);
   }
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Build base parts what needs to be build
+ *
+ * @param {Room} room - Room supposed to be planned
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetBaseBuild = FuncWrapper(function GetBaseBuild(
   room: Room
 ): FunctionReturn {
-  const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
+  const getRoomMemoryUsingName = GetRoomMemoryUsingName(room.name);
+  if (getRoomMemoryUsingName.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getRoomMemoryUsingName.code);
+  const mem: RoomMemory = getRoomMemoryUsingName.response;
+
   if (mem.base && room.controller) {
     if (mem.base.hearth) {
-      const hearthBaseStructures: BaseStructure[] = GetHearthOfBase(
-        mem.base.hearth
-      ).response;
+      const getHearthOfBase = GetHearthOfBase(mem.base.hearth);
+      if (getHearthOfBase.code !== FunctionReturnCodes.OK)
+        return FunctionReturnHelper(getHearthOfBase.code);
+      const hearthBaseStructures: BaseStructure[] = getHearthOfBase.response;
       forEach(hearthBaseStructures, (str: BaseStructure) => {
         BuildStructure(room, str.pos, str.type);
       });
     }
     const controllerLevel = room.controller.level;
     if (mem.base.lab && controllerLevel >= 6) {
-      const labBaseStructures: BaseStructure[] = GetLabPartOfBase(mem.base.lab)
-        .response;
+      const getLabPartOfBase = GetLabPartOfBase(mem.base.lab);
+      if (getLabPartOfBase.code !== FunctionReturnCodes.OK)
+        return FunctionReturnHelper(getLabPartOfBase.code);
+      const labBaseStructures: BaseStructure[] = getLabPartOfBase.response;
       forEach(labBaseStructures, (str: BaseStructure) => {
         BuildStructure(room, str.pos, str.type);
       });
@@ -767,9 +882,11 @@ export const GetBaseBuild = FuncWrapper(function GetBaseBuild(
       i += 1
     ) {
       const extensionPartPos = mem.base.extension[i];
-      const extensionBaseStructures: BaseStructure[] = GetExtensionPartOfBase(
-        extensionPartPos
-      ).response;
+      const getExtensionPartOfBase = GetExtensionPartOfBase(extensionPartPos);
+      if (getExtensionPartOfBase.code !== FunctionReturnCodes.OK)
+        return FunctionReturnHelper(getExtensionPartOfBase.code);
+      const extensionBaseStructures: BaseStructure[] =
+        getExtensionPartOfBase.response;
       forEach(extensionBaseStructures, (str) => {
         BuildStructure(room, str.pos, str.type);
       });
@@ -778,15 +895,29 @@ export const GetBaseBuild = FuncWrapper(function GetBaseBuild(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * If the base is planned, build the base to current max stage
+ *
+ * @param {Room} room - Room supposed to be planned
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const ExecuteBasePlanner = FuncWrapper(function ExecuteRoomPlanner(
   room: Room
 ): FunctionReturn {
-  GetBasePlanned(room);
-  GetBaseBuild(room);
+  if (GetBasePlanned(room).code === FunctionReturnCodes.OK) GetBaseBuild(room);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Execute room planner, if its supposed too it executes it.
+ *
+ * @param {Room} room - Room supposed to be planned
+ * @param {Boolean} [forceExecute=false] - Force execute module without waiting for right tick value
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const TryToExecuteRoomPlanner = FuncWrapper(
   function TryToExecuteRoomPlanner(
     room: Room,
@@ -802,7 +933,11 @@ export const TryToExecuteRoomPlanner = FuncWrapper(
       if (ExecuteEachTick(RoomControllerPlannerDelay, forceExecute).response) {
         Controller(room);
       }
-      const mem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
+      const getRoomMemoryUsingName = GetRoomMemoryUsingName(room.name);
+      if (getRoomMemoryUsingName.code !== FunctionReturnCodes.OK)
+        return FunctionReturnHelper(getRoomMemoryUsingName.code);
+      const mem: RoomMemory = getRoomMemoryUsingName.response;
+
       const controllerLevel = room.controller.level;
       const lastControllerLevel = mem.lastControllerLevelAtRoomPlanner
         ? mem.lastControllerLevelAtRoomPlanner

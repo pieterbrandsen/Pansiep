@@ -25,8 +25,9 @@ export const GetJobActionsWithCreepNeed = FuncWrapper(
     usePriorityJobs: boolean
   ): FunctionReturn {
     const getAllJobs = GetAllJobs(roomName);
-    if (getAllJobs.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getAllJobs.code);
-    let jobs:Job[] = getAllJobs.response;
+    if (getAllJobs.code !== FunctionReturnCodes.OK)
+      return FunctionReturnHelper(getAllJobs.code);
+    let jobs: Job[] = getAllJobs.response;
 
     const priorityJobs: Job[] = jobs.filter((j: Job) => j.hasPriority);
     if (usePriorityJobs && priorityJobs.length > 0) {
@@ -38,21 +39,21 @@ export const GetJobActionsWithCreepNeed = FuncWrapper(
       if (!jobActionTypesObj[job.action])
         jobActionTypesObj[job.action] = { usableCreeps: 0, wantedCreeps: 0 };
       jobActionTypesObj[job.action].wantedCreeps +=
-        job.maxCreeps - job.assignedCreepsIds.length;
+        job.maxCreeps - job.assignedCreepsNames.length;
     });
 
     const jobActionTypes: JobActionTypes[] = [];
     forOwn(jobActionTypesObj, (job: JobActionObj, key: string) => {
-      let getAllCreepsMemory:FunctionReturn = {code: FunctionReturnCodes.BAD_REQUEST};
+      let getAllCreepsMemory: FunctionReturn = {
+        code: FunctionReturnCodes.BAD_REQUEST,
+      };
       switch (key) {
         case "move":
           getAllCreepsMemory = GetAllCreepsMemory(roomName, ["move"]);
           break;
         case "transfer":
         case "withdraw":
-          getAllCreepsMemory = GetAllCreepsMemory(roomName, [
-            "transferring",
-          ]);
+          getAllCreepsMemory = GetAllCreepsMemory(roomName, ["transferring"]);
           break;
         case "harvest":
         case "build":
@@ -75,8 +76,9 @@ export const GetJobActionsWithCreepNeed = FuncWrapper(
       }
 
       if (getAllCreepsMemory.code !== FunctionReturnCodes.OK) {
-      const usableCreeps = getAllCreepsMemory.response.length;
-        if (usableCreeps < MaxCreepsPerCreepType &&
+        const usableCreeps = getAllCreepsMemory.response.length;
+        if (
+          usableCreeps < MaxCreepsPerCreepType &&
           usableCreeps < job.wantedCreeps
         ) {
           jobActionTypes.push(key as JobActionTypes);
@@ -98,33 +100,37 @@ export const GetJobActionsWithCreepNeed = FuncWrapper(
  */
 export const GetNextCreepType = FuncWrapper(function GetNextCreepType(
   roomName: string,
-  usePriorityJobs:boolean = false
+  usePriorityJobs = false
 ): FunctionReturn {
   const getRoom = GetRoom(roomName);
-  if (getRoom.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getRoom.code);
+  if (getRoom.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getRoom.code);
   const room: Room = getRoom.response;
-    if (
-      room && (room.energyCapacityAvailable <= 300 ||
+  if (
+    room &&
+    (room.energyCapacityAvailable <= 300 ||
       (room.energyCapacityAvailable / 4 > room.energyAvailable &&
         room.energyCapacityAvailable > 300))
-    ) {
-      const getAllCreepsMemory = GetAllCreepsMemory(roomName, ["pioneer"]);
-      if (
-        getAllCreepsMemory.code === FunctionReturnCodes.OK && (getAllCreepsMemory.response as CreepMemory[])
-          .length <
+  ) {
+    const getAllCreepsMemory = GetAllCreepsMemory(roomName, ["pioneer"]);
+    if (
+      getAllCreepsMemory.code === FunctionReturnCodes.OK &&
+      (getAllCreepsMemory.response as CreepMemory[]).length <
         MaxCreepsPerCreepType * 1.5
-      ) {
-        return FunctionReturnHelper(FunctionReturnCodes.OK, "pioneer");
-      }
-      return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
+    ) {
+      return FunctionReturnHelper(FunctionReturnCodes.OK, "pioneer");
     }
+    return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
+  }
 
-    const getJobActionsWithCreepNeed = GetJobActionsWithCreepNeed(
-      roomName,
-      usePriorityJobs
-    );
-    if (getJobActionsWithCreepNeed.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getJobActionsWithCreepNeed.code);
-  const possibleJobActionTypes: JobActionTypes[] = getJobActionsWithCreepNeed.response;
+  const getJobActionsWithCreepNeed = GetJobActionsWithCreepNeed(
+    roomName,
+    usePriorityJobs
+  );
+  if (getJobActionsWithCreepNeed.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getJobActionsWithCreepNeed.code);
+  const possibleJobActionTypes: JobActionTypes[] =
+    getJobActionsWithCreepNeed.response;
 
   const possibleCreepTypes: CreepTypes[] = [];
   forEach(possibleJobActionTypes, (key: JobActionTypes) => {
@@ -185,13 +191,11 @@ export const GetNextCreepType = FuncWrapper(function GetNextCreepType(
 export const GetUniqueName = FuncWrapper(function GetUniqueName(
   creepType: CreepTypes
 ): FunctionReturn {
-  const getName = ()=> `${creepType}-${Math.floor(Math.random() * 100001)}`;;
-  let name: string | undefined = undefined;
-  do {
-    name = getName();
-  } while (isUndefined(Memory.creeps[name])) {
-    name = getName();
-  }
+  const getName = () => `${creepType}-${Math.floor(Math.random() * 100001)}`;
+  let name: string | undefined;
+  do name = getName();
+  while (isUndefined(Memory.creeps[name]));
+  name = getName();
   return FunctionReturnHelper(FunctionReturnCodes.OK, name);
 });
 
@@ -202,7 +206,7 @@ export const GetUniqueName = FuncWrapper(function GetUniqueName(
  * @return {number} cost of body
  *
  */
-const CalcBodyCost = function CalcBodyCost(body: BodyPartConstant[]): number{
+const CalcBodyCost = function CalcBodyCost(body: BodyPartConstant[]): number {
   const bodyCost = reduce(body, (sum, part) => sum + BODYPART_COST[part], 0);
   return bodyCost;
 };
@@ -218,14 +222,13 @@ export const GenerateBody = FuncWrapper(function GenerateBody(
   parts: BodyPartConstant[],
   bodyIteration: BodyPartConstant[],
   energyAvailable: number,
-  maxLoopCount: number = 50
+  maxLoopCount = 50
 ): FunctionReturn {
   let body: BodyPartConstant[] = parts;
   let i = 0;
 
   while (
-    CalcBodyCost(body) + CalcBodyCost(bodyIteration) <=
-      energyAvailable &&
+    CalcBodyCost(body) + CalcBodyCost(bodyIteration) <= energyAvailable &&
     body.length + bodyIteration.length <= MAX_CREEP_SIZE &&
     i < maxLoopCount
   ) {
@@ -235,7 +238,7 @@ export const GenerateBody = FuncWrapper(function GenerateBody(
 
   if (body.length === parts.length) body = [];
 
-  return FunctionReturnHelper(FunctionReturnCodes.OK, body)
+  return FunctionReturnHelper(FunctionReturnCodes.OK, body);
 });
 
 /**
@@ -250,15 +253,22 @@ export const GetBodyParts = FuncWrapper(function GetBodyParts(
   creepType: CreepTypes,
   room: Room
 ): FunctionReturn {
-
-  let generateBody: FunctionReturn = {code: FunctionReturnCodes.NO_CONTENT};
+  let generateBody: FunctionReturn = { code: FunctionReturnCodes.NO_CONTENT };
 
   switch (creepType) {
     case "attack":
-      generateBody = GenerateBody([], [TOUGH, MOVE, MOVE, ATTACK], room.energyAvailable);
+      generateBody = GenerateBody(
+        [],
+        [TOUGH, MOVE, MOVE, ATTACK],
+        room.energyAvailable
+      );
       break;
     case "claim":
-      generateBody = GenerateBody([], [MOVE, MOVE, CLAIM], room.energyAvailable);
+      generateBody = GenerateBody(
+        [],
+        [MOVE, MOVE, CLAIM],
+        room.energyAvailable
+      );
       break;
     case "heal":
       generateBody = GenerateBody([], [MOVE, HEAL], room.energyAvailable);
@@ -267,17 +277,26 @@ export const GetBodyParts = FuncWrapper(function GetBodyParts(
       generateBody = GenerateBody([], [MOVE], room.energyAvailable, 2);
       break;
     case "transferring":
-      generateBody = GenerateBody([], [MOVE, CARRY, CARRY], room.energyAvailable);
+      generateBody = GenerateBody(
+        [],
+        [MOVE, CARRY, CARRY],
+        room.energyAvailable
+      );
       break;
     case "pioneer":
     case "work":
-      generateBody = GenerateBody([], [MOVE, WORK, CARRY], room.energyAvailable);
+      generateBody = GenerateBody(
+        [],
+        [MOVE, WORK, CARRY],
+        room.energyAvailable
+      );
       break;
     default:
       break;
   }
 
-  if (generateBody.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(generateBody.code);
+  if (generateBody.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(generateBody.code);
   const body: BodyPartConstant[] = generateBody.response;
 
   return FunctionReturnHelper(FunctionReturnCodes.OK, {
@@ -317,11 +336,14 @@ export const SpawnCreep = FuncWrapper(function SpawnCreep(
   }
 
   const getUniqueName = GetUniqueName(creepType);
-  if (getUniqueName.code !== FunctionReturnCodes.OK)return FunctionReturnHelper(getUniqueName.code);
-  const name:string = getUniqueName.response;
+  if (getUniqueName.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getUniqueName.code);
+  const name: string = getUniqueName.response;
   const getBodyParts = GetBodyParts(creepType, spawn.room);
-  if (getBodyParts.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getBodyParts.code);
-  const body: {parts:BodyPartConstant[], bodyCost:number} = getBodyParts.response;
+  if (getBodyParts.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getBodyParts.code);
+  const body: { parts: BodyPartConstant[]; bodyCost: number } =
+    getBodyParts.response;
 
   const spawnCreep = spawn.spawnCreep(body.parts, name);
   if (spawnCreep !== OK) {

@@ -8,8 +8,8 @@ import {
   DeleteJobById,
   UnassignJob,
 } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
 import { GetCreepMemory } from "../helper";
+import { GetObject } from "../../utils/helper";
 
 // eslint-disable-next-line
 export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
