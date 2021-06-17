@@ -199,7 +199,7 @@ export const RoomStats = FuncWrapper(function RoomStats(
       const roomCreepCount: number = currentJobs[name]
         ? currentJobs[name].reduce<number>((acc, job) => {
             // eslint-disable-next-line no-param-reassign
-            acc += job.assignedCreepsIds.length;
+            acc += job.assignedCreepsNames.length;
             return acc;
           }, 0)
         : 0;

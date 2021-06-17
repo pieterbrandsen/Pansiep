@@ -29,15 +29,22 @@ export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
 
     try {
       return func(...args);
-    } catch (error) {
-      Log(LogTypes.Error, func.name, error, {
-        ...args,
-      });
-      return { code: 500 };
-    } finally {
+    }
+    finally {
       statsPath.callCount += 1;
       statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
     }
+    // try {
+    // } catch (error) {
+    //   throw error;
+    //   Log(LogTypes.Error, func.name, error, {
+    //     ...args,
+    //   });
+    //   return { code: 500 };
+    // } finally {
+    //   statsPath.callCount += 1;
+    //   statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
+    // }
   }) as F;
 };
 

@@ -50,7 +50,7 @@ export const GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
   filterOnTypes?: JobActionTypes[]
 ): FunctionReturn {
   const getAllJobs = GetAllJobs(roomName, filterOnTypes);
-  if (getAllJobs.code === FunctionReturnCodes.OK)
+  if (getAllJobs.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(getAllJobs.code);
   const jobs: Job[] = getAllJobs.response.filter((j: Job) =>
     requesterIsCreep
@@ -178,7 +178,7 @@ export const AssignNewJobForStructure = FuncWrapper(
     const strMem: StructureMemory = getStructureMemory.response;
     let jobs: Job[] = [];
 
-    let getAvailableJobs: FunctionReturn | undefined;
+    let getAvailableJobs: FunctionReturn = { code: FunctionReturnCodes.NOT_MODIFIED};
     if (filterOnTypes) {
       getAvailableJobs = GetAvailableJobs(strMem.room, false, filterOnTypes);
       if (getAvailableJobs.code !== FunctionReturnCodes.OK)
@@ -189,7 +189,7 @@ export const AssignNewJobForStructure = FuncWrapper(
         case "tower":
           getAvailableJobs = GetAvailableJobs(strMem.room, false, ["attack"]);
           jobs = getAvailableJobs.response;
-          if (jobs.length === 0) {
+          if (getAvailableJobs.code === FunctionReturnCodes.OK && jobs.length === 0) {
             getAvailableJobs = GetAvailableJobs(strMem.room, false, [
               "repair",
               "heal",
@@ -202,7 +202,7 @@ export const AssignNewJobForStructure = FuncWrapper(
       }
     }
 
-    if (jobs.length === 0)
+    if (getAvailableJobs.code !== FunctionReturnCodes.OK || jobs.length === 0)
       return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
 
     const getClosestJob = GetClosestJob(jobs, str.pos);

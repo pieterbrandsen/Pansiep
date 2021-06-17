@@ -11,9 +11,9 @@ export const RemoveCreep = FuncWrapper(function RemoveCreep(
   roomName: string
 ): FunctionReturn {
   const jobs: Job[] = GetAllJobs(roomName).response;
-  const job = jobs.find((j) => j.assignedCreepsIds.includes(name));
+  const job = jobs.find((j) => j.assignedCreepsNames.includes(name));
   if (job) {
-    job.assignedCreepsIds = remove(job.assignedCreepsIds, name);
+    job.assignedCreepsNames = remove(job.assignedCreepsNames, name);
     UpdateJobById(job.id, job, roomName);
   }
   remove(jobs, (j) => j.objId === name);
