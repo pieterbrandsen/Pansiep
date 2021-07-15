@@ -52,6 +52,22 @@ export const GetRoomMemoryUsingName = FuncWrapper(
 );
 
 /**
+ * Fetches room stats memory and returns it
+ *
+ * @param {string} name - name of room
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+ export const GetRoomStatsMemoryUsingName = FuncWrapper(
+  function GetRoomStatsMemoryUsingName(id: string): FunctionReturn {
+    const roomMemory = Memory.stats.rooms[id];
+    if (isUndefined(roomMemory))
+      return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
+    return FunctionReturnHelper(FunctionReturnCodes.OK, roomMemory);
+  }
+);
+
+/**
  * Overwrites old room memory with new memory
  *
  * @param {RoomMemory} mem - Updated room memory

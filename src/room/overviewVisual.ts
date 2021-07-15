@@ -4,7 +4,7 @@ import { VisualDisplayLevels } from "../utils/constants/room";
 import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { AddLineWCoords, AddRectWCoords, AddTextWCoords } from "./visuals";
-import { GetRoomMemoryUsingName } from "./helper";
+import { GetRoomMemoryUsingName, GetRoomStatsMemoryUsingName } from "./helper";
 
 /**
  * Draw all main visuals
@@ -585,10 +585,10 @@ export const JobVisuals = FuncWrapper(function JobVisuals(
 export const RoomVisuals = FuncWrapper(function RoomVisuals(room: Room) {
   MainVisuals(room);
 
-  const getRoomMemoryUsingName = GetRoomMemoryUsingName(room.name);
-  if (getRoomMemoryUsingName.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getRoomMemoryUsingName.code);
-  const roomStats: RoomStats = getRoomMemoryUsingName.response;
+  const getRoomStatsMemoryUsingName = GetRoomStatsMemoryUsingName(room.name);
+  if (getRoomStatsMemoryUsingName.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getRoomStatsMemoryUsingName.code);
+  const roomStats: RoomStats = getRoomStatsMemoryUsingName.response;
   IncomeAndExpensesVisuals(room, roomStats);
-  // JobVisuals(room, roomStats);
+  JobVisuals(room, roomStats);
 });

@@ -21,7 +21,8 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
     const assignNewJobForCreepCode = AssignNewJobForCreep(creep, [
       "transferSource",
     ]).code;
-    if (assignNewJobForCreepCode === FunctionReturnCodes.NOT_MODIFIED) {
+
+    if (assignNewJobForCreepCode === FunctionReturnCodes.NO_CONTENT) {
       UnassignJob(job.id, creep.name, job.roomName);
       AssignNewJobForCreep(creep);
     } else {

@@ -248,7 +248,7 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
   }
 
   if (creepMem.secondJobId) {
-    if (creepMem.jobId !== creepMem.secondJobId) {
+  if (creepMem.jobId !== creepMem.secondJobId) {
       SwitchCreepSavedJobIds(creep.id, true);
       return FunctionReturnHelper(FunctionReturnCodes.OK);
     }
