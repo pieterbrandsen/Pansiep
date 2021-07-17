@@ -8,6 +8,7 @@
     "lint": "eslint **/*",
     "lint-fix": "eslint **/* --fix",
     "push-main": "rollup -c --environment DEST:main",
+    "push-s+": "rollup -c --environment DEST:s+",
     "push-pserver": "rollup -c --environment DEST:pserver",
     "push-sim": "rollup -c --environment DEST:sim",
     "push-seasonal": "rollup -c --environment DEST:seasonal",
@@ -38,10 +39,9 @@
     "@types/jest": "^26.0.22",
     "@types/lodash": "^4.14.168",
     "@types/node": "^14.14.27",
-    "@types/screeps": "^3.2.2",
-    "@types/source-map": "^0.5.7",
-    "@typescript-eslint/eslint-plugin": "^4.27.0",
-    "@typescript-eslint/parser": "^4.27.0",
+    "@types/screeps": "^3.2.1",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.20.0",
     "codecov": "^3.8.1",
     "eslint": "^7.23.0",
     "eslint-config-airbnb": "^18.2.1",
@@ -65,6 +65,6 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "screeps-jest": "github:eduter/screeps-jest",
-    "source-map": "^0.7.3"
+    "source-map": "~0.6.1"
   }
 }

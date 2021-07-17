@@ -6,7 +6,7 @@ import {
   UpdateJobById,
 } from "../../room/jobs/handler";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory, UpdateCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";
@@ -17,7 +17,11 @@ export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
   job: Job
 ): FunctionReturn {
   const _job = job;
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  const creepMem: CreepMemory = getCreepMemory.response;
   if (
     isUndefined(creep.room.controller) ||
     isUndefined(_job.energyRequired) ||
@@ -32,11 +36,16 @@ export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
       creep.say("upgrade");
       _job.energyRequired -= creep.getActiveBodyparts(WORK) * 2;
       UpdateJobById(job.id, _job, job.roomName);
+
+      if (isUndefined(creepMem.parts[WORK]))
+        creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+      global.preProcessingStats.rooms[creep.room.name].energyExpenses.upgrade +=
+        creepMem.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (
         AssignNewJobForCreep(creep, ["withdrawController"]).code ===
-        FunctionReturnCodes.NOT_MODIFIED
+        FunctionReturnCodes.NO_CONTENT
       ) {
         UnassignJob(job.id, creep.name, job.roomName);
         AssignNewJobForCreep(

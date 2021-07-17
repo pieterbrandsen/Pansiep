@@ -1,7 +1,7 @@
 import { DeleteJobById } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
+import { GetObject } from "../../utils/helper";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 
@@ -10,9 +10,11 @@ export const ExecuteAttack = FuncWrapper(function ExecuteAttack(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const target: Structure | Creep = GetObject(job.objId).response as
-    | Structure
-    | Creep;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
+  const target: Structure | Creep = getObject.response as Structure | Creep;
 
   switch (creep.attack(target)) {
     case OK:

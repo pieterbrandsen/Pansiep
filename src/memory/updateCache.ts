@@ -17,7 +17,7 @@ import {
 import { CachedStructureTypes } from "../utils/constants/structure";
 import { FuncWrapper } from "../utils/wrapper";
 import { RemoveCreep, RemoveRoom, RemoveStructure } from "./garbageCollection";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import {
   DeleteJobById,
   UpdateJobById,

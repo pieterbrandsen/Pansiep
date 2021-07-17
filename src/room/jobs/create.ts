@@ -1,24 +1,35 @@
 import { isUndefined } from "lodash";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetAccesSpotsAroundPosition } from "../reading";
 import { UpdateJobById } from "./handler";
 
+/**
+ * Create an harvest job
+ *
+ * @param {jobId} jobId - Id of job
+ * @param {Source} source - Source to harvest
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateHarvestJob = FuncWrapper(function CreateHarvestJob(
   jobId: Id<Job>,
   source: Source
 ): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(
+  const getAccesSpotsAroundPosition = GetAccesSpotsAroundPosition(
     source.room,
     source.pos,
     1
-  ).response;
+  );
+  if (getAccesSpotsAroundPosition.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getAccesSpotsAroundPosition.code);
+  const openSpots: number = getAccesSpotsAroundPosition.response;
   const job: Job = {
     id: jobId,
     action: "harvest",
     updateJobAtTick: Game.time + 100,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: openSpots,
     assignedStructuresIds: [],
     maxStructures: 99,
@@ -32,6 +43,13 @@ export const CreateHarvestJob = FuncWrapper(function CreateHarvestJob(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Create an heal job
+ *
+ * @param {Creep} creep - Creep to heal
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateHealJob = FuncWrapper(function CreateHealJob(
   creep: Creep
 ): FunctionReturn {
@@ -40,7 +58,7 @@ export const CreateHealJob = FuncWrapper(function CreateHealJob(
     id: jobId,
     action: "heal",
     updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: 1,
     assignedStructuresIds: [],
     maxStructures: 99,
@@ -53,6 +71,15 @@ export const CreateHealJob = FuncWrapper(function CreateHealJob(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Create an move job
+ *
+ * @param {Id<Job>} jobId - Id of job
+ * @param {string} roomName - Name of room
+ * @param {RoomPosition} [pos] - Position to move to
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
   jobId: Id<Job>,
   roomName: string,
@@ -62,7 +89,7 @@ export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
     id: jobId,
     action: "move",
     updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: 1,
     assignedStructuresIds: [],
     maxStructures: 99,
@@ -75,6 +102,16 @@ export const CreateMoveJob = FuncWrapper(function CreateMoveJob(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Create an build job
+ *
+ * @param {Room} room - Room to build in
+ * @param {RoomPosition} pos - Position to build at
+ * @param {StructureConstant} structureType - Type of structure to create
+ * @param {boolean} [hasPriority] - Must be focussed to be completed
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateBuildJob = FuncWrapper(function CreateBuildJob(
   room: Room,
   pos: RoomPosition,
@@ -82,13 +119,16 @@ export const CreateBuildJob = FuncWrapper(function CreateBuildJob(
   hasPriority = false
 ): FunctionReturn {
   const jobId: Id<Job> = `build-${pos.x}/${pos.y}-${structureType}` as Id<Job>;
-  const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2).response;
-  const structureCost = CONSTRUCTION_COST[structureType];
+  const getAccesSpotsAroundPosition = GetAccesSpotsAroundPosition(room, pos, 2);
+  if (getAccesSpotsAroundPosition.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getAccesSpotsAroundPosition.code);
+  const openSpots: number = getAccesSpotsAroundPosition.response;
+  const constructionCost = CONSTRUCTION_COST[structureType];
   const job: Job = {
     id: jobId,
     action: "build",
     updateJobAtTick: Game.time + 1,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: openSpots,
     assignedStructuresIds: [],
     maxStructures: 99,
@@ -96,12 +136,24 @@ export const CreateBuildJob = FuncWrapper(function CreateBuildJob(
     objId: "undefined" as Id<ConstructionSite>,
     hasPriority,
     position: pos,
-    energyRequired: structureCost,
+    energyRequired: constructionCost,
   };
   UpdateJobById(jobId, job, room.name);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Create an withdraw job
+ *
+ * @param {Structure} str - Structure to withdraw from
+ * @param {Id<Job>} jobId - Id of job
+ * @param {number} energyRequired - Energy required to withdraw before job is completed
+ * @param {ResourceConstant} resourceType - Type of resource
+ * @param {JobActionTypes} action - Job action
+ * @param {boolean} hasPriority - Must be focussed to be completed
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateWithdrawJob = FuncWrapper(function CreateWithdrawJob(
   str: Structure,
   jobId: Id<Job>,
@@ -110,13 +162,19 @@ export const CreateWithdrawJob = FuncWrapper(function CreateWithdrawJob(
   action: JobActionTypes,
   hasPriority = false
 ): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(str.room, str.pos, 1)
-    .response;
+  const getAccesSpotsAroundPosition = GetAccesSpotsAroundPosition(
+    str.room,
+    str.pos,
+    1
+  );
+  if (getAccesSpotsAroundPosition.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getAccesSpotsAroundPosition.code);
+  const openSpots: number = getAccesSpotsAroundPosition.response;
   const job: Job = {
     id: jobId,
     action,
     updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: openSpots > 1 ? openSpots - 1 : openSpots,
     assignedStructuresIds: [],
     maxStructures: 3,
@@ -131,6 +189,18 @@ export const CreateWithdrawJob = FuncWrapper(function CreateWithdrawJob(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Create an transfer job
+ *
+ * @param {Structure} str - Structure to transfer from
+ * @param {Id<Job>} jobId - Id of job
+ * @param {number} energyRequired - Energy required to transfer before job is completed
+ * @param {ResourceConstant} resourceType - Type of resource
+ * @param {JobActionTypes} action - Job action
+ * @param {boolean} hasPriority - Must be focussed to be completed
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateTransferJob = FuncWrapper(function CreateTransferJob(
   str: Structure,
   jobId: Id<Job>,
@@ -139,13 +209,19 @@ export const CreateTransferJob = FuncWrapper(function CreateTransferJob(
   hasPriority = false,
   action: JobActionTypes
 ): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(str.room, str.pos, 1)
-    .response;
+  const getAccesSpotsAroundPosition = GetAccesSpotsAroundPosition(
+    str.room,
+    str.pos,
+    1
+  );
+  if (getAccesSpotsAroundPosition.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getAccesSpotsAroundPosition.code);
+  const openSpots: number = getAccesSpotsAroundPosition.response;
   const job: Job = {
     id: jobId,
     action,
     updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: openSpots > 1 ? openSpots - 1 : openSpots,
     assignedStructuresIds: [],
     maxStructures: 99,
@@ -160,6 +236,14 @@ export const CreateTransferJob = FuncWrapper(function CreateTransferJob(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Create an upgrade job
+ *
+ * @param {Room} room - Room to upgrade in
+ * @param {boolean} hasPriority - Must be focussed to be completed
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
   room: Room,
   hasPriority = false
@@ -170,12 +254,15 @@ export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
 
   const { pos } = room.controller;
   const jobId: Id<Job> = `upgrade-${pos.x}/${pos.y}` as Id<Job>;
-  const openSpots: number = GetAccesSpotsAroundPosition(room, pos, 2).response;
+  const getAccesSpotsAroundPosition = GetAccesSpotsAroundPosition(room, pos, 2);
+  if (getAccesSpotsAroundPosition.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getAccesSpotsAroundPosition.code);
+  const openSpots: number = getAccesSpotsAroundPosition.response;
   const job: Job = {
     id: jobId,
     action: "upgrade",
     updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: openSpots,
     assignedStructuresIds: [],
     maxStructures: 99,
@@ -189,18 +276,33 @@ export const CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Create an repair job
+ *
+ * @param {Room} room - Room to repair in
+ * @param {Id<Job>} jobId - Id of job
+ * @param {boolean} hasPriority - Must be focussed to be completed
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const CreateRepairJob = FuncWrapper(function CreateRepairJob(
   str: Structure,
   jobId: Id<Job>,
   hasPriority = false
 ): FunctionReturn {
-  const openSpots: number = GetAccesSpotsAroundPosition(str.room, str.pos, 2)
-    .response;
+  const getAccesSpotsAroundPosition = GetAccesSpotsAroundPosition(
+    str.room,
+    str.pos,
+    2
+  );
+  if (getAccesSpotsAroundPosition.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getAccesSpotsAroundPosition.code);
+  const openSpots: number = getAccesSpotsAroundPosition.response;
   const job: Job = {
     id: jobId,
     action: "repair",
     updateJobAtTick: Game.time + 500,
-    assignedCreepsIds: [],
+    assignedCreepsNames: [],
     maxCreeps: openSpots,
     assignedStructuresIds: [],
     maxStructures: 3,

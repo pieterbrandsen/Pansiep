@@ -1,5 +1,16 @@
-export const AverageValueOverAmountTicks = 1000;
+/**
+ * New stats get divided by this number to calculate their cut in the current value of the stat.
+ */
+export const AverageValueOverAmountTicks = 2500;
 
+/**
+ * Current username in game.
+ */
+export const Username = "PandaMaster";
+
+/**
+ * List of possible log levels.
+ */
 export const LogTypes: StringMap<LogType> = {
   None: { code: 0, value: { name: "None", color: "None" } },
   Error: { code: 10, value: { name: "Error", color: "Crimson" } },
@@ -9,6 +20,9 @@ export const LogTypes: StringMap<LogType> = {
   All: { code: 999, value: { name: "All", color: "None" } },
 };
 
+/**
+ * List of custom http response codes.
+ */
 export const FunctionReturnCodes = {
   OK: 200,
   CREATED: 201,
@@ -24,8 +38,9 @@ export const FunctionReturnCodes = {
   LOOP_DETECTED: 508,
 };
 
-export const Username = "PandaMaster";
-
+/**
+ * List of objects describing how much ticks are between each update check.
+ */
 export const CacheNextCheckIncrement = {
   rooms: 50,
   structures: 50,
@@ -33,7 +48,13 @@ export const CacheNextCheckIncrement = {
   jobs: 50,
 };
 
+/**
+ * Amount of ticks before an not found/visible object is deleted.
+ */
 export const SaveUnloadedObjectForAmountTicks = 500;
 
+/**
+ * Amount of decimals should be used when averaging stats.
+ */
 export const StatsDigitCount =
   5 + AverageValueOverAmountTicks.toString().length;

@@ -1,5 +1,5 @@
 import { isUndefined, forOwn } from "lodash";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { GetJobById } from "../room/jobs/handler";
@@ -28,8 +28,10 @@ export const IsCreepDamaged = FuncWrapper(function IsCreepDamaged(
 export const TryToCreateHealJob = FuncWrapper(function TryToCreateHealJob(
   creep: Creep
 ): FunctionReturn {
+  const isCreepDamaged = IsCreepDamaged(creep);
   if (
-    IsCreepDamaged(creep).response &&
+    isCreepDamaged.code === FunctionReturnCodes.OK &&
+    isCreepDamaged.response &&
     GetJobById(`heal-${creep.name}` as Id<Job>, creep.room.name).code ===
       FunctionReturnCodes.NOT_FOUND
   ) {
@@ -61,6 +63,7 @@ export const ExecuteJob = FuncWrapper(function ExecuteJob(
     UpdateCreepMemory(creep.name, mem);
     return FunctionReturnHelper(getJobById.code);
   }
+
   const job = getJobById.response;
   switch (job.action) {
     case "attack":
@@ -123,7 +126,7 @@ export const GetCreepMemory = FuncWrapper(function GetCreepMemory(
   return FunctionReturnHelper(FunctionReturnCodes.OK, creepMem);
 });
 
-export const GetCreepsMemory = FuncWrapper(function GetAllCreepMemory(
+export const GetAllCreepsMemory = FuncWrapper(function GetAllCreepMemory(
   id: string,
   filterOnType?: CreepTypes[]
 ): FunctionReturn {

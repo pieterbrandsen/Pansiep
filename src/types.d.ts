@@ -44,10 +44,38 @@ interface FunctionReturn {
   response?: any;
 }
 
+interface RoomEnergyIncome {
+  harvest: number;
+  dismantle: number;
+}
+
+interface RoomEnergyExpenses {
+  build: number;
+  repair: number;
+  spawn: StringMap<number>;
+  upgrade: number;
+}
+
+interface EnergyInStorages {
+  terminal: number;
+  storage: number;
+  containers: number;
+}
+
 interface RoomStats {
+  energyInStorages: EnergyInStorages;
   creepCount: number;
   structureCount: number;
+  energyIncome: RoomEnergyIncome;
+  energyExpenses: RoomEnergyExpenses;
   rcl: GlobalControlLevel;
+  activeJobs: StringMap<number>;
+  creepCountPerJob: StringMap<number>;
+}
+
+interface GlobalCpuUsage {
+  usage: StringMap<number>;
+  bucket: StringMap<number>;
 }
 
 interface StatsMemory {
@@ -56,6 +84,7 @@ interface StatsMemory {
   ticksStatsCollecting: number;
   gcl: GlobalControlLevel;
   rooms: StringMap<RoomStats>;
+  cpu: GlobalCpuUsage;
 }
 
 type JobActionTypes =
@@ -78,9 +107,9 @@ interface Job {
   action: JobActionTypes;
   updateJobAtTick: number;
 
-  assignedCreepsIds: string[];
+  assignedCreepsNames: string[];
   maxCreeps: number;
-  assignedStructuresIds: string[];
+  assignedStructuresIds: Id<Structure>[];
   maxStructures: number;
 
   roomName: string;
@@ -113,6 +142,7 @@ interface BaseStructure {
 interface RoomMemory {
   spawnQueue: CreepTypes[];
   jobs: Job[];
+  sourceCount: number;
 
   // Base
   lastControllerLevelAtRoomPlanner?: number;
@@ -128,11 +158,12 @@ interface RoomMemory {
 interface CreepMemory {
   type: CreepTypes;
   commandRoom: string;
+  parts: StringMap<number>;
 
   walkPath?: PathStep[];
   isNotSeenSince?: number;
-  jobId?: string;
-  secondJobId?: string;
+  jobId?: Id<Job>;
+  secondJobId?: Id<Job>;
 }
 
 interface StructureMemory {

@@ -1,7 +1,7 @@
 import { DeleteJobById } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
+import { GetObject } from "../../utils/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 import { IsCreepDamaged } from "../helper";
@@ -11,7 +11,11 @@ export const ExecuteHeal = FuncWrapper(function ExecuteHeal(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const targetCreep: Creep = GetObject(job.objId).response as Creep;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
+  const targetCreep: Creep = getObject.response as Creep;
 
   if (job.stopHealingAtMaxHits && !IsCreepDamaged(creep)) {
     DeleteJobById(job.id, job.roomName);

@@ -1,12 +1,13 @@
+import { isUndefined } from "lodash";
 import {
   AssignNewJobForCreep,
   DeleteJobById,
   UnassignJob,
 } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
+import { GetObject } from "../../utils/helper";
 import { IsStructureDamaged } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";
@@ -16,8 +17,17 @@ export const ExecuteRepair = FuncWrapper(function ExecuteRepair(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
-  const str: Structure = GetObject(job.objId).response as Structure;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
+
+  const creepMem: CreepMemory = getCreepMemory.response;
+  const str: Structure = getObject.response as Structure;
   if (!IsStructureDamaged(str).response) {
     DeleteJobById(job.id, job.roomName);
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
@@ -25,7 +35,11 @@ export const ExecuteRepair = FuncWrapper(function ExecuteRepair(
 
   switch (creep.repair(str)) {
     case OK:
-      creep.say("repair");
+      creep.say("Repair");
+      if (isUndefined(creepMem.parts[WORK]))
+        creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+      global.preProcessingStats.rooms[creep.room.name].energyExpenses.repair +=
+        creepMem.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (

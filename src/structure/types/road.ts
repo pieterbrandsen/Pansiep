@@ -1,12 +1,18 @@
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
-import { TryToCreateRepairJob } from "./helper";
+import { RepairIfDamagedStructure } from "./helper";
 
-// eslint-disable-next-line
-export const ExecuteRoad = FuncWrapper(function ExecuteRoad(
+/**
+ * Execute an road
+ *
+ * @param {StructureRoad} str - Container structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+export default FuncWrapper(function ExecuteRoad(
   str: StructureRoad
 ): FunctionReturn {
-  TryToCreateRepairJob(str);
+  RepairIfDamagedStructure(str);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

@@ -4,20 +4,33 @@ import {
   AssignNewJobForStructure,
 } from "../../room/jobs/handler";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
+import { GetObject } from "../../utils/helper";
 import { FuncWrapper } from "../../utils/wrapper";
-import { GetObject, GetStructureMemory } from "../helper";
+import { GetStructureMemory } from "../helper";
 import {
   IsStructureDamaged,
-  TryToCreateRepairJob,
+  RepairIfDamagedStructure,
   TryToCreateTransferJob,
 } from "./helper";
 
+/**
+ * Execute an attack job for a tower
+ *
+ * @param {StructureTower} str - Tower structure
+ * @param {Job} job - attack job
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const ExecuteTowerAttack = FuncWrapper(function ExecuteTowerAttack(
   str: StructureTower,
   job: Job
 ): FunctionReturn {
-  const creep: Creep = GetObject(job.objId).response as Creep;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getObject.code);
+  const creep: Creep = getObject.response as Creep;
+
   switch (str.attack(creep)) {
     case ERR_INVALID_TARGET:
       DeleteJobById(job.id, str.room.name);
@@ -28,11 +41,23 @@ export const ExecuteTowerAttack = FuncWrapper(function ExecuteTowerAttack(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Execute an heal job for a tower
+ *
+ * @param {StructureTower} str - Tower structure
+ * @param {Job} job - heal job
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const ExecuteTowerHeal = FuncWrapper(function ExecuteTowerHeal(
   str: StructureTower,
   job: Job
 ): FunctionReturn {
-  const creep: Creep = GetObject(job.objId).response as Creep;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getObject.code);
+  const creep: Creep = getObject.response as Creep;
+
   switch (str.heal(creep)) {
     case ERR_INVALID_TARGET:
       DeleteJobById(job.id, str.room.name);
@@ -43,11 +68,23 @@ export const ExecuteTowerHeal = FuncWrapper(function ExecuteTowerHeal(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Execute an repair job for a tower
+ *
+ * @param {StructureTower} str - Tower structure
+ * @param {Job} job - repair job
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const ExecuteTowerRepair = FuncWrapper(function ExecuteTowerRepair(
   str: StructureTower,
   job: Job
 ): FunctionReturn {
-  const targetStr: Structure = GetObject(job.objId).response as Structure;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getObject.code);
+  const targetStr: Structure = getObject.response as Structure;
+
   if (!IsStructureDamaged(targetStr).response) {
     DeleteJobById(job.id, job.roomName);
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
@@ -70,13 +107,24 @@ export const GetNewTowerJob = FuncWrapper(function GetNewTowerJob(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Execute an tower
+ *
+ * @param {StructureTower} str - tower structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const ExecuteTower = FuncWrapper(function ExecuteTower(
   str: StructureTower
 ): FunctionReturn {
-  TryToCreateRepairJob(str);
+  RepairIfDamagedStructure(str);
   TryToCreateTransferJob(str, 100, RESOURCE_ENERGY, true);
 
-  const strMem: StructureMemory = GetStructureMemory(str.id).response;
+  const getStructureMemory = GetStructureMemory(str.id);
+  if (getStructureMemory.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getStructureMemory.code);
+  const strMem: StructureMemory = getStructureMemory.response;
+
   if (strMem.jobId) {
     const job: Job = GetJobById(strMem.jobId as Id<Job>, str.room.name)
       .response;

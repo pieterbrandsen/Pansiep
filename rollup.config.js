@@ -23,7 +23,7 @@ export default {
   output: {
     file: "dist/main.js",
     format: "cjs",
-    sourcemap: false,
+    sourcemap: true,
   },
   plugins: [
     clear({ targets: ["dist"] }),
