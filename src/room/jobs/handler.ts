@@ -178,7 +178,9 @@ export const AssignNewJobForStructure = FuncWrapper(
     const strMem: StructureMemory = getStructureMemory.response;
     let jobs: Job[] = [];
 
-    let getAvailableJobs: FunctionReturn = { code: FunctionReturnCodes.NOT_MODIFIED};
+    let getAvailableJobs: FunctionReturn = {
+      code: FunctionReturnCodes.NOT_MODIFIED,
+    };
     if (filterOnTypes) {
       getAvailableJobs = GetAvailableJobs(strMem.room, false, filterOnTypes);
       if (getAvailableJobs.code !== FunctionReturnCodes.OK)
@@ -189,7 +191,10 @@ export const AssignNewJobForStructure = FuncWrapper(
         case "tower":
           getAvailableJobs = GetAvailableJobs(strMem.room, false, ["attack"]);
           jobs = getAvailableJobs.response;
-          if (getAvailableJobs.code === FunctionReturnCodes.OK && jobs.length === 0) {
+          if (
+            getAvailableJobs.code === FunctionReturnCodes.OK &&
+            jobs.length === 0
+          ) {
             getAvailableJobs = GetAvailableJobs(strMem.room, false, [
               "repair",
               "heal",
@@ -248,7 +253,7 @@ export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
   }
 
   if (creepMem.secondJobId) {
-  if (creepMem.jobId !== creepMem.secondJobId) {
+    if (creepMem.jobId !== creepMem.secondJobId) {
       SwitchCreepSavedJobIds(creep.id, true);
       return FunctionReturnHelper(FunctionReturnCodes.OK);
     }

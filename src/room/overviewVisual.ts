@@ -4,7 +4,7 @@ import { VisualDisplayLevels } from "../utils/constants/room";
 import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { AddLineWCoords, AddRectWCoords, AddTextWCoords } from "./visuals";
-import { GetRoomMemoryUsingName, GetRoomStatsMemoryUsingName } from "./helper";
+import { GetRoomStatsMemoryUsingName } from "./helper";
 
 /**
  * Draw all main visuals
@@ -483,7 +483,7 @@ export const JobVisuals = FuncWrapper(function JobVisuals(
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
 
-      forEach(globalActiveJobs, ([key, value]) => {
+  forEach(globalActiveJobs, ([key, value]) => {
     AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
@@ -517,7 +517,7 @@ export const JobVisuals = FuncWrapper(function JobVisuals(
     topLeftSecondRowPos += 5 - globalCreepCountPerJob.length;
 
   // Room
-      topLeftPos += 4;
+  topLeftPos += 4;
   AddTextWCoords(
     room,
     "> Job",
@@ -534,7 +534,7 @@ export const JobVisuals = FuncWrapper(function JobVisuals(
     VisualDisplayLevels.Debug,
     textStyle
   );
-      const activeJobs = Object.entries(roomStats.activeJobs)
+  const activeJobs = Object.entries(roomStats.activeJobs)
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
   forEach(activeJobs, ([key, value]) => {
@@ -558,7 +558,7 @@ export const JobVisuals = FuncWrapper(function JobVisuals(
     VisualDisplayLevels.Debug,
     textStyle
   );
-      const creepCountPerJob = Object.entries(roomStats.creepCountPerJob)
+  const creepCountPerJob = Object.entries(roomStats.creepCountPerJob)
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
   forEach(creepCountPerJob, ([key, value]) => {

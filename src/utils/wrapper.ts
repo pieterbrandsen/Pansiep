@@ -1,6 +1,4 @@
 import { isUndefined } from "lodash";
-import { Log } from "./logger";
-import { LogTypes } from "./constants/global";
 
 /**
  * Returns monkey patched function that tracks call count and cpu usage.
@@ -29,8 +27,7 @@ export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
 
     try {
       return func(...args);
-    }
-    finally {
+    } finally {
       statsPath.callCount += 1;
       statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
     }

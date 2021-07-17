@@ -35,7 +35,8 @@ export const Sources = FuncWrapper(function Sources(
   room: Room
 ): FunctionReturn {
   const getSources = GetSources(room);
-  if (getSources.code !== FunctionReturnCodes.OK) return FunctionReturnHelper(getSources.code);
+  if (getSources.code !== FunctionReturnCodes.OK)
+    return FunctionReturnHelper(getSources.code);
   const sources: Source[] = getSources.response;
   forEach(sources, (source: Source) => {
     const harvestJobId: Id<Job> = `harvest-${source.pos.x}/${source.pos.y}` as Id<Job>;

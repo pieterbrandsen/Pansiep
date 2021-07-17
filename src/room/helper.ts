@@ -58,7 +58,7 @@ export const GetRoomMemoryUsingName = FuncWrapper(
  * @return {FunctionReturn} HTTP response with code and data
  *
  */
- export const GetRoomStatsMemoryUsingName = FuncWrapper(
+export const GetRoomStatsMemoryUsingName = FuncWrapper(
   function GetRoomStatsMemoryUsingName(id: string): FunctionReturn {
     const roomMemory = Memory.stats.rooms[id];
     if (isUndefined(roomMemory))

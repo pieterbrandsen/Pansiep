@@ -4,10 +4,10 @@ import {
   FunctionReturnCodes,
   StatsDigitCount,
 } from "../utils/constants/global";
-import { ShouldUpdateStats } from "../utils/config/global";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { GetRoomMemoryUsingName } from "../room/helper";
+import { ShouldUpdateStats } from '../utils/config/global';
 
 export const ResetPreProcessingStats = FuncWrapper(
   function ResetPreProcessingStats(): FunctionReturn {
@@ -110,19 +110,14 @@ export const RoomStats = FuncWrapper(function RoomStats(
   if (!ShouldUpdateStats())
     return FunctionReturnHelper(FunctionReturnCodes.TARGET_IS_ON_DELAY_OR_OFF);
 
-  let preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
+  const preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
   const roomMem: RoomMemory = GetRoomMemoryUsingName(room.name).response;
-  let roomStats: RoomStats = Memory.stats.rooms[room.name];
+  const roomStats: RoomStats = Memory.stats.rooms[room.name];
 
-  if (preProcessingRoomStats === undefined) {
-    ResetPreProcessingRoomStats(room.name);
-    preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
-  }
-
-  if (roomStats === undefined) {
-    ResetRoomStats(room.name);
-    roomStats = Memory.stats.rooms[room.name];
-  }
+  // if (roomStats === undefined) {
+  //   ResetRoomStats(room.name);
+  //   roomStats = Memory.stats.rooms[room.name];
+  // }
 
   const creepCount = GetAveragedValue(
     roomStats.creepCount,

@@ -150,6 +150,9 @@ export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
   };
   const getRoom = GetRoom(roomName);
   if (getRoom.code === FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getRoom.code)
+  }
+  
     const room: Room = getRoom.response;
     const csSites: ConstructionSite[] = room.find(FIND_CONSTRUCTION_SITES);
     forEach(csSites, (site: ConstructionSite) => {
@@ -158,7 +161,6 @@ export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
     const sources: Source[] | undefined = GetSources(room).response;
     Memory.rooms[roomName].sourceCount = sources ? sources.length : 0;
     TryToExecuteRoomPlanner(room, true);
-  }
 
   Log(
     LogTypes.Debug,

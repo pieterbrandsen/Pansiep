@@ -10,7 +10,11 @@ export const RemoveCreep = FuncWrapper(function RemoveCreep(
   name: string,
   roomName: string
 ): FunctionReturn {
-  const jobs: Job[] = GetAllJobs(roomName).response;
+  const getAllJobs = GetAllJobs(roomName);
+  if (getAllJobs.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+  const jobs: Job[] = getAllJobs.response;
   const job = jobs.find((j) => j.assignedCreepsNames.includes(name));
   if (job) {
     job.assignedCreepsNames = remove(job.assignedCreepsNames, name);
@@ -35,7 +39,11 @@ export const RemoveStructure = FuncWrapper(function RemoveStructure(
   id: Id<Structure>,
   roomName: string
 ): FunctionReturn {
-  const jobs: Job[] = GetAllJobs(roomName).response;
+  const getAllJobs = GetAllJobs(roomName);
+  if (getAllJobs.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+  const jobs: Job[] = getAllJobs.response;
   const job = jobs.find((j) => j.assignedStructuresIds.includes(id));
   if (job) {
     job.assignedStructuresIds = remove(job.assignedStructuresIds, id);
