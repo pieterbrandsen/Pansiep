@@ -45,7 +45,7 @@ export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
     case ERR_NOT_ENOUGH_RESOURCES:
       if (
         AssignNewJobForCreep(creep, ["withdrawController"]).code ===
-        FunctionReturnCodes.NOT_MODIFIED
+        FunctionReturnCodes.NO_CONTENT
       ) {
         UnassignJob(job.id, creep.name, job.roomName);
         AssignNewJobForCreep(
