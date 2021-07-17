@@ -17,7 +17,11 @@ export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
   job: Job
 ): FunctionReturn {
   const _job = job;
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  const creepMem: CreepMemory = getCreepMemory.response;
   if (
     isUndefined(creep.room.controller) ||
     isUndefined(_job.energyRequired) ||

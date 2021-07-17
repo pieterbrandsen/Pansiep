@@ -10,7 +10,11 @@ export const ExecuteAttack = FuncWrapper(function ExecuteAttack(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const target: Structure | Creep = GetObject(job.objId).response as
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
+  const target: Structure | Creep =getObject.response as
     | Structure
     | Creep;
 

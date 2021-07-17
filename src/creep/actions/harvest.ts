@@ -16,7 +16,12 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  const creepMem: CreepMemory = getCreepMemory.response;
+
   if (creep.store.getFreeCapacity(job.resourceType) === 0) {
     const assignNewJobForCreepCode = AssignNewJobForCreep(creep, [
       "transferSource",
@@ -33,7 +38,11 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
 
-  const source: Source = GetObject(job.objId).response as Source;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
+  const source: Source = getObject.response as Source;
 
   switch (creep.harvest(source)) {
     case OK:

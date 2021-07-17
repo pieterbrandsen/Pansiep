@@ -28,8 +28,9 @@ export const IsCreepDamaged = FuncWrapper(function IsCreepDamaged(
 export const TryToCreateHealJob = FuncWrapper(function TryToCreateHealJob(
   creep: Creep
 ): FunctionReturn {
+  const isCreepDamaged = IsCreepDamaged(creep);
   if (
-    IsCreepDamaged(creep).response &&
+    isCreepDamaged.code === FunctionReturnCodes.OK && isCreepDamaged.response &&
     GetJobById(`heal-${creep.name}` as Id<Job>, creep.room.name).code ===
       FunctionReturnCodes.NOT_FOUND
   ) {

@@ -10,8 +10,11 @@ export const ExecuteClaim = FuncWrapper(function ExecuteClaim(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const controller: StructureController = GetObject(job.objId)
-    .response as StructureController;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
+  const controller: StructureController = getObject.response as StructureController;
 
   switch (creep.claimController(controller)) {
     case OK:
@@ -24,7 +27,7 @@ export const ExecuteClaim = FuncWrapper(function ExecuteClaim(
       DeleteJobById(job.id, job.roomName);
       break;
     case ERR_GCL_NOT_ENOUGH:
-      Game.notify("CLAIMING GCL WHILE TOO LOW LEVEL!");
+      Game.notify("CLAIMING CONTROLLER WHILE GCL IS TOO LOW LEVEL!");
       DeleteJobById(job.id, job.roomName);
       break;
     default:

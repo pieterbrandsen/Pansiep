@@ -19,7 +19,12 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
   job: Job
 ): FunctionReturn {
   const _job = job;
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  
+  const creepMem: CreepMemory = getCreepMemory.response;
 
   if (
     creep.store.getUsedCapacity(job.resourceType) <

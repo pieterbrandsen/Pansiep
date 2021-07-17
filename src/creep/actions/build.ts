@@ -16,8 +16,17 @@ export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
-  const csSite: ConstructionSite = GetObject(job.objId)
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code)
+  }
+  
+  const creepMem: CreepMemory = getCreepMemory.response;
+  const csSite: ConstructionSite = getObject
     .response as ConstructionSite;
 
   switch (creep.build(csSite)) {
