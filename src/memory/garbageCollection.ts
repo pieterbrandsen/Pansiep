@@ -3,17 +3,21 @@ import { Log } from "../utils/logger";
 import { ResetRoomStats } from "./stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { GetAllJobs, UpdateJobById, UpdateJobList } from "../room/jobs/handler";
 
 export const RemoveCreep = FuncWrapper(function RemoveCreep(
   name: string,
   roomName: string
 ): FunctionReturn {
-  const jobs: Job[] = GetAllJobs(roomName).response;
-  const job = jobs.find((j) => j.assignedCreepsIds.includes(name));
+  const getAllJobs = GetAllJobs(roomName);
+  if (getAllJobs.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+  const jobs: Job[] = getAllJobs.response;
+  const job = jobs.find((j) => j.assignedCreepsNames.includes(name));
   if (job) {
-    job.assignedCreepsIds = remove(job.assignedCreepsIds, name);
+    job.assignedCreepsNames = remove(job.assignedCreepsNames, name);
     UpdateJobById(job.id, job, roomName);
   }
   remove(jobs, (j) => j.objId === name);
@@ -35,7 +39,11 @@ export const RemoveStructure = FuncWrapper(function RemoveStructure(
   id: Id<Structure>,
   roomName: string
 ): FunctionReturn {
-  const jobs: Job[] = GetAllJobs(roomName).response;
+  const getAllJobs = GetAllJobs(roomName);
+  if (getAllJobs.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  }
+  const jobs: Job[] = getAllJobs.response;
   const job = jobs.find((j) => j.assignedStructuresIds.includes(id));
   if (job) {
     job.assignedStructuresIds = remove(job.assignedStructuresIds, id);

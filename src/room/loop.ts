@@ -6,23 +6,30 @@ import { IsRoomMemoryInitialized } from "../memory/initialization";
 import { RoomStatsPreProcessing, RoomStats } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { TryToExecuteRoomPlanner } from "./planner";
 import { RoomVisuals } from "./overviewVisual";
 
+/**
+ * Execute an single room
+ *
+ * @param {Room} room - room to be executed
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const RunRoom = FuncWrapper(function RunRoom(
-  id: string
+  name: string
 ): FunctionReturn {
-  const getRoom = GetRoom(id);
+  const getRoom = GetRoom(name);
 
   if (getRoom.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   const room = getRoom.response;
 
-  RoomStatsPreProcessing(room);
-  RunStructures(id);
-  RunCreeps(id);
-  RoomStats(room);
+  const roomStatsPreProcessing = RoomStatsPreProcessing(room);
+  RunStructures(name);
+  RunCreeps(name);
+  if (roomStatsPreProcessing.code === FunctionReturnCodes.OK) RoomStats(room);
 
   TryToExecuteRoomPlanner(room);
   RoomVisuals(room);
@@ -30,6 +37,12 @@ export const RunRoom = FuncWrapper(function RunRoom(
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
 
+/**
+ * Execute all visible rooms
+ *
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const Run = FuncWrapper(function RunRooms(): FunctionReturn {
   const getRoomIds = GetRoomIds();
 

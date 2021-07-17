@@ -1,3 +1,6 @@
+/**
+ * List of possible visual display levels.
+ */
 export const VisualDisplayLevels = {
   None: 0,
   Info: 250,
@@ -5,6 +8,9 @@ export const VisualDisplayLevels = {
   All: 750,
 };
 
+/**
+ * A list of intents that's going to be monkey patched to return cpu usage to a heap variable.
+ */
 export const TrackedIntents = [
   "createConstructionSite",
   "createFlag",
@@ -19,6 +25,9 @@ export const TrackedIntents = [
   "lookForAtArea",
 ];
 
+/**
+ * List of possible job action with their associated priority level. Lower equals higher priority..
+ */
 export const JobActionPriority: { [key in JobActionTypes]: number } = {
   move: 0,
   transfer: 0,
@@ -39,6 +48,9 @@ export const JobActionPriority: { [key in JobActionTypes]: number } = {
   claim: 4,
 };
 
+/**
+ * Max amount of creeps per job type.
+ */
 export const MaxCreepsPerCreepType = 7;
 
 // Timers

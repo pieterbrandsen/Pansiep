@@ -12,9 +12,22 @@ import {
 } from "../memory/garbageCollection";
 import { FuncWrapper } from "./wrapper";
 import { FunctionReturnCodes } from "./constants/global";
-import { FunctionReturnHelper } from "./statusGenerator";
+import { FunctionReturnHelper } from "./functionStatusGenerator";
 
 type Param = { name: string; type: string };
+
+/**
+ * Return an html string that describes an function based on params.
+ *
+ * @param {string} name - Name of function
+ * @param {string} description - Description of function
+ * @param {Param[]} [params] - Parameters of function
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ * @example
+ *
+ *     DescribeFunction('foo',"returns bar",[{ name: "parameterName", type: "typeName" }])
+ */
 export const DescribeFunction = FuncWrapper(function DescribeFunction(
   name: string,
   description: string,
@@ -32,6 +45,7 @@ export const DescribeFunction = FuncWrapper(function DescribeFunction(
   return FunctionReturnHelper(FunctionReturnCodes.OK, message);
 });
 
+// #region Commands
 export const ResetGlobalMemoryCommand = FuncWrapper(
   function ResetGlobalMemoryCommand(): number {
     return InitializeGlobalMemory().code;
@@ -132,6 +146,17 @@ export const HelpCommand = FuncWrapper(function HelpCommand(): string {
   return helpMessage;
 });
 
+// #endregion
+
+/**
+ * Handles setting the console commands to the heap to used in the console.
+ *
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ * @example
+ *
+ *     AssignCommandsToHeap()
+ */
 export const AssignCommandsToHeap = FuncWrapper(
   function AssignCommandsToHeap(): FunctionReturn {
     global.help = HelpCommand;

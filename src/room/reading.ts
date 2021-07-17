@@ -1,15 +1,20 @@
 import { first, forEach, union } from "lodash";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { FuncWrapper } from "../utils/wrapper";
 import { GetObjectsFromIDs } from "./helper";
 import {
   DangerousStructureTypes,
   WalkableStructureTypes,
 } from "../utils/constants/structure";
-import { AddTextWPos } from "./visuals";
-import { VisualDisplayLevels } from "../utils/constants/room";
 
+/**
+ * Return the terrain of the room
+ *
+ * @param {Room} room - Room where terrain is requested
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetTerrain = FuncWrapper(function GetTerrain(
   room: Room
 ): FunctionReturn {
@@ -17,6 +22,16 @@ export const GetTerrain = FuncWrapper(function GetTerrain(
   return FunctionReturnHelper(FunctionReturnCodes.OK, terrain);
 });
 
+/**
+ * Return all structures in range of the inputted position
+ *
+ * @param {RoomPosition} pos - Middle position
+ * @param {number} range - Range from middle
+ * @param {Room} room - Room where the structures are requested
+ * @param {StructureConstant[]} [filterOnStrType] - Return only structures types based on this array
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetStructuresInRange = FuncWrapper(function GetStructuresInRange(
   pos: RoomPosition,
   range: number,
@@ -41,14 +56,24 @@ export const GetStructuresInRange = FuncWrapper(function GetStructuresInRange(
   return FunctionReturnHelper(FunctionReturnCodes.OK, structures);
 });
 
+/**
+ * Return all construction sites in range of the inputted position
+ *
+ * @param {RoomPosition} pos - Middle position
+ * @param {number} range - Range from middle
+ * @param {Room} room - Room where the construction sites are requested
+ * @param {StructureConstant[]} [filterOnStrType] - Return only structures types based on this array
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetConstructionSitesInRange = FuncWrapper(
   function GetConstructionSitesInRange(
     pos: RoomPosition,
     range: number,
     room: Room,
-    filterOnStrType?: string[]
+    filterOnStrType?: StructureConstant[]
   ): FunctionReturn {
-    const sites = room
+    const constructionSites = room
       .lookForAtArea(
         LOOK_CONSTRUCTION_SITES,
         pos.y - range,
@@ -63,10 +88,19 @@ export const GetConstructionSitesInRange = FuncWrapper(
           : true
       )
       .map((s) => s.constructionSite);
-    return FunctionReturnHelper(FunctionReturnCodes.OK, sites);
+    return FunctionReturnHelper(FunctionReturnCodes.OK, constructionSites);
   }
 );
 
+/**
+ * Return all sources in range of the inputted position
+ *
+ * @param {RoomPosition} pos - Middle position
+ * @param {number} range - Range from middle
+ * @param {Room} room - Room where the sources are requested
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetSourcesInRange = FuncWrapper(function GetSourcesInRange(
   pos: RoomPosition,
   range: number,
@@ -85,11 +119,21 @@ export const GetSourcesInRange = FuncWrapper(function GetSourcesInRange(
   return FunctionReturnHelper(FunctionReturnCodes.OK, sources);
 });
 
+/**
+ * Return all terrain in range of the inputted position
+ *
+ * @param {RoomPosition} pos - Middle position
+ * @param {number} range - Range from middle
+ * @param {Room} room - Room where the sources are requested
+ * @param {Terrain[]} [filterOnTerrainType] - Return only terrain types based on this array
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetTerrainInRange = FuncWrapper(function GetTerrainInRange(
   pos: RoomPosition,
   range: number,
   room: Room,
-  filterOnTerrain?: string[]
+  filterOnTerrainType?: Terrain[]
 ): FunctionReturn {
   const terrain = room
     .lookForAtArea(
@@ -101,24 +145,33 @@ export const GetTerrainInRange = FuncWrapper(function GetTerrainInRange(
       true
     )
     .filter((t) =>
-      filterOnTerrain ? filterOnTerrain.includes(t.terrain) : true
+      filterOnTerrainType ? filterOnTerrainType.includes(t.terrain) : true
     )
     .map((t) => new RoomPosition(t.x, t.y, room.name));
 
   return FunctionReturnHelper(FunctionReturnCodes.OK, terrain);
 });
 
+/**
+ * Return all structures of inputted room
+ *
+ * @param {Room} room - Room where the structures are requested
+ * @param {StructureConstant[]} [filterOnStrTypes] - Return only structures types based on this array
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetStructures = FuncWrapper(function GetStructures(
   roomName: string,
   filterOnStrTypes?: StructureConstant[]
 ): FunctionReturn {
-  if (Memory.cache.structures.data[roomName] !== undefined) return GetObjectsFromIDs<Structure>(
-    Memory.cache.structures.data[roomName]
-      .filter((s) =>
-        filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
-      )
-      .map((s) => s.id)
-  )
+  if (Memory.cache.structures.data[roomName] !== undefined)
+    return GetObjectsFromIDs<Structure>(
+      Memory.cache.structures.data[roomName]
+        .filter((s) =>
+          filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
+        )
+        .map((s) => s.id)
+    );
 
   return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
 });
@@ -136,21 +189,42 @@ export const GetDangerousStructures = FuncWrapper(
   }
 );
 
+/**
+ * Find all exits in an room
+ *
+ * @param {Room} room - Room with exits
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const FindExits = FuncWrapper(function FindExits(
   room: Room
 ): FunctionReturn {
   return FunctionReturnHelper(FunctionReturnCodes.OK, room.find(FIND_EXIT));
 });
 
+/**
+ * Find all exits in an room
+ *
+ * @param {string} roomName - Room name
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetAccessibleSurroundingRoomNames = FuncWrapper(
-  function GetAccessibleSurroundingRoomNames(id: string): FunctionReturn {
-    return FunctionReturnHelper(
-      FunctionReturnCodes.OK,
-      Game.map.describeExits(id)
-    );
+  function GetAccessibleSurroundingRoomNames(roomName: string): FunctionReturn {
+    const exits = Game.map.describeExits(roomName);
+    const surroundingRoomNames: string[] = Object.values(exits) as string[];
+    return FunctionReturnHelper(FunctionReturnCodes.OK, surroundingRoomNames);
   }
 );
 
+/**
+ * returns an boolean indicating if position is surrounded
+ *
+ * @param {RoomPosition} roomPos - Room position to check
+ * @param {Room} room - Room of position
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const IsPositionDefended = FuncWrapper(function IsPositionDefended(
   roomPos: RoomPosition,
   room: Room
@@ -173,11 +247,6 @@ export const IsPositionDefended = FuncWrapper(function IsPositionDefended(
   const strOpenSpotsClassifiedByRange = { 0: 1, 1: 8, 2: 16 };
   forEach(positions, (pos: RoomPosition) => {
     strOpenSpotsClassifiedByRange[pos.getRangeTo(roomPos)] -= 1;
-    AddTextWPos(room, "🟥", pos, VisualDisplayLevels.Debug);
-  });
-
-  AddTextWPos(room, "🟩", roomPos, VisualDisplayLevels.Debug, {
-    opacity: 0.5,
   });
 
   forEach(Object.values(strOpenSpotsClassifiedByRange), (total: number) => {
@@ -187,6 +256,13 @@ export const IsPositionDefended = FuncWrapper(function IsPositionDefended(
   return FunctionReturnHelper(FunctionReturnCodes.OK, isStructureDefended);
 });
 
+/**
+ * Return the mineral if its in the room
+ *
+ * @param {Room} room - Room where mineral should be located
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetMineral = FuncWrapper(function GetMineral(
   room: Room
 ): FunctionReturn {
@@ -197,6 +273,13 @@ export const GetMineral = FuncWrapper(function GetMineral(
   return FunctionReturnHelper(FunctionReturnCodes.OK, first(minerals));
 });
 
+/**
+ * Return an boolean indicating if there is an extractor at the minerals position
+ *
+ * @param {Room} room - Room where mineral should be located
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const HasMineralStructure = FuncWrapper(function HasMineralStructure(
   room: Room
 ): FunctionReturn {
@@ -211,6 +294,13 @@ export const HasMineralStructure = FuncWrapper(function HasMineralStructure(
   return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
 });
 
+/**
+ * Return all sources if they are found in the room
+ *
+ * @param {Room} room - Room where sources should be located
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetSources = FuncWrapper(function GetSources(
   room: Room
 ): FunctionReturn {
@@ -221,6 +311,13 @@ export const GetSources = FuncWrapper(function GetSources(
   return FunctionReturnHelper(FunctionReturnCodes.OK, sources);
 });
 
+/**
+ * Return an boolean indicating if the the position has an structure where it energy can be dispensed in
+ *
+ * @param {Room} room - Room where sources should be located
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const HasPositionEnergyStructures = FuncWrapper(
   function HasPositionEnergyStructures(room: Room, pos: RoomPosition) {
     const structures: Array<
@@ -244,6 +341,15 @@ export const HasPositionEnergyStructures = FuncWrapper(
   }
 );
 
+/**
+ * Get the amount of acces points that are around the position
+ *
+ * @param {Room} room - Room to check in
+ * @param {RoomPosition} pos - Middle position of check point
+ * @param {1 | 2} range - All positions in a 1 or 2 range of position
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetAccesSpotsAroundPosition = FuncWrapper(
   function GetAccesSpotsAroundPosition(
     room: Room,
@@ -275,6 +381,15 @@ export const GetAccesSpotsAroundPosition = FuncWrapper(
   }
 );
 
+/**
+ * Return the best position where an energy structure should be placed. This calculation is done based on acces points and range away from position
+ *
+ * @param {Room} room - Room to check in
+ * @param {RoomPosition} pos - Middle position of check point
+ * @param {1 | 2} range - All positions in a 1 or 2 range of position
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
 export const GetBestEnergyStructurePosAroundPosition = FuncWrapper(
   function GetBestEnergyStructurePosAroundPosition(
     room: Room,

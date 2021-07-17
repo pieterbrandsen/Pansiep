@@ -1,7 +1,7 @@
 import { UnassignJob } from "../../room/jobs/handler";
 import { FunctionReturnCodes } from "../../utils/constants/global";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { CreateRoomPosition } from "../../utils/helper";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 
 // export const GetPath = FuncWrapper(function GetPath(creep:Creep,targetPos:RoomPosition): FunctionReturn {
@@ -15,7 +15,6 @@ export const ExecuteMove = FuncWrapper(function ExecuteMove(
   job: Job
   // range = 2
 ): FunctionReturn {
-  // const creepMem: CreepMemory = GetCreepMemory(creep.id).response;
   const targetPos: RoomPosition = job.position
     ? CreateRoomPosition(job.position).response
     : new RoomPosition(25, 25, job.roomName);

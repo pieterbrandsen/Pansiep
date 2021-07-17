@@ -5,7 +5,7 @@ import { ResetStats, ResetPreProcessingStats } from "./stats";
 import { FuncWrapper, IntentWrapper } from "../utils/wrapper";
 import { AssignCommandsToHeap } from "../utils/consoleCommands";
 import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { TrackedIntents as TrackedRoomIntents } from "../utils/constants/room";
 import { TrackedIntents as TrackedStructureIntents } from "../utils/constants/structure";
 import { TrackedIntents as TrackedCreepIntents } from "../utils/constants/creep";
@@ -150,15 +150,17 @@ export const InitializeRoomMemory = FuncWrapper(function InitializeRoomMemory(
   };
   const getRoom = GetRoom(roomName);
   if (getRoom.code === FunctionReturnCodes.OK) {
-    const room: Room = getRoom.response;
-    const csSites: ConstructionSite[] = room.find(FIND_CONSTRUCTION_SITES);
-    forEach(csSites, (site: ConstructionSite) => {
-      site.remove();
-    });
-    const sources: Source[] | undefined = GetSources(room).response;
-    Memory.rooms[roomName].sourceCount = sources ? sources.length : 0;
-    TryToExecuteRoomPlanner(room, true);
+    return FunctionReturnHelper(getRoom.code);
   }
+
+  const room: Room = getRoom.response;
+  const csSites: ConstructionSite[] = room.find(FIND_CONSTRUCTION_SITES);
+  forEach(csSites, (site: ConstructionSite) => {
+    site.remove();
+  });
+  const sources: Source[] | undefined = GetSources(room).response;
+  Memory.rooms[roomName].sourceCount = sources ? sources.length : 0;
+  TryToExecuteRoomPlanner(room, true);
 
   Log(
     LogTypes.Debug,

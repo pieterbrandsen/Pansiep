@@ -1,10 +1,10 @@
 import { isUndefined } from "lodash";
-import { Log } from "./logger";
-import { LogTypes } from "./constants/global";
 
 /**
- * @param func
- * @returns {F} Function
+ * Returns monkey patched function that tracks call count and cpu usage.
+ *
+ * @param {f} func currFunction
+ * @returns {F} Money patched function
  */
 // eslint-disable-next-line
 export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
@@ -27,20 +27,28 @@ export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
 
     try {
       return func(...args);
-    } catch (error) {
-      Log(LogTypes.Error, func.name, error, {
-        ...args,
-      });
-      return { code: 500 };
     } finally {
       statsPath.callCount += 1;
       statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
     }
+    // try {
+    // } catch (error) {
+    //   throw error;
+    //   Log(LogTypes.Error, func.name, error, {
+    //     ...args,
+    //   });
+    //   return { code: 500 };
+    // } finally {
+    //   statsPath.callCount += 1;
+    //   statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
+    // }
   }) as F;
 };
 
 /**
- * @param functions
+ * Wrap multiple functions using the FuncWrapper function wrapper.
+ *
+ * @param {T} functions
  */
 export const WrapFunctions = FuncWrapper(function WrapFunctions<
   // eslint-disable-next-line

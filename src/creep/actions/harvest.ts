@@ -4,9 +4,9 @@ import {
   AssignNewJobForCreep,
   DeleteJobById,
 } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
+import { GetObject } from "../../utils/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory, UpdateCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";
@@ -16,12 +16,18 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
   creep: Creep,
   job: Job
 ): FunctionReturn {
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  const creepMem: CreepMemory = getCreepMemory.response;
+
   if (creep.store.getFreeCapacity(job.resourceType) === 0) {
     const assignNewJobForCreepCode = AssignNewJobForCreep(creep, [
       "transferSource",
     ]).code;
-    if (assignNewJobForCreepCode === FunctionReturnCodes.NOT_MODIFIED) {
+
+    if (assignNewJobForCreepCode === FunctionReturnCodes.NO_CONTENT) {
       UnassignJob(job.id, creep.name, job.roomName);
       AssignNewJobForCreep(creep);
     } else {
@@ -32,7 +38,11 @@ export const ExecuteHarvest = FuncWrapper(function ExecuteHarvest(
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
 
-  const source: Source = GetObject(job.objId).response as Source;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
+  const source: Source = getObject.response as Source;
 
   switch (creep.harvest(source)) {
     case OK:

@@ -1,12 +1,18 @@
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
-import { TryToCreateRepairJob } from "./helper";
+import { RepairIfDamagedStructure } from "./helper";
 
-// eslint-disable-next-line
-export const ExecuteObserver = FuncWrapper(function ExecuteObserver(
+/**
+ * Execute an observer
+ *
+ * @param {StructureObserver} str - Container structure
+ * @return {FunctionReturn} HTTP response with code and data
+ *
+ */
+export default FuncWrapper(function ExecuteObserver(
   str: StructureObserver
 ): FunctionReturn {
-  TryToCreateRepairJob(str);
+  RepairIfDamagedStructure(str);
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

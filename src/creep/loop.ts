@@ -9,7 +9,7 @@ import { IsCreepMemoryInitialized } from "../memory/initialization";
 import { CreepStatsPreProcessing } from "../memory/stats";
 import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/statusGenerator";
+import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { AssignNewJobForCreep } from "../room/jobs/handler";
 
 export const RunCreep = FuncWrapper(function RunCreep(

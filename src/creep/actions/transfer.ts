@@ -5,10 +5,10 @@ import {
   UnassignJob,
   UpdateJobById,
 } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
+import { GetObject } from "../../utils/helper";
 import { GetFreeCapacity } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { GetCreepMemory } from "../helper";
 import { ExecuteMove } from "./move";
@@ -19,7 +19,12 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
   job: Job
 ): FunctionReturn {
   const _job = job;
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+
+  const creepMem: CreepMemory = getCreepMemory.response;
 
   if (
     creep.store.getUsedCapacity(job.resourceType) <

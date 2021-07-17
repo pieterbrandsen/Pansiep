@@ -6,13 +6,13 @@ import {
   UpdateJobById,
   SwitchCreepSavedJobIds,
 } from "../../room/jobs/handler";
-import { GetObject } from "../../structure/helper";
 import { GetUsedCapacity } from "../../structure/types/helper";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/statusGenerator";
+import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FuncWrapper } from "../../utils/wrapper";
 import { ExecuteMove } from "./move";
 import { GetCreepMemory } from "../helper";
+import { GetObject } from "../../utils/helper";
 
 // eslint-disable-next-line
 export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
@@ -20,15 +20,23 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
   job: Job
 ): FunctionReturn {
   const _job = job;
-  const creepMem: CreepMemory = GetCreepMemory(creep.name).response;
+  const getCreepMemory = GetCreepMemory(creep.name);
+  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getCreepMemory.code);
+  }
+  const creepMem: CreepMemory = getCreepMemory.response;
   if (_job.energyRequired === undefined || _job.energyRequired <= 0) {
     DeleteJobById(job.id, job.roomName);
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   }
 
   const resourceType = job.resourceType as ResourceConstant;
-  const str: Structure = GetObject(job.objId).response as Structure;
+  const getObject = GetObject(job.objId);
+  if (getObject.code !== FunctionReturnCodes.OK) {
+    return FunctionReturnHelper(getObject.code);
+  }
 
+  const str: Structure = getObject.response as Structure;
   const strUsedCapacity = GetUsedCapacity(str, resourceType).response;
   const creepFreeCapacity = creep.store.getFreeCapacity(resourceType);
   const withdrawAmount: number =
