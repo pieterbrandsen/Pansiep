@@ -33,11 +33,10 @@ export const ExecuteWithdraw = FuncWrapper(function ExecuteWithdraw(
   const resourceType = job.resourceType as ResourceConstant;
   const getObject = GetObject(job.objId);
   if (getObject.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(getObject.code)
+    return FunctionReturnHelper(getObject.code);
   }
-  
-  const str: Structure = getObject
-    .response as Structure;
+
+  const str: Structure = getObject.response as Structure;
   const strUsedCapacity = GetUsedCapacity(str, resourceType).response;
   const creepFreeCapacity = creep.store.getFreeCapacity(resourceType);
   const withdrawAmount: number =

@@ -23,7 +23,7 @@ export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
   if (getCreepMemory.code !== FunctionReturnCodes.OK) {
     return FunctionReturnHelper(getCreepMemory.code);
   }
-  
+
   const creepMem: CreepMemory = getCreepMemory.response;
 
   if (

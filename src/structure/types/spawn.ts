@@ -191,10 +191,13 @@ export const GetNextCreepType = FuncWrapper(function GetNextCreepType(
 export const GetUniqueName = FuncWrapper(function GetUniqueName(
   creepType: CreepTypes
 ): FunctionReturn {
+  const currentNames = Object.keys(Memory.creeps);
   const getName = () => `${creepType}-${Math.floor(Math.random() * 100001)}`;
+
   let name: string | undefined;
   do name = getName();
-  while (isUndefined(Memory.creeps[name]));
+  while (currentNames.includes(name));
+
   name = getName();
   return FunctionReturnHelper(FunctionReturnCodes.OK, name);
 });

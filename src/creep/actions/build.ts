@@ -22,12 +22,11 @@ export const ExecuteBuild = FuncWrapper(function ExecuteBuild(
   }
   const getObject = GetObject(job.objId);
   if (getObject.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(getObject.code)
+    return FunctionReturnHelper(getObject.code);
   }
-  
+
   const creepMem: CreepMemory = getCreepMemory.response;
-  const csSite: ConstructionSite = getObject
-    .response as ConstructionSite;
+  const csSite: ConstructionSite = getObject.response as ConstructionSite;
 
   switch (creep.build(csSite)) {
     case OK:

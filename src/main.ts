@@ -49,5 +49,4 @@ export const loop = ErrorMapper.wrapLoop(() => {
   if (globalStatsPreProcessing.code === FunctionReturnCodes.OK) GlobalStats();
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
-  // }
 });

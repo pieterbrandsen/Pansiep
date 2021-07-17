@@ -18,13 +18,12 @@ export const ExecuteDismantle = FuncWrapper(function ExecuteDismantle(
   }
   const getObject = GetObject(job.objId);
   if (getObject.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(getObject.code)
+    return FunctionReturnHelper(getObject.code);
   }
-  
+
   const creepMem: CreepMemory = getCreepMemory.response;
-  const str: Structure = getObject
-    .response as Structure;
-  
+  const str: Structure = getObject.response as Structure;
+
   switch (creep.dismantle(str)) {
     case OK:
       creep.say("Dismantle");

@@ -23,12 +23,11 @@ export const ExecuteRepair = FuncWrapper(function ExecuteRepair(
   }
   const getObject = GetObject(job.objId);
   if (getObject.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(getObject.code)
+    return FunctionReturnHelper(getObject.code);
   }
-  
+
   const creepMem: CreepMemory = getCreepMemory.response;
-  const str: Structure = getObject
-    .response as Structure;
+  const str: Structure = getObject.response as Structure;
   if (!IsStructureDamaged(str).response) {
     DeleteJobById(job.id, job.roomName);
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);

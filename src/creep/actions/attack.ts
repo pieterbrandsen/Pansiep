@@ -14,9 +14,7 @@ export const ExecuteAttack = FuncWrapper(function ExecuteAttack(
   if (getObject.code !== FunctionReturnCodes.OK) {
     return FunctionReturnHelper(getObject.code);
   }
-  const target: Structure | Creep =getObject.response as
-    | Structure
-    | Creep;
+  const target: Structure | Creep = getObject.response as Structure | Creep;
 
   switch (creep.attack(target)) {
     case OK:
