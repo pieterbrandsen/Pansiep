@@ -2,496 +2,364 @@ import { isUndefined, first, forEach, remove } from "lodash";
 import { FuncWrapper } from "../../utils/wrapper";
 import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
 import { FunctionReturnCodes } from "../../utils/constants/global";
-import { GetCreepMemory, UpdateCreepMemory } from "../../creep/helper";
-import {
-  GetStructureMemory,
-  UpdateStructureMemory,
-} from "../../structure/helper";
-import { CreateRoomPosition } from "../../utils/helper";
+import { GetCreepMemory } from "../../creep/helper";
+import { GetStructureMemory } from "../../structure/helper";
 import { JobActionPriority } from "../../utils/constants/room";
+import { RehydratedRoomPosition } from "../../utils/helper";
 
-/**
- * Return all jobs from an requested room
- *
- * @param {string} roomName - Name of room
- * @param {JobActionTypes[]} [filterOnTypes] - filter on selected job types
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const GetAllJobs = FuncWrapper(function GetAllJobs(
-  roomName: string,
-  filterOnTypes?: JobActionTypes[]
-): FunctionReturn {
-  let jobs = Memory.rooms[roomName].jobs.filter((j) =>
-    filterOnTypes ? filterOnTypes.includes(j.action) : true
-  );
-
-  if (jobs.length === 0)
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT, []);
-
-  jobs = jobs.sort((a, b) => {
-    return Number(a.hasPriority) - Number(b.hasPriority);
-  });
-  return FunctionReturnHelper(FunctionReturnCodes.OK, jobs);
-});
-
-/**
- * Return all available jobs from an requested room
- *
- * @param {string} roomName - Name of room
- * @param {boolean} requesterIsCreep - If requester is an creep
- * @param {JobActionTypes[]} [filterOnTypes] - filter on selected job types
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
-  roomName: string,
-  requesterIsCreep: boolean,
-  filterOnTypes?: JobActionTypes[]
-): FunctionReturn {
-  const getAllJobs = GetAllJobs(roomName, filterOnTypes);
-  if (getAllJobs.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getAllJobs.code);
-  const jobs: Job[] = getAllJobs.response.filter((j: Job) =>
-    requesterIsCreep
-      ? j.assignedCreepsNames.length < j.maxCreeps
-      : j.assignedStructuresIds.length < j.maxStructures
-  );
-
-  if (jobs.length === 0)
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT, []);
-
-  return FunctionReturnHelper(FunctionReturnCodes.OK, jobs);
-});
-
-/**
- * Return closest job to inputted position
- *
- * @param {Job[]} jobs - Jobs to use when getting closest job
- * @param {RoomPosition} pos - Middle position
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const GetClosestJob = FuncWrapper(function GetClosestJob(
-  jobs: Job[],
-  pos: RoomPosition
-): FunctionReturn {
-  const jobsWithPos: Job[] = [];
-  jobs
-    .filter((job) => job.position)
-    .forEach((job: Job) => {
-      const _job = job;
-      const createRoomPosition = CreateRoomPosition(
-        job.position as RoomPosition
-      );
-      if (createRoomPosition.code === FunctionReturnCodes.OK) {
-        _job.position = createRoomPosition.response;
-        jobsWithPos.push(_job);
-      }
-    });
-
-  const closestJob: Job = first(
-    jobsWithPos.sort(
-      (a: Job, b: Job) =>
-        (a.position as RoomPosition).getRangeTo(pos) -
-        (b.position as RoomPosition).getRangeTo(pos)
-    )
-  ) as Job;
-
-  return FunctionReturnHelper(FunctionReturnCodes.OK, closestJob);
-});
-
-/**
- * Update job with new memory
- *
- * @param {Id<Job>} id - Id of job
- * @param {Job} job - Updated job
- * @param {string} roomName - Name of room
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const UpdateJobById = FuncWrapper(function UpdateJobById(
-  id: Id<Job>,
-  job: Job,
-  roomName: string
-): FunctionReturn {
-  const jobsMem = Memory.rooms[roomName].jobs;
-  const index = jobsMem.findIndex((j) => j.id === id);
-  if (index >= 0) {
-    jobsMem[index] = job;
-  } else {
-    jobsMem.push(job);
-  }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-/**
- * Switch creep jobs saved in memory
- *
- * @param {string} name - Name of creep
- * @param {boolean=false} switchBack - Switch from secondary job to first
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const SwitchCreepSavedJobIds = FuncWrapper(
-  function SwitchCreepSavedJobIds(
-    creepName: string,
-    switchBack = false
-  ): FunctionReturn {
-    const getCreepMemory = GetCreepMemory(creepName);
-    if (getCreepMemory.code !== FunctionReturnCodes.OK)
-      return FunctionReturnHelper(getCreepMemory.code);
-    const creepMem: CreepMemory = getCreepMemory.response;
-    let oldId: Id<Job> | undefined;
-    if (switchBack) {
-      oldId = creepMem.jobId;
-      creepMem.jobId = creepMem.secondJobId;
-      creepMem.secondJobId = oldId;
-    } else {
-      oldId = creepMem.secondJobId;
-      creepMem.secondJobId = creepMem.jobId;
-      creepMem.jobId = oldId;
-    }
-
-    UpdateCreepMemory(creepName, creepMem);
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
-  }
-);
-
-/**
- * Assigns new job to an structure
- *
- * @param {Structure} str - Actual structure
- * @param {JobActionTypes[]} [filterOnTypes] - Only return inputted job types
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const AssignNewJobForStructure = FuncWrapper(
-  function AssignNewJobForStructure(
-    str: Structure,
+export default class JobHandler {
+  /**
+   * Return all jobs from @param room
+   */
+  public static GetAllJobs = FuncWrapper(function GetAllJobs(
+    roomName: string,
     filterOnTypes?: JobActionTypes[]
-  ): FunctionReturn {
-    const strId: Id<Structure> = str.id;
-    const getStructureMemory = GetStructureMemory(strId);
-    if (getStructureMemory.code !== FunctionReturnCodes.OK)
-      return FunctionReturnHelper(getStructureMemory.code);
-    const strMem: StructureMemory = getStructureMemory.response;
-    let jobs: Job[] = [];
+  ): Job[] {
+    // TODO: Create room function that returns room memory
+    const jobs = Memory.rooms[roomName].jobs
+      .filter((j) => (filterOnTypes ? filterOnTypes.includes(j.action) : true))
+      .sort((a, b) => {
+        return Number(a.hasPriority) - Number(b.hasPriority);
+      });
+    return jobs;
+  });
 
-    let getAvailableJobs: FunctionReturn = {
-      code: FunctionReturnCodes.NOT_MODIFIED,
-    };
-    if (filterOnTypes) {
-      getAvailableJobs = GetAvailableJobs(strMem.room, false, filterOnTypes);
-      if (getAvailableJobs.code !== FunctionReturnCodes.OK)
-        return FunctionReturnHelper(getAvailableJobs.code);
-      jobs = getAvailableJobs.response;
-    } else {
-      switch (str.structureType) {
-        case "tower":
-          getAvailableJobs = GetAvailableJobs(strMem.room, false, ["attack"]);
-          jobs = getAvailableJobs.response;
-          if (
-            getAvailableJobs.code === FunctionReturnCodes.OK &&
-            jobs.length === 0
-          ) {
-            getAvailableJobs = GetAvailableJobs(strMem.room, false, [
-              "repair",
-              "heal",
-            ]);
-            jobs = getAvailableJobs.response;
-          }
-          break;
-        default:
-          break;
-      }
-    }
+  /**
+   * Return all available jobs from @param room
+   *
+   */
 
-    if (getAvailableJobs.code !== FunctionReturnCodes.OK || jobs.length === 0)
-      return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
-
-    const getClosestJob = GetClosestJob(jobs, str.pos);
-    if (getClosestJob.code !== FunctionReturnCodes.OK)
-      return FunctionReturnHelper(getClosestJob.code);
-    const closestJob: Job = getClosestJob.response;
-    closestJob.assignedStructuresIds.push(strId);
-    UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
-
-    strMem.jobId = closestJob.id;
-    UpdateStructureMemory(str.id, strMem);
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
-  }
-);
-
-/**
- * Assigns new job to an creep
- *
- * @param {Creep} creep - Actual creep
- * @param {JobActionTypes[]} [filterOnTypes] - Only return inputted job types
- * @param {Job} [forcedJob] - Input an job
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const AssignNewJobForCreep = FuncWrapper(function AssignNewJobForCreep(
-  creep: Creep,
-  filterOnTypes?: JobActionTypes[],
-  forcedJob?: Job
-): FunctionReturn {
-  const getCreepMemory = GetCreepMemory(creep.name);
-  if (getCreepMemory.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getCreepMemory.code);
-  const creepMem: CreepMemory = getCreepMemory.response;
-  let jobs: Job[] = [];
-
-  if (forcedJob) {
-    forcedJob.assignedCreepsNames.push(creep.name);
-    UpdateJobById(forcedJob.id, forcedJob, forcedJob.roomName);
-
-    creepMem.jobId = forcedJob.id;
-    UpdateCreepMemory(creep.name, creepMem);
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
-  }
-
-  if (creepMem.secondJobId) {
-    if (creepMem.jobId !== creepMem.secondJobId) {
-      SwitchCreepSavedJobIds(creep.id, true);
-      return FunctionReturnHelper(FunctionReturnCodes.OK);
-    }
-  }
-
-  let getAvailableJobs: FunctionReturn = {
-    code: FunctionReturnCodes.INTERNAL_SERVER_ERROR,
-  };
-  if (filterOnTypes) {
-    getAvailableJobs = GetAvailableJobs(
-      creepMem.commandRoom,
-      true,
+  public static GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
+    roomName: string,
+    requesterIsCreep: boolean,
+    filterOnTypes?: JobActionTypes[]
+  ): Job[] {
+    const jobs = JobHandler.GetAllJobs(
+      roomName,
       filterOnTypes
+    ).filter((j: Job) =>
+      requesterIsCreep
+        ? j.assignedCreepsNames.length < j.maxCreeps
+        : j.assignedStructuresIds.length < j.maxStructures
     );
-  } else {
-    switch (creepMem.type) {
-      case "attack":
-      case "claim":
-      case "move":
-      case "heal":
-        getAvailableJobs = GetAvailableJobs(creepMem.commandRoom, true, [
-          creepMem.type,
-        ]);
-        break;
-      case "pioneer":
-        getAvailableJobs = GetAvailableJobs(
-          creepMem.commandRoom,
-          true,
-          creep.store.getUsedCapacity() < creep.store.getCapacity()
-            ? [
-                "harvest",
-                "transfer",
-                "dismantle",
-                "build",
-                "repair",
-                "dismantle",
-              ]
-            : [
-                "transfer",
-                "dismantle",
-                "build",
-                "repair",
-                "dismantle",
-                "upgrade",
-              ]
-        );
-        break;
-      case "transferring":
-        getAvailableJobs = GetAvailableJobs(creepMem.commandRoom, true, [
-          "transfer",
-        ]);
-        break;
-      case "work":
-        getAvailableJobs = GetAvailableJobs(
-          creepMem.commandRoom,
-          true,
-          creep.store.getUsedCapacity() < creep.store.getCapacity()
-            ? [
-                "harvest",
-                "dismantle",
-                "build",
-                "repair",
-                "dismantle",
-                "upgrade",
-              ]
-            : ["dismantle", "build", "repair", "dismantle"]
-        );
-        break;
-      default:
-        break;
-    }
-  }
-
-  if (getAvailableJobs.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getAvailableJobs.code);
-  jobs = getAvailableJobs.response;
-  if (jobs.length === 0)
-    return FunctionReturnHelper(FunctionReturnCodes.NOT_MODIFIED);
-
-  const jobsGroupedByPrioritize: StringMap<Job[]> = {};
-  let highestPriorityJobsNumber = 99;
-  forEach(jobs, (j: Job) => {
-    const num = JobActionPriority[j.action];
-    if (highestPriorityJobsNumber > num) {
-      highestPriorityJobsNumber = num;
-    }
-
-    if (isUndefined(jobsGroupedByPrioritize[num]))
-      jobsGroupedByPrioritize[num] = [];
-    jobsGroupedByPrioritize[num].push(j);
+    return jobs;
   });
 
-  const getClosestJob = GetClosestJob(
-    jobsGroupedByPrioritize[highestPriorityJobsNumber],
-    creep.pos
-  );
-  if (getClosestJob.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getClosestJob.code);
-  const closestJob: Job = getClosestJob.response;
-  closestJob.assignedCreepsNames.push(creep.name);
-  UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
+  /**
+   * Return closest job based on @param pos
+   */
+  public static GetClosestJob = FuncWrapper(function GetClosestJob(
+    jobs: Job[],
+    pos: RoomPosition
+  ): Job {
+    jobs
+      .filter((job) => job.position)
+      .forEach((job: Job) => {
+        // eslint-disable-next-line
+        job.position = RehydratedRoomPosition(
+        job.position as RoomPosition);
+      });
 
-  creepMem.jobId = closestJob.id;
-  UpdateCreepMemory(creep.name, creepMem);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+    const closestJob: Job = first(
+      jobs.sort(
+        (a: Job, b: Job) =>
+          (a.position as RoomPosition).getRangeTo(pos) -
+          (b.position as RoomPosition).getRangeTo(pos)
+      )
+    ) as Job;
 
-/**
- * Fetch job
- *
- * @param {Id<Job>} id - Id of job
- * @param {string} roomName - Room name to search job in
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const GetJobById = FuncWrapper(function GetJobById(
-  id: Id<Job>,
-  roomName: string
-): FunctionReturn {
-  const getAllJobs = GetAllJobs(roomName);
-  if (getAllJobs.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getAllJobs.code);
-  const job: Job | undefined = getAllJobs.response.find(
-    (j: Job) => j.id === id
-  );
+    return closestJob;
+  });
 
-  if (isUndefined(job))
-    return FunctionReturnHelper(FunctionReturnCodes.NOT_FOUND);
-  return FunctionReturnHelper(FunctionReturnCodes.OK, job);
-});
+  // /**
+  //  * Update job with new memory
+  //  */
+  //  public static UpdateJobById = FuncWrapper(function UpdateJobById(
+  //   job: Job,
+  //   roomName: string
+  // ): FunctionReturn {
+  //   const jobsMem = Memory.rooms[roomName].jobs;
+  //   const index = jobsMem.findIndex((j) => j.id === id);
+  //   if (index >= 0) {
+  //     jobsMem[index] = job;
+  //   } else {
+  //     jobsMem.push(job);
+  //   }
+  //   return FunctionReturnHelper(FunctionReturnCodes.OK);
+  // });
 
-/**
- * Update full job list
- *
- * @param {string} roomName - Room name to update jobs in
- * @param {Job[]} jobs - List of updated jobs
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const UpdateJobList = FuncWrapper(function UpdateJobList(
-  roomName: string,
-  jobs: Job[]
-): FunctionReturn {
-  Memory.rooms[roomName].jobs = jobs;
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-/**
- * Unassign job from creep or structure
- *
- * @param {Id<Job>} jobId - Id of job
- * @param {Id<Structure | Creep>} id - Id of object to unassign job from/
- * @param {string} roomName - Name of room
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const UnassignJob = FuncWrapper(function UnassignJob(
-  jobId: Id<Job>,
-  id: Id<Structure> | string,
-  roomName: string
-): FunctionReturn {
-  const getJobById = GetJobById(jobId, roomName);
-  if (getJobById.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getJobById.code);
-  const job: Job = getJobById.response;
-  const removedStructuresIds = remove(
-    job.assignedStructuresIds,
-    (strId: string) => strId === id
-  );
-  const removedCreepsIds = remove(
-    job.assignedCreepsNames,
-    (name: string) => name === id
-  );
-  UpdateJobById(jobId, job, roomName);
-
-  if (removedCreepsIds.length > 0) {
-    const getCreepMemory = GetCreepMemory(id);
-    if (getCreepMemory.code === FunctionReturnCodes.OK) {
-      const creepMem: CreepMemory = getCreepMemory.response;
-      if (creepMem.jobId === jobId) {
-        creepMem.jobId = undefined;
-      } else if (creepMem.secondJobId === jobId) {
-        creepMem.secondJobId = undefined;
-      }
-      UpdateCreepMemory(id, creepMem);
-    }
-  }
-  if (removedStructuresIds.length > 0) {
-    const getStructureMemory = GetStructureMemory(id as Id<Structure>);
-    if (getStructureMemory.code === FunctionReturnCodes.OK) {
-      const strMem: StructureMemory = getStructureMemory.response;
-      strMem.jobId = undefined;
-      UpdateStructureMemory(id as Id<Structure>, strMem);
-    }
-  }
-
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-/**
- * Delete job and unassign job for all creep and structure
- *
- * @param {Id<Job>} jobId - Id of job
- * @param {string} roomName - Name of room
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const DeleteJobById = FuncWrapper(function DeleteJobById(
-  id: Id<Job>,
-  roomName: string
-): FunctionReturn {
-  const getAllJobs = GetAllJobs(roomName);
-  if (getAllJobs.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getAllJobs.code);
-  const jobs: Job[] = getAllJobs.response;
-  const index = jobs.findIndex((j) => j.id === id);
-  forEach(jobs[index].assignedCreepsNames, (name: string) => {
-    const getCreepMemory = GetCreepMemory(name);
-    if (getCreepMemory.code === FunctionReturnCodes.OK) {
-      const creepMem: CreepMemory = getCreepMemory.response;
-      if (creepMem.jobId === id) {
-        creepMem.jobId = undefined;
+  /**
+   * Switch creep jobs saved in memory
+   */
+  public static SwitchCreepSavedJobIds = FuncWrapper(
+    function SwitchCreepSavedJobIds(
+      creepMemory: CreepMemory,
+      switchBack = false
+    ): void {
+      let oldId: Id<Job> | undefined;
+      if (switchBack) {
+        oldId = creepMemory.jobId;
+        creepMemory.jobId = creepMemory.secondJobId;
+        creepMemory.secondJobId = oldId;
       } else {
-        creepMem.secondJobId = undefined;
+        oldId = creepMemory.secondJobId;
+        creepMemory.secondJobId = creepMemory.jobId;
+        creepMemory.jobId = oldId;
       }
 
-      UpdateCreepMemory(name, creepMem);
+      // UpdateCreepMemory(creepName, creepMem);
     }
-  });
-  forEach(jobs[index].assignedStructuresIds, (strId: Id<Structure>) => {
-    const getStrMemory = GetStructureMemory(strId);
-    if (getStrMemory.code === FunctionReturnCodes.OK) {
-      const strMem: StructureMemory = getStrMemory.response;
-      strMem.jobId = undefined;
-      UpdateStructureMemory(strId, strMem);
+  );
+
+  /**
+   * Assigns new job to @param str
+   */
+  public static AssignNewJobForStructure = FuncWrapper(
+    function AssignNewJobForStructure(
+      str: Structure,
+      filterOnTypes?: JobActionTypes[]
+    ): boolean {
+      const strId: Id<Structure> = str.id;
+      const strMem = GetStructureMemory(strId);
+      let jobs: Job[] = [];
+
+      if (filterOnTypes) {
+        jobs = JobHandler.GetAvailableJobs(str.room.name, false, filterOnTypes);
+      } else {
+        switch (str.structureType) {
+          case "tower":
+            jobs = JobHandler.GetAvailableJobs(str.room.name, false, [
+              "attack",
+            ]);
+            if (jobs.length === 0) {
+              jobs = JobHandler.GetAvailableJobs(str.room.name, false, [
+                "repair",
+                "heal",
+              ]);
+            }
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (jobs.length === 0) return false;
+
+      const closestJob = JobHandler.GetClosestJob(jobs, str.pos);
+      closestJob.assignedStructuresIds.push(strId);
+      strMem.jobId = closestJob.id;
+      // UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
+
+      // UpdateStructureMemory(str.id, strMem);
+      return true;
     }
+  );
+
+  /**
+   * Assigns new job to @param creep
+   */
+  public static AssignNewJobForCreep = FuncWrapper(
+    function AssignNewJobForCreep(
+      creep: Creep,
+      filterOnTypes?: JobActionTypes[],
+      forcedJob?: Job
+    ): boolean {
+      const creepMem = GetCreepMemory(creep.name);
+      if (forcedJob) {
+        forcedJob.assignedCreepsNames.push(creep.name);
+        creepMem.jobId = forcedJob.id;
+        // UpdateJobById(forcedJob.id, forcedJob, forcedJob.roomName);
+        // UpdateCreepMemory(creep.name, creepMem);
+        return true;
+      }
+
+      if (creepMem.secondJobId) {
+        if (creepMem.jobId !== creepMem.secondJobId) {
+          JobHandler.SwitchCreepSavedJobIds(creepMem, true);
+        }
+        return true;
+      }
+
+      let jobs: Job[] = [];
+      if (filterOnTypes) {
+        jobs = JobHandler.GetAvailableJobs(
+          creep.room.name,
+          true,
+          filterOnTypes
+        );
+      } else {
+        switch (creepMem.type) {
+          case "attack":
+          case "claim":
+          case "move":
+          case "heal":
+            jobs = JobHandler.GetAvailableJobs(creep.room.name, true, [
+              creepMem.type,
+            ]);
+            break;
+          case "pioneer":
+            jobs = JobHandler.GetAvailableJobs(
+              creep.room.name,
+              true,
+              creep.store.getUsedCapacity() < creep.store.getCapacity()
+                ? [
+                    "harvest",
+                    "transfer",
+                    "dismantle",
+                    "build",
+                    "repair",
+                    "dismantle",
+                  ]
+                : [
+                    "transfer",
+                    "dismantle",
+                    "build",
+                    "repair",
+                    "dismantle",
+                    "upgrade",
+                  ]
+            );
+            break;
+          case "transferring":
+            jobs = JobHandler.GetAvailableJobs(creep.room.name, true, [
+              "transfer",
+            ]);
+            break;
+          case "work":
+            jobs = JobHandler.GetAvailableJobs(
+              creep.room.name,
+              true,
+              creep.store.getUsedCapacity() < creep.store.getCapacity()
+                ? [
+                    "harvest",
+                    "dismantle",
+                    "build",
+                    "repair",
+                    "dismantle",
+                    "upgrade",
+                  ]
+                : ["dismantle", "build", "repair", "dismantle"]
+            );
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (jobs.length === 0) return false;
+
+      const jobsGroupedByPrioritize: StringMap<Job[]> = {};
+      let highestPriorityJobsNumber = 99;
+      forEach(jobs, (j: Job) => {
+        const num = JobActionPriority[j.action];
+        if (highestPriorityJobsNumber > num) {
+          highestPriorityJobsNumber = num;
+        }
+
+        if (isUndefined(jobsGroupedByPrioritize[num]))
+          jobsGroupedByPrioritize[num] = [];
+        jobsGroupedByPrioritize[num].push(j);
+      });
+
+      const closestJob = JobHandler.GetClosestJob(
+        jobsGroupedByPrioritize[highestPriorityJobsNumber],
+        creep.pos
+      );
+      closestJob.assignedCreepsNames.push(creep.name);
+      creepMem.jobId = closestJob.id;
+      // UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
+
+      // UpdateCreepMemory(creep.name, creepMem);
+      return true;
+    }
+  );
+
+  /**
+   * Get job by @param jobId
+   */
+  public static GetJobById = FuncWrapper(function GetJobById(
+    jobId: Id<Job>,
+    roomName: string
+  ): Job {
+    const jobs = JobHandler.GetAllJobs(roomName);
+    const job: Job | undefined = jobs.find((j: Job) => j.id === jobId);
+    return job as Job;
   });
-  remove(jobs, (j: Job) => j.id === id);
-  UpdateJobList(roomName, jobs);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+
+  /**
+   * Update full job list with @param jobs
+   */
+  public static UpdateJobList = FuncWrapper(function UpdateJobList(
+    roomName: string,
+    jobs: Job[]
+  ): FunctionReturn {
+    Memory.rooms[roomName].jobs = jobs;
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  });
+
+  /**
+   * Unassign job from creep or structure
+   */
+  public static UnassignJob = FuncWrapper(function UnassignJob(
+    jobId: Id<Job>,
+    id: Id<Structure> | string,
+    roomName: string
+  ): boolean {
+    const job = JobHandler.GetJobById(jobId, roomName);
+    const removedStructuresIds = remove(
+      job.assignedStructuresIds,
+      (strId: string) => strId === id
+    );
+    const removedCreepsIds = remove(
+      job.assignedCreepsNames,
+      (name: string) => name === id
+    );
+    // UpdateJobById(jobId, job, roomName);
+
+    if (removedCreepsIds.length > 0) {
+      const creepMemory = GetCreepMemory(id);
+      if (creepMemory.jobId === jobId) {
+        creepMemory.jobId = undefined;
+      } else if (creepMemory.secondJobId === jobId) {
+        creepMemory.secondJobId = undefined;
+      }
+      // UpdateCreepMemory(id, creepMem);
+    }
+    if (removedStructuresIds.length > 0) {
+      const structureMemory = GetStructureMemory(id as Id<Structure>);
+      structureMemory.jobId = undefined;
+      // UpdateStructureMemory(id as Id<Structure>, strMem);
+    }
+
+    return true;
+  });
+
+  /**
+   * Delete job and unassign job for all creep and structure
+   */
+  public static DeleteJobById = FuncWrapper(function DeleteJobById(
+    id: Id<Job>,
+    roomName: string
+  ): FunctionReturn {
+    const jobs = JobHandler.GetAllJobs(roomName);
+    const index = jobs.findIndex((j) => j.id === id);
+    forEach(jobs[index].assignedCreepsNames, (name: string) => {
+      const creepMemory = GetCreepMemory(name);
+      if (creepMemory.jobId === id) {
+        creepMemory.jobId = undefined;
+      } else {
+        creepMemory.secondJobId = undefined;
+      }
+
+      // UpdateCreepMemory(name, creepMem);
+    });
+    forEach(jobs[index].assignedStructuresIds, (strId: Id<Structure>) => {
+      const structureMemory = GetStructureMemory(strId);
+      structureMemory.jobId = undefined;
+      // UpdateStructureMemory(strId, strMem);
+    });
+    remove(jobs, (j: Job) => j.id === id);
+    JobHandler.UpdateJobList(roomName, jobs);
+    return FunctionReturnHelper(FunctionReturnCodes.OK);
+  });
+}
