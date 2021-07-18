@@ -8,7 +8,7 @@ import { FuncWrapper } from "../utils/wrapper";
 import { FunctionReturnCodes } from "../utils/constants/global";
 import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
 import { TryToExecuteRoomPlanner } from "./planner";
-import { RoomVisuals } from "./overviewVisual";
+import RoomVisualHandler from "./visuals/handler";
 
 /**
  * Execute an single room
@@ -21,7 +21,6 @@ export const RunRoom = FuncWrapper(function RunRoom(
   name: string
 ): FunctionReturn {
   const getRoom = GetRoom(name);
-
   if (getRoom.code !== FunctionReturnCodes.OK)
     return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
   const room = getRoom.response;
@@ -32,7 +31,7 @@ export const RunRoom = FuncWrapper(function RunRoom(
   if (roomStatsPreProcessing.code === FunctionReturnCodes.OK) RoomStats(room);
 
   TryToExecuteRoomPlanner(room);
-  RoomVisuals(room);
+  RoomVisualHandler.DrawRoomVisuals(room);
 
   return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
