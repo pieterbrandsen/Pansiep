@@ -1,33 +1,26 @@
-import { DeleteJobById } from "../../room/jobs/handler";
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { GetObject } from "../../utils/helper";
-import { FuncWrapper } from "../../utils/wrapper";
-import { ExecuteMove } from "./move";
+import JobHandler from "../../room/jobs/handler";
+import UtilsHelper from "../../utils/helper";
+import FuncWrapper from "../../utils/wrapper";
+import CreepActions from "./actions";
 
 // eslint-disable-next-line
-export const ExecuteAttack = FuncWrapper(function ExecuteAttack(
+export default FuncWrapper(function ExecuteAttack(
   creep: Creep,
   job: Job
-): FunctionReturn {
-  const getObject = GetObject(job.objId);
-  if (getObject.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(getObject.code);
-  }
-  const target: Structure | Creep = getObject.response as Structure | Creep;
+): void {
+  const target = UtilsHelper.GetObject(job.objId) as Structure | Creep;
 
   switch (creep.attack(target)) {
     case OK:
       creep.say("attack");
       break;
     case ERR_NOT_IN_RANGE:
-      ExecuteMove(creep, job);
+      CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      DeleteJobById(job.id, job.roomName);
+      JobHandler.DeleteJob(job.id, job.roomName);
       break;
     default:
       break;
   }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

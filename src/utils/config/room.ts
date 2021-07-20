@@ -1,7 +1,8 @@
-import { VisualDisplayLevels } from "../constants/room";
+import RoomConstants from "../constants/room";
 
-/**
- * The level of visual displaying it's going to return to the user.
- */
-// eslint-disable-next-line
-export const VisualLevel = VisualDisplayLevels.All;
+export default class RoomConfig {
+  /**
+   * The level of visual displaying it's going to return to the user.
+   */
+  public static VisualLevel = RoomConstants.VisualDisplayLevels.Debug;
+}

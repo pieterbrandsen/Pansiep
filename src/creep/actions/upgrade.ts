@@ -1,72 +1,54 @@
 import { isUndefined } from "lodash";
-import {
-  DeleteJobById,
-  AssignNewJobForCreep,
-  UnassignJob,
-  UpdateJobById,
-} from "../../room/jobs/handler";
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { FuncWrapper } from "../../utils/wrapper";
-import { GetCreepMemory, UpdateCreepMemory } from "../helper";
-import { ExecuteMove } from "./move";
+import JobHandler from "../../room/jobs/handler";
+import FuncWrapper from "../../utils/wrapper";
+import CreepHelper from "../helper";
+import CreepActions from "./actions";
 
 // eslint-disable-next-line
-export const ExecuteUpgrade = FuncWrapper(function ExecuteUpgrade(
+export default FuncWrapper(function ExecuteUpgrade(
   creep: Creep,
   job: Job
-): FunctionReturn {
-  const _job = job;
-  const getCreepMemory = GetCreepMemory(creep.name);
-  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(getCreepMemory.code);
-  }
-  const creepMem: CreepMemory = getCreepMemory.response;
+): void {
+  const creepMemory = CreepHelper.GetCreepMemory(creep.name);
   if (
     isUndefined(creep.room.controller) ||
-    isUndefined(_job.energyRequired) ||
-    _job.energyRequired <= 0
+    isUndefined(job.energyRequired) ||
+    job.energyRequired <= 0
   ) {
-    DeleteJobById(job.id, job.roomName);
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+    JobHandler.DeleteJob(job.id, job.roomName);
+    return;
   }
   const { controller } = creep.room;
   switch (creep.upgradeController(controller)) {
     case OK:
       creep.say("upgrade");
-      _job.energyRequired -= creep.getActiveBodyparts(WORK) * 2;
-      UpdateJobById(job.id, _job, job.roomName);
+      job.energyRequired -= creep.getActiveBodyparts(WORK) * 2;
 
-      if (isUndefined(creepMem.parts[WORK]))
-        creepMem.parts[WORK] = creep.getActiveBodyparts(WORK);
+      if (isUndefined(creepMemory.parts[WORK]))
+        creepMemory.parts[WORK] = creep.getActiveBodyparts(WORK);
       global.preProcessingStats.rooms[creep.room.name].energyExpenses.upgrade +=
-        creepMem.parts[WORK];
+        creepMemory.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
-      if (
-        AssignNewJobForCreep(creep, ["withdrawController"]).code ===
-        FunctionReturnCodes.NO_CONTENT
-      ) {
-        UnassignJob(job.id, creep.name, job.roomName);
-        AssignNewJobForCreep(
+      if (JobHandler.AssignNewJobForCreep(creep, ["withdrawController"])) {
+        JobHandler.UnassignJob(job.id, creep.name, job.roomName);
+        JobHandler.AssignNewJobForCreep(
           creep,
-          creepMem.type === "work" || creepMem.type === "pioneer"
+          creepMemory.type === "work" || creepMemory.type === "pioneer"
             ? ["withdraw", "harvest"]
             : ["withdraw"]
         );
       } else {
-        creepMem.secondJobId = job.id;
-        UpdateCreepMemory(creep.name, creepMem);
+        creepMemory.secondJobId = job.id;
       }
       break;
     case ERR_NOT_IN_RANGE:
-      ExecuteMove(creep, job);
+      CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      DeleteJobById(job.id, job.roomName);
+      JobHandler.DeleteJob(job.id, job.roomName);
       break;
     default:
       break;
   }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

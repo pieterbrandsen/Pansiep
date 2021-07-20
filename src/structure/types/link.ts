@@ -1,33 +1,25 @@
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { FuncWrapper } from "../../utils/wrapper";
+import FuncWrapper from "../../utils/wrapper";
 import {
   TryToCreateTransferJob,
   RepairIfDamagedStructure,
   TryToCreateWithdrawJob,
 } from "./helper";
-import { ControllerEnergyStructureRange } from "../../utils/constants/structure";
-import { GetSourcesInRange } from "../../room/reading";
+import RoomHelper from "../../room/helper";
+import StructureConstants from "../../utils/constants/structure";
 
 /**
  * Execute an link
- *
- * @param {StructureLink} str - link structure
- * @return {FunctionReturn} HTTP response with code and data
- *
  */
-export default FuncWrapper(function ExecuteLink(
-  str: StructureLink
-): FunctionReturn {
+export default FuncWrapper(function ExecuteLink(str: StructureLink): void {
   RepairIfDamagedStructure(str);
 
-  const getSourcesInRange = GetSourcesInRange(str.pos, 2, str.room);
-  if (getSourcesInRange.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getSourcesInRange.code);
-  const sources: Source[] = getSourcesInRange.response;
+  const sources = RoomHelper.Reader.GetSourcesInRange(str.pos, 2, str.room);
   if (
     str.room.controller &&
-    str.pos.inRangeTo(str.room.controller, ControllerEnergyStructureRange)
+    str.pos.inRangeTo(
+      str.room.controller,
+      StructureConstants.ControllerEnergyStructureRange
+    )
   ) {
     TryToCreateWithdrawJob(str, 0, RESOURCE_ENERGY, "withdrawController");
   } else if (sources.length > 0) {
@@ -36,6 +28,4 @@ export default FuncWrapper(function ExecuteLink(
   } else {
     TryToCreateWithdrawJob(str, 100);
   }
-
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });
