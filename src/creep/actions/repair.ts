@@ -1,10 +1,10 @@
 import { isUndefined } from "lodash";
 import UtilsHelper from "../../utils/helper";
-import { IsStructureDamaged } from "../../structure/types/helper";
 import FuncWrapper from "../../utils/wrapper";
 import JobHandler from "../../room/jobs/handler";
 import CreepActions from "./actions";
 import CreepHelper from "../helper";
+import StructureHelper from "../../structure/helper";
 
 // eslint-disable-next-line
 export default FuncWrapper(function ExecuteRepair(
@@ -13,7 +13,7 @@ export default FuncWrapper(function ExecuteRepair(
 ): void {
   const creepMemory = CreepHelper.GetCreepMemory(creep.name);
   const structure = UtilsHelper.GetObject(job.objId) as Structure;
-  if (!IsStructureDamaged(structure)) {
+  if (!StructureHelper.IsStructureDamaged(structure)) {
     JobHandler.DeleteJob(job.id, job.roomName);
     return;
   }

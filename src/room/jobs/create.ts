@@ -125,12 +125,12 @@ export default class CreateJobHandler {
    */
   public static CreateWithdrawJob = FuncWrapper(function CreateWithdrawJob(
     str: Structure,
-    jobId: Id<Job>,
     energyRequired: number,
     resourceType: ResourceConstant,
-    action: JobActionTypes,
+    action: JobActionTypes = "withdraw",
     hasPriority = false
   ): boolean {
+    const jobId: Id<Job> = `${action}-${str.pos.x}/${str.pos.y}-${str.structureType}` as Id<Job>;
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       str.room,
       str.pos,
@@ -160,12 +160,12 @@ export default class CreateJobHandler {
    */
   public static CreateTransferJob = FuncWrapper(function CreateTransferJob(
     str: Structure,
-    jobId: Id<Job>,
     energyRequired: number,
     resourceType: ResourceConstant,
     hasPriority = false,
-    action: JobActionTypes
+    action: JobActionTypes = "transfer"
   ): boolean {
+    const jobId: Id<Job> = `${action}-${str.pos.x}/${str.pos.y}-${str.structureType}` as Id<Job>;
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       str.room,
       str.pos,
@@ -227,13 +227,23 @@ export default class CreateJobHandler {
   });
 
   /**
+   * Returns Repair job id for @param str
+   */
+  public static GetRepairJobId = FuncWrapper(function GetRepairJobId(
+    str: Structure
+  ): Id<Job> {
+    const jobId: Id<Job> = `repair-${str.pos.x}/${str.pos.x}-${str.structureType}` as Id<Job>;
+    return jobId;
+  });
+
+  /**
    * Creates an repair job
    */
   public static CreateRepairJob = FuncWrapper(function CreateRepairJob(
     str: Structure,
-    jobId: Id<Job>,
     hasPriority = false
-  ): boolean {
+  ): void {
+    const jobId = CreateJobHandler.GetRepairJobId(str);
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       str.room,
       str.pos,
@@ -254,6 +264,5 @@ export default class CreateJobHandler {
       energyRequired: (str.hitsMax - str.hits) / 100,
     };
     JobHandler.AddJob(job);
-    return true;
   });
 }

@@ -1,9 +1,9 @@
 import UtilsHelper from "../../utils/helper";
-import { GetFreeCapacity } from "../../structure/types/helper";
 import FuncWrapper from "../../utils/wrapper";
 import JobHandler from "../../room/jobs/handler";
 import CreepActions from "./actions";
 import CreepHelper from "../helper";
+import StructureHelper from "../../structure/helper";
 
 // eslint-disable-next-line
 export default FuncWrapper(function ExecuteTransfer(
@@ -40,7 +40,7 @@ export default FuncWrapper(function ExecuteTransfer(
   const resourceType = job.resourceType as ResourceConstant;
   const str: Structure = UtilsHelper.GetObject(job.objId) as Structure;
 
-  const strFreeCapacity = GetFreeCapacity(str, resourceType);
+  const strFreeCapacity = StructureHelper.GetFreeCapacity(str, resourceType);
   const creepUsedCapacity = creep.store.getUsedCapacity(resourceType);
   const transferAmount: number =
     strFreeCapacity > creepUsedCapacity ? creepUsedCapacity : strFreeCapacity;

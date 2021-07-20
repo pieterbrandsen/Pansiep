@@ -1,5 +1,6 @@
+import JobHandler from "../../room/jobs/handler";
 import FuncWrapper from "../../utils/wrapper";
-import { RepairIfDamagedStructure } from "./helper";
+import StructureHelper from "../helper";
 
 /**
  * Execute an observer
@@ -7,5 +8,10 @@ import { RepairIfDamagedStructure } from "./helper";
 export default FuncWrapper(function ExecuteObserver(
   str: StructureObserver
 ): void {
-  RepairIfDamagedStructure(str);
+  const structureMemory = StructureHelper.GetStructureMemory(str.id);
+  if (
+    StructureHelper.IsStructureDamaged(str) &&
+    structureMemory.jobId === undefined
+  )
+    JobHandler.CreateJob.CreateRepairJob(str);
 });

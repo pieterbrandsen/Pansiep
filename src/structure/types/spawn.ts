@@ -4,10 +4,10 @@ import RoomHelper from "../../room/helper";
 import JobHandler from "../../room/jobs/handler";
 import LogHandler from "../../utils/logger";
 import FuncWrapper from "../../utils/wrapper";
-import { RepairIfDamagedStructure, TryToCreateTransferJob } from "./helper";
 import MemoryInitializationHandler from "../../memory/initialization";
 import RoomConstants from "../../utils/constants/room";
 import GlobalConstants from "../../utils/constants/global";
+import StructureHelper from "../helper";
 
 type JobActionObj = { usableCreeps: number; wantedCreeps: number };
 
@@ -344,8 +344,13 @@ export default class SpawnHandler {
   public static ExecuteSpawn = FuncWrapper(function ExecuteSpawn(
     str: StructureSpawn
   ): void {
-    RepairIfDamagedStructure(str);
-    TryToCreateTransferJob(str, 100, RESOURCE_ENERGY, true);
+    const structureMemory = StructureHelper.GetStructureMemory(str.id);
+    if (
+      StructureHelper.IsStructureDamaged(str) &&
+      structureMemory.jobId === undefined
+    )
+      JobHandler.CreateJob.CreateRepairJob(str);
+    StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY, true);
 
     SpawnHandler.TryToSpawnCreep(str);
   });

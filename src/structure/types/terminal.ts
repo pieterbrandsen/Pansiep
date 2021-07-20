@@ -1,9 +1,6 @@
+import JobHandler from "../../room/jobs/handler";
 import FuncWrapper from "../../utils/wrapper";
-import {
-  RepairIfDamagedStructure,
-  TryToCreateWithdrawJob,
-  TryToCreateTransferJob,
-} from "./helper";
+import StructureHelper from "../helper";
 
 /**
  * Execute an terminal
@@ -11,7 +8,11 @@ import {
 export default FuncWrapper(function ExecuteTerminal(
   str: StructureTerminal
 ): void {
-  RepairIfDamagedStructure(str);
-  TryToCreateWithdrawJob(str, 35);
-  TryToCreateTransferJob(str, 20, RESOURCE_ENERGY, true);
+  const structureMemory = StructureHelper.GetStructureMemory(str.id);
+  if (
+    StructureHelper.IsStructureDamaged(str) &&
+    structureMemory.jobId === undefined
+  )
+    JobHandler.CreateJob.CreateRepairJob(str);
+  StructureHelper.ControlStorageOfTerminal(str);
 });

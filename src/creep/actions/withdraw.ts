@@ -1,10 +1,10 @@
 import { isUndefined } from "lodash";
-import { GetUsedCapacity } from "../../structure/types/helper";
 import FuncWrapper from "../../utils/wrapper";
 import UtilsHelper from "../../utils/helper";
 import JobHandler from "../../room/jobs/handler";
 import CreepActions from "./actions";
 import CreepHelper from "../helper";
+import StructureHelper from "../../structure/helper";
 
 // eslint-disable-next-line
 export default FuncWrapper(function ExecuteWithdraw(
@@ -19,7 +19,10 @@ export default FuncWrapper(function ExecuteWithdraw(
 
   const resourceType = job.resourceType as ResourceConstant;
   const structure = UtilsHelper.GetObject(job.objId) as Structure;
-  const strUsedCapacity = GetUsedCapacity(structure, resourceType);
+  const strUsedCapacity = StructureHelper.GetUsedCapacity(
+    structure,
+    resourceType
+  );
   const creepFreeCapacity = creep.store.getFreeCapacity(resourceType);
   const withdrawAmount: number =
     strUsedCapacity > creepFreeCapacity ? creepFreeCapacity : strUsedCapacity;

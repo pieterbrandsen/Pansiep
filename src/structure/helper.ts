@@ -1,4 +1,6 @@
+import RoomHelper from "../room/helper";
 import JobHandler from "../room/jobs/handler";
+import StructureConstants from "../utils/constants/structure";
 import FuncWrapper from "../utils/wrapper";
 import ExecuteContainer from "./types/container";
 import ExecuteController from "./types/controller";
@@ -14,7 +16,80 @@ import ExecuteStorage from "./types/storage";
 import ExecuteTerminal from "./types/terminal";
 import ExecuteTowerHandler from "./types/tower";
 
+type OverFlowObject = { hasOverflow: boolean; overflowAmount: number };
+
 export default class StructureHelper {
+  /**
+   * Send in an structure and return if the hit points is lower than the maximum.
+   */
+  public static IsStructureDamaged = FuncWrapper(function IsStructureDamaged(
+    str: Structure
+  ): boolean {
+    return str.hits < str.hitsMax;
+  });
+
+  /**
+   * Return structure capacity.
+   */
+  public static GetCapacity = FuncWrapper(function GetCapacity(
+    str: Structure,
+    resourceType: ResourceConstant
+  ): number {
+    const capacity = (str as StructureStorage).store.getCapacity(resourceType);
+    return capacity;
+  });
+
+  /**
+   * Return structure free capacity.
+   */
+  public static GetFreeCapacity = FuncWrapper(function GetFreeCapacity(
+    str: Structure,
+    resourceType: ResourceConstant
+  ): number {
+    const freeCapacity = (str as StructureStorage).store.getFreeCapacity(
+      resourceType
+    );
+    return freeCapacity;
+  });
+
+  /**
+   * Return structure used capacity.
+   */
+  public static GetUsedCapacity = FuncWrapper(function GetUsedCapacity(
+    str: Structure,
+    resourceType: ResourceConstant
+  ): number {
+    const usedCapacity = (str as StructureStorage).store.getUsedCapacity(
+      resourceType
+    );
+    return usedCapacity;
+  });
+
+  /**
+   * Return if the used capacity is higher inputted {requiredPercentageFull}.
+   */
+  public static IsStructureFullEnough = FuncWrapper(
+    function IsStructureFullEnough(
+      str: Structure,
+      requiredPercentageFull: number,
+      resourceType: ResourceConstant
+    ): OverFlowObject {
+      const resourceCount: number = StructureHelper.GetUsedCapacity(
+        str,
+        resourceType
+      );
+      const capacity: number = StructureHelper.GetCapacity(str, resourceType);
+      const percentageFull = (resourceCount / capacity) * 100;
+      const overflowAmount =
+        (percentageFull - requiredPercentageFull) * (capacity / 100);
+      return {
+        hasOverflow:
+          percentageFull < 100 ? percentageFull > requiredPercentageFull : true,
+        overflowAmount,
+      };
+    }
+  );
+
   // /**
   //  * Update structure memory with inputted memory object. If no memory object is present, a new one will be created.
   //  */
@@ -123,4 +198,280 @@ export default class StructureHelper {
         break;
     }
   });
+
+  /**
+   * Control if an container need to be filled/withdraw from
+   */
+  public static ControlStorageOfContainer = FuncWrapper(
+    function ControlStorageOfContainer(str: StructureContainer): void {
+      const sourcesInRange = RoomHelper.Reader.GetSourcesInRange(
+        str.pos,
+        2,
+        str.room
+      );
+
+      if (
+        str.room.controller &&
+        str.pos.inRangeTo(
+          str.room.controller,
+          StructureConstants.ControllerEnergyStructureRange
+        )
+      ) {
+        let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          0,
+          RESOURCE_ENERGY
+        );
+        if (isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateWithdrawJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY,
+            "withdrawController"
+          );
+
+        isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          100,
+          RESOURCE_ENERGY
+        );
+        if (!isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateTransferJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY
+          );
+      } else if (sourcesInRange.length > 0) {
+        let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          0,
+          RESOURCE_ENERGY
+        );
+        if (isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateWithdrawJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY
+          );
+        isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          100,
+          RESOURCE_ENERGY
+        );
+        if (!isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateTransferJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY,
+            false,
+            "transferSource"
+          );
+      } else {
+        const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          50,
+          RESOURCE_ENERGY
+        );
+        if (isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateWithdrawJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY
+          );
+      }
+    }
+  );
+
+  /**
+   * Control if an link need to be filled/withdraw from
+   */
+  public static ControlStorageOfLink = FuncWrapper(
+    function ControlStorageOfLink(str: StructureLink): void {
+      const sourcesInRange = RoomHelper.Reader.GetSourcesInRange(
+        str.pos,
+        2,
+        str.room
+      );
+      if (
+        str.room.controller &&
+        str.pos.inRangeTo(
+          str.room.controller,
+          StructureConstants.ControllerEnergyStructureRange
+        )
+      ) {
+        const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          0,
+          RESOURCE_ENERGY
+        );
+        if (isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateWithdrawJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY,
+            "withdrawController"
+          );
+      } else if (sourcesInRange.length > 0) {
+        let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          0,
+          RESOURCE_ENERGY
+        );
+        if (isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateWithdrawJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY
+          );
+        isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          100,
+          RESOURCE_ENERGY
+        );
+        if (!isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateTransferJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY,
+            false,
+            "transferSource"
+          );
+      } else {
+        const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+          str,
+          100,
+          RESOURCE_ENERGY
+        );
+        if (isStructureFullEnough.hasOverflow)
+          JobHandler.CreateJob.CreateWithdrawJob(
+            str,
+            isStructureFullEnough.overflowAmount,
+            RESOURCE_ENERGY
+          );
+      }
+    }
+  );
+
+  /**
+   * Control if the storage need to be filled/withdraw from
+   */
+  public static ControlStorageOfStorage = FuncWrapper(
+    function ControlStorageOfStorage(str: StructureStorage): void {
+      let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        str,
+        50,
+        RESOURCE_ENERGY
+      );
+      if (isStructureFullEnough.hasOverflow)
+        JobHandler.CreateJob.CreateWithdrawJob(
+          str,
+          isStructureFullEnough.overflowAmount,
+          RESOURCE_ENERGY
+        );
+      isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        str,
+        20,
+        RESOURCE_ENERGY
+      );
+      if (!isStructureFullEnough.hasOverflow)
+        JobHandler.CreateJob.CreateTransferJob(
+          str,
+          isStructureFullEnough.overflowAmount,
+          RESOURCE_ENERGY
+        );
+    }
+  );
+
+  /**
+   * Control if the terminal need to be filled/withdraw from
+   */
+  public static ControlStorageOfTerminal = FuncWrapper(
+    function ControlStorageOfTerminal(str: StructureTerminal): void {
+      let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        str,
+        35,
+        RESOURCE_ENERGY
+      );
+      if (isStructureFullEnough.hasOverflow)
+        JobHandler.CreateJob.CreateWithdrawJob(
+          str,
+          isStructureFullEnough.overflowAmount,
+          RESOURCE_ENERGY
+        );
+      isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        str,
+        20,
+        RESOURCE_ENERGY
+      );
+      if (!isStructureFullEnough.hasOverflow)
+        JobHandler.CreateJob.CreateTransferJob(
+          str,
+          isStructureFullEnough.overflowAmount,
+          RESOURCE_ENERGY,
+          true
+        );
+    }
+  );
+
+  /**
+   *
+   */
+  public static KeepStructureFullEnough = FuncWrapper(
+    function KeepStructureFullEnough(
+      str: Structure,
+      requiredPercentageFull: number,
+      resourceType: ResourceConstant = RESOURCE_ENERGY,
+      hasPriority = false
+    ): void {
+      const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        str,
+        requiredPercentageFull,
+        resourceType
+      );
+      if (!isStructureFullEnough.hasOverflow)
+        JobHandler.CreateJob.CreateTransferJob(
+          str,
+          isStructureFullEnough.overflowAmount,
+          RESOURCE_ENERGY,
+          hasPriority
+        );
+    }
+  );
+
+  /**
+   * Control if an upgrade job need to be created or deleted for the controller
+   */
+  public static ControlUpgradingOfController = FuncWrapper(
+    function ControlUpgradingOfController(
+      controller: StructureController
+    ): void {
+      const spendJobs = JobHandler.GetAllJobs(controller.room.name, [
+        "build",
+        "dismantle",
+        "upgrade",
+      ]);
+      const upgradeJobs: Job[] = spendJobs.filter(
+        (j) => j.action === "upgrade"
+      );
+
+      // TODO: When energy is low and not near downgrade, delete upgrade job
+
+      if (upgradeJobs.length === 0) {
+        JobHandler.CreateJob.CreateUpgradeJob(controller.room, true);
+      } else if (spendJobs.length === 0) {
+        JobHandler.CreateJob.CreateUpgradeJob(controller.room);
+      } else if (
+        (controller.room.controller as StructureController).ticksToDowngrade <
+        10 * 1000
+      ) {
+        const deletedJob = JobHandler.DeleteJob(
+          spendJobs[0].id,
+          controller.room.name
+        );
+        if (deletedJob) {
+          JobHandler.CreateJob.CreateUpgradeJob(controller.room, true);
+        }
+      }
+    }
+  );
 }

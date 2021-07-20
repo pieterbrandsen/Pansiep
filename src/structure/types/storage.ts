@@ -1,9 +1,6 @@
+import JobHandler from "../../room/jobs/handler";
 import FuncWrapper from "../../utils/wrapper";
-import {
-  RepairIfDamagedStructure,
-  TryToCreateWithdrawJob,
-  TryToCreateTransferJob,
-} from "./helper";
+import StructureHelper from "../helper";
 
 /**
  * Execute an storage
@@ -11,7 +8,11 @@ import {
 export default FuncWrapper(function ExecuteStorage(
   str: StructureStorage
 ): void {
-  RepairIfDamagedStructure(str);
-  TryToCreateWithdrawJob(str, 50);
-  TryToCreateTransferJob(str, 20);
+  const structureMemory = StructureHelper.GetStructureMemory(str.id);
+  if (
+    StructureHelper.IsStructureDamaged(str) &&
+    structureMemory.jobId === undefined
+  )
+    JobHandler.CreateJob.CreateRepairJob(str);
+  StructureHelper.ControlStorageOfStorage(str);
 });

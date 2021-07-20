@@ -2,11 +2,6 @@ import JobHandler from "../../room/jobs/handler";
 import UtilsHelper from "../../utils/helper";
 import FuncWrapper from "../../utils/wrapper";
 import StructureHelper from "../helper";
-import {
-  IsStructureDamaged,
-  RepairIfDamagedStructure,
-  TryToCreateTransferJob,
-} from "./helper";
 
 export default class TowerHandler {
   /**
@@ -54,7 +49,7 @@ export default class TowerHandler {
   ): void {
     const targetStructure = UtilsHelper.GetObject(job.objId) as Structure;
 
-    if (!IsStructureDamaged(targetStructure)) {
+    if (!StructureHelper.IsStructureDamaged(targetStructure)) {
       JobHandler.DeleteJob(job.id, job.roomName);
       return;
     }
@@ -80,10 +75,13 @@ export default class TowerHandler {
   public static ExecuteTower = FuncWrapper(function ExecuteTower(
     str: StructureTower
   ): void {
-    RepairIfDamagedStructure(str);
-    TryToCreateTransferJob(str, 100, RESOURCE_ENERGY, true);
-
     const structureMemory = StructureHelper.GetStructureMemory(str.id);
+    if (
+      StructureHelper.IsStructureDamaged(str) &&
+      structureMemory.jobId === undefined
+    )
+      JobHandler.CreateJob.CreateRepairJob(str);
+    StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY, true);
 
     if (structureMemory.jobId) {
       const job: Job = JobHandler.GetJob(
