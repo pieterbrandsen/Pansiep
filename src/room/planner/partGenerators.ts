@@ -1,6 +1,6 @@
 import FuncWrapper from "../../utils/wrapper";
 
-export class RoomPartGeneratorHandler{
+export  default class RoomPartGeneratorHandler{
     /**
    * Return an planned extension part to use in base building
    */

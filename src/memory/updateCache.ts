@@ -36,7 +36,7 @@ export default class UpdateCacheHandler {
   ): RoomObjTypes {
     const returnCache = newCache;
     Object.keys(currentCache).forEach((key) => {
-      const noVisionJobId = `move-25/25-${key}` as Id<Job>;
+      // const noVisionJobId = `move-25/25-${key}` as Id<Job>;
 
       if (!returnCache[key]) returnCache[key] = [];
       const newCacheArr = returnCache[key];
@@ -79,7 +79,7 @@ export default class UpdateCacheHandler {
           roomObject[obj.id] &&
           roomObject[obj.id].isNotSeenSince !== undefined
         ) {
-          JobHandler.DeleteJob(noVisionJobId, key);
+          JobHandler.DeleteJob(JobHandler.CreateJob.GetMoveJobId(key), key);
           // eslint-disable-next-line no-param-reassign
           delete roomObject[obj.id].isNotSeenSince;
         }

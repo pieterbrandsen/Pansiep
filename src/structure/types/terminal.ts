@@ -8,10 +8,9 @@ import StructureHelper from "../helper";
 export default FuncWrapper(function ExecuteTerminal(
   str: StructureTerminal
 ): void {
-  const structureMemory = StructureHelper.GetStructureMemory(str.id);
   if (
     StructureHelper.IsStructureDamaged(str) &&
-    structureMemory.jobId === undefined
+     JobHandler.GetJob(JobHandler.CreateJob.GetRepairJobId(str), str.room.name) === null
   )
     JobHandler.CreateJob.CreateRepairJob(str);
   StructureHelper.ControlStorageOfTerminal(str);

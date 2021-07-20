@@ -5,7 +5,7 @@ import UtilsHelper from "../../utils/helper";
 import FuncWrapper from "../../utils/wrapper";
 import RoomHelper from "../helper";
 import JobHandler from "../jobs/handler";
-import { RoomPartGeneratorHandler } from "./partGenerators";
+import RoomPartGeneratorHandler from "./partGenerators";
 
 export default class RoomPlannerHandler {
   /**
@@ -14,9 +14,9 @@ export default class RoomPlannerHandler {
   public static PlanSources = FuncWrapper(function Sources(room: Room): void {
     const sources = RoomHelper.Reader.GetSources(room);
     forEach(sources, (source: Source) => {
-      const harvestJobId: Id<Job> = `harvest-${source.pos.x}/${source.pos.y}` as Id<Job>;
+      const harvestJobId: Id<Job> = JobHandler.CreateJob.GetHarvestJobId(source.pos);
       if (JobHandler.GetJob(harvestJobId, room.name) === null) {
-        JobHandler.CreateJob.CreateHarvestJob(harvestJobId, source);
+        JobHandler.CreateJob.CreateHarvestJob(source);
       }
 
       const maxLinkCount =

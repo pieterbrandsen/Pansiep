@@ -457,9 +457,9 @@ export default class StructureHelper {
       // TODO: When energy is low and not near downgrade, delete upgrade job
 
       if (upgradeJobs.length === 0) {
-        JobHandler.CreateJob.CreateUpgradeJob(controller.room, true);
+        JobHandler.CreateJob.CreateUpgradeJob(controller, true);
       } else if (spendJobs.length === 0) {
-        JobHandler.CreateJob.CreateUpgradeJob(controller.room);
+        JobHandler.CreateJob.CreateUpgradeJob(controller);
       } else if (
         (controller.room.controller as StructureController).ticksToDowngrade <
         10 * 1000
@@ -469,7 +469,7 @@ export default class StructureHelper {
           controller.room.name
         );
         if (deletedJob) {
-          JobHandler.CreateJob.CreateUpgradeJob(controller.room, true);
+          JobHandler.CreateJob.CreateUpgradeJob(controller, true);
         }
       }
     }

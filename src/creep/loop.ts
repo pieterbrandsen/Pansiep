@@ -15,7 +15,7 @@ export default class CreepManager {
       CreepHelper.ExecuteJob(creep, creepMem);
     }
 
-    if (CreepHelper.IsCreepDamaged(creep))
+    if (CreepHelper.IsCreepDamaged(creep) && JobHandler.GetJob(JobHandler.CreateJob.GetHealJobId(creep.name), creep.room.name) === null)
       JobHandler.CreateJob.CreateHealJob(creep);
     StatsHandler.CreepStatsPreProcessing(creep);
   });

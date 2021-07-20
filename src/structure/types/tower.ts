@@ -75,14 +75,14 @@ export default class TowerHandler {
   public static ExecuteTower = FuncWrapper(function ExecuteTower(
     str: StructureTower
   ): void {
-    const structureMemory = StructureHelper.GetStructureMemory(str.id);
     if (
       StructureHelper.IsStructureDamaged(str) &&
-      structureMemory.jobId === undefined
+       JobHandler.GetJob(JobHandler.CreateJob.GetRepairJobId(str), str.room.name) === null
     )
       JobHandler.CreateJob.CreateRepairJob(str);
     StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY, true);
 
+    const structureMemory = StructureHelper.GetStructureMemory(str.id);
     if (structureMemory.jobId) {
       const job: Job = JobHandler.GetJob(
         structureMemory.jobId as Id<Job>,

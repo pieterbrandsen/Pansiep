@@ -6,10 +6,9 @@ import StructureHelper from "../helper";
  * Execute an lab
  */
 export default FuncWrapper(function ExecuteLab(str: StructureLab): void {
-  const structureMemory = StructureHelper.GetStructureMemory(str.id);
   if (
     StructureHelper.IsStructureDamaged(str) &&
-    structureMemory.jobId === undefined
+     JobHandler.GetJob(JobHandler.CreateJob.GetRepairJobId(str), str.room.name) === null
   )
     JobHandler.CreateJob.CreateRepairJob(str);
   StructureHelper.KeepStructureFullEnough(str, 100);
