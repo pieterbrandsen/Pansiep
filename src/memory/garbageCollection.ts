@@ -1,92 +1,88 @@
-import { forOwn, remove } from "lodash";
-import { Log } from "../utils/logger";
-import { ResetRoomStats } from "./stats";
-import { FuncWrapper } from "../utils/wrapper";
-import { FunctionReturnCodes, LogTypes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
-import { GetAllJobs, UpdateJobById, UpdateJobList } from "../room/jobs/handler";
+import { forEach, forOwn, remove } from "lodash";
+import FuncWrapper from "../utils/wrapper";
+import JobHandler from "../room/jobs/handler";
+import GlobalConstants from "../utils/constants/global";
+import LoggerHandler from "../utils/logger";
 
-export const RemoveCreep = FuncWrapper(function RemoveCreep(
-  name: string,
-  roomName: string
-): FunctionReturn {
-  const getAllJobs = GetAllJobs(roomName);
-  if (getAllJobs.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
-  }
-  const jobs: Job[] = getAllJobs.response;
-  const job = jobs.find((j) => j.assignedCreepsNames.includes(name));
-  if (job) {
-    job.assignedCreepsNames = remove(job.assignedCreepsNames, name);
-    UpdateJobById(job.id, job, roomName);
-  }
-  remove(jobs, (j) => j.objId === name);
-  UpdateJobList(roomName, jobs);
+export default class GarbageCollectionHandler {
+  public static RemoveCreep = FuncWrapper(function RemoveCreep(
+    name: string,
+    roomName: string
+  ): boolean {
+    const jobs = JobHandler.GetAllJobs(roomName);
+    const creepJobs = jobs.filter((j) => j.assignedCreepsNames.includes(name));
+    forEach(creepJobs, (job: Job) => {
+      job.assignedCreepsNames = remove(job.assignedCreepsNames, name);
+    });
 
-  delete Memory.creeps[name];
+    remove(jobs, (j) => j.objId === name);
+    JobHandler.OverwriteJobList(roomName, jobs);
 
-  Log(
-    LogTypes.Debug,
-    "memory/garbageCollection:RemoveCreep",
-    "Deleted Creep memory",
-    name
-  );
+    delete Memory.creeps[name];
 
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+    LoggerHandler.Log(
+      GlobalConstants.LogTypes.Debug,
+      "memory/garbageCollection:RemoveCreep",
+      "Deleted Creep memory",
+      name
+    );
 
-export const RemoveStructure = FuncWrapper(function RemoveStructure(
-  id: Id<Structure>,
-  roomName: string
-): FunctionReturn {
-  const getAllJobs = GetAllJobs(roomName);
-  if (getAllJobs.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
-  }
-  const jobs: Job[] = getAllJobs.response;
-  const job = jobs.find((j) => j.assignedStructuresIds.includes(id));
-  if (job) {
-    job.assignedStructuresIds = remove(job.assignedStructuresIds, id);
-    UpdateJobById(job.id, job, roomName);
-  }
-  remove(jobs, (j) => j.objId === id);
-  UpdateJobList(roomName, jobs);
-
-  delete Memory.structures[id];
-
-  Log(
-    LogTypes.Debug,
-    "memory/garbageCollection:RemoveStructure",
-    "Deleted Structure memory",
-    id
-  );
-
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-export const RemoveRoom = FuncWrapper(function RemoveRoom(
-  roomName: string
-): FunctionReturn {
-  forOwn(Memory.structures, (str: StructureMemory, key: string) => {
-    if (str.room === roomName) {
-      RemoveStructure(key as Id<Structure>, roomName);
-    }
-  });
-  forOwn(Memory.creeps, (crp: CreepMemory, key: string) => {
-    if (crp.commandRoom === roomName) {
-      RemoveCreep(key as Id<Creep>, roomName);
-    }
+    return true;
   });
 
-  delete Memory.rooms[roomName];
-  ResetRoomStats(roomName);
+  public static RemoveStructure = FuncWrapper(function RemoveStructure(
+    id: Id<Structure>,
+    roomName: string
+  ): boolean {
+    const jobs = JobHandler.GetAllJobs(roomName);
+    const structureJobs = jobs.filter((j) =>
+      j.assignedStructuresIds.includes(id)
+    );
+    forEach(structureJobs, (job: Job) => {
+      job.assignedStructuresIds = remove(job.assignedStructuresIds, id);
+    });
 
-  Log(
-    LogTypes.Debug,
-    "memory/garbageCollection:RemoveRoom",
-    "Deleted Room memory",
-    roomName
-  );
+    remove(jobs, (j) => j.objId === id);
 
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+    delete Memory.structures[id];
+
+    LoggerHandler.Log(
+      GlobalConstants.LogTypes.Debug,
+      "memory/garbageCollection:RemoveStructure",
+      "Deleted Structure memory",
+      id
+    );
+
+    return true;
+  });
+
+  public static RemoveRoom = FuncWrapper(function RemoveRoom(
+    roomName: string
+  ): boolean {
+    forOwn(Memory.structures, (str: StructureMemory, key: string) => {
+      if (str.room === roomName) {
+        GarbageCollectionHandler.RemoveStructure(
+          key as Id<Structure>,
+          roomName
+        );
+      }
+    });
+    forOwn(Memory.creeps, (crp: CreepMemory, key: string) => {
+      if (crp.commandRoom === roomName) {
+        GarbageCollectionHandler.RemoveCreep(key as Id<Creep>, roomName);
+      }
+    });
+
+    delete Memory.rooms[roomName];
+    delete Memory.stats.rooms[roomName];
+
+    LoggerHandler.Log(
+      GlobalConstants.LogTypes.Debug,
+      "memory/garbageCollection:RemoveRoom",
+      "Deleted Room memory",
+      roomName
+    );
+
+    return true;
+  });
+}

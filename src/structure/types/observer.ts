@@ -1,18 +1,17 @@
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { FuncWrapper } from "../../utils/wrapper";
-import { RepairIfDamagedStructure } from "./helper";
+import JobHandler from "../../room/jobs/handler";
+import FuncWrapper from "../../utils/wrapper";
+import StructureHelper from "../helper";
 
 /**
  * Execute an observer
- *
- * @param {StructureObserver} str - Container structure
- * @return {FunctionReturn} HTTP response with code and data
- *
  */
 export default FuncWrapper(function ExecuteObserver(
   str: StructureObserver
-): FunctionReturn {
-  RepairIfDamagedStructure(str);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
+): void {
+  const structureMemory = StructureHelper.GetStructureMemory(str.id);
+  if (
+    StructureHelper.IsStructureDamaged(str) &&
+    structureMemory.jobId === undefined
+  )
+    JobHandler.CreateJob.CreateRepairJob(str);
 });

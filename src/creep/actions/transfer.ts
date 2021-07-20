@@ -1,88 +1,73 @@
-import {
-  AssignNewJobForCreep,
-  DeleteJobById,
-  SwitchCreepSavedJobIds,
-  UnassignJob,
-  UpdateJobById,
-} from "../../room/jobs/handler";
-import { GetObject } from "../../utils/helper";
-import { GetFreeCapacity } from "../../structure/types/helper";
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { FuncWrapper } from "../../utils/wrapper";
-import { GetCreepMemory } from "../helper";
-import { ExecuteMove } from "./move";
+import UtilsHelper from "../../utils/helper";
+import FuncWrapper from "../../utils/wrapper";
+import JobHandler from "../../room/jobs/handler";
+import CreepActions from "./actions";
+import CreepHelper from "../helper";
+import StructureHelper from "../../structure/helper";
 
 // eslint-disable-next-line
-export const ExecuteTransfer = FuncWrapper(function ExecuteTransfer(
+export default FuncWrapper(function ExecuteTransfer(
   creep: Creep,
   job: Job
-): FunctionReturn {
-  const _job = job;
-  const getCreepMemory = GetCreepMemory(creep.name);
-  if (getCreepMemory.code !== FunctionReturnCodes.OK) {
-    return FunctionReturnHelper(getCreepMemory.code);
-  }
-
-  const creepMem: CreepMemory = getCreepMemory.response;
+): void {
+  const creepMemory = CreepHelper.GetCreepMemory(creep.name);
 
   if (
     creep.store.getUsedCapacity(job.resourceType) <
     creep.store.getCapacity(job.resourceType) / 10
   ) {
     if (job.action === "transferSource") {
-      SwitchCreepSavedJobIds(creep.name);
-      UnassignJob(job.id, creep.name, job.roomName);
+      JobHandler.SwitchCreepSavedJobIds(creepMemory);
+      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
     } else if (
-      AssignNewJobForCreep(
+      JobHandler.AssignNewJobForCreep(
         creep,
-        creepMem.type === "work" || creepMem.type === "pioneer"
+        creepMemory.type === "work" || creepMemory.type === "pioneer"
           ? ["withdraw", "harvest"]
           : ["withdraw"]
-      ).code === FunctionReturnCodes.OK
-    )
-      UnassignJob(job.id, creep.name, job.roomName);
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+      )
+    ) {
+      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
+    }
+    return;
   }
 
-  if (_job.energyRequired === undefined || _job.energyRequired <= 0) {
-    DeleteJobById(job.id, job.roomName);
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
+  if (job.energyRequired === undefined || job.energyRequired <= 0) {
+    JobHandler.DeleteJob(job.id, job.roomName);
+    return;
   }
 
   const resourceType = job.resourceType as ResourceConstant;
-  const str: Structure = GetObject(job.objId).response as Structure;
+  const str: Structure = UtilsHelper.GetObject(job.objId) as Structure;
 
-  const strFreeCapacity = GetFreeCapacity(str, resourceType).response;
+  const strFreeCapacity = StructureHelper.GetFreeCapacity(str, resourceType);
   const creepUsedCapacity = creep.store.getUsedCapacity(resourceType);
   const transferAmount: number =
     strFreeCapacity > creepUsedCapacity ? creepUsedCapacity : strFreeCapacity;
   switch (creep.transfer(str, resourceType, transferAmount)) {
     case OK:
       creep.say("transfer");
-      _job.energyRequired -= transferAmount;
-      UpdateJobById(job.id, _job, job.roomName);
+      job.energyRequired -= transferAmount;
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
       if (
-        AssignNewJobForCreep(
+        JobHandler.AssignNewJobForCreep(
           creep,
-          creepMem.type === "work" || creepMem.type === "pioneer"
+          creepMemory.type === "work" || creepMemory.type === "pioneer"
             ? ["withdraw", "harvest"]
             : ["withdraw"]
-        ).code === FunctionReturnCodes.OK
+        )
       )
-        UnassignJob(job.id, creep.name, job.roomName);
+        JobHandler.UnassignJob(job.id, creep.name, job.roomName);
       break;
     case ERR_NOT_IN_RANGE:
-      ExecuteMove(creep, job);
+      CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
     case ERR_FULL:
-      DeleteJobById(job.id, job.roomName);
+      JobHandler.DeleteJob(job.id, job.roomName);
       break;
     default:
       break;
   }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

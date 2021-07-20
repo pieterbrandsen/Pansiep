@@ -1,175 +1,159 @@
 import { forEach } from "lodash";
-import {
-  InitializeCreepMemory,
-  InitializeGlobalMemory,
-  InitializeRoomMemory,
-  InitializeStructureMemory,
-} from "../memory/initialization";
-import {
-  RemoveCreep,
-  RemoveRoom,
-  RemoveStructure,
-} from "../memory/garbageCollection";
-import { FuncWrapper } from "./wrapper";
-import { FunctionReturnCodes } from "./constants/global";
-import { FunctionReturnHelper } from "./functionStatusGenerator";
+import FuncWrapper from "./wrapper";
+import MemoryInitializationHandler from "../memory/initialization";
+import GarbageCollectionHandler from "../memory/garbageCollection";
 
 type Param = { name: string; type: string };
 
-/**
- * Return an html string that describes an function based on params.
- *
- * @param {string} name - Name of function
- * @param {string} description - Description of function
- * @param {Param[]} [params] - Parameters of function
- * @return {FunctionReturn} HTTP response with code and data
- *
- * @example
- *
- *     DescribeFunction('foo',"returns bar",[{ name: "parameterName", type: "typeName" }])
- */
-export const DescribeFunction = FuncWrapper(function DescribeFunction(
-  name: string,
-  description: string,
-  params?: Param[]
-): FunctionReturn {
-  let message = `<br><br>Function name: ${name}<br>Description: ${description}`;
-  if (params && params.length > 0) {
-    message += "<br>Params:";
-    forEach(params, (param: Param) => {
-      message += `<br>Name = ${param.name}, Type = ${param.type}`;
-    });
-  }
-  message +=
-    "<br>----------------------------------------------------------------";
-  return FunctionReturnHelper(FunctionReturnCodes.OK, message);
-});
+export default class ConsoleCommandsHandler {
+  /**
+   * Return an html string that describes an function based on params.
+   */
+  private static DescribeFunction = FuncWrapper(function DescribeFunction(
+    name: string,
+    description: string,
+    params?: Param[]
+  ): string {
+    let message = `<br><br>Function name: ${name}<br>Description: ${description}`;
+    if (params && params.length > 0) {
+      message += "<br>Params:";
+      forEach(params, (param: Param) => {
+        message += `<br>Name = ${param.name}, Type = ${param.type}`;
+      });
+    }
+    message +=
+      "<br>----------------------------------------------------------------";
+    return message;
+  });
 
-// #region Commands
-export const ResetGlobalMemoryCommand = FuncWrapper(
-  function ResetGlobalMemoryCommand(): number {
-    return InitializeGlobalMemory().code;
-  }
-);
+  // #region Commands
+  private static ResetGlobalMemoryCommand = FuncWrapper(
+    function ResetGlobalMemoryCommand(): boolean {
+      return MemoryInitializationHandler.InitializeGlobalMemory();
+    }
+  );
 
-export const ResetRoomMemoryCommand = FuncWrapper(
-  function ResetRoomMemoryCommand(id: string): number {
-    return InitializeRoomMemory(id).code;
-  }
-);
+  private static ResetRoomMemoryCommand = FuncWrapper(
+    function ResetRoomMemoryCommand(id: string): boolean {
+      return MemoryInitializationHandler.InitializeRoomMemory(id);
+    }
+  );
 
-export const ResetStructureMemoryCommand = FuncWrapper(
-  function ResetStructureMemoryCommand(id: string, roomName: string): number {
-    return InitializeStructureMemory(id, roomName).code;
-  }
-);
+  private static ResetStructureMemoryCommand = FuncWrapper(
+    function ResetStructureMemoryCommand(
+      id: string,
+      roomName: string
+    ): boolean {
+      return MemoryInitializationHandler.InitializeStructureMemory(
+        id,
+        roomName
+      );
+    }
+  );
 
-export const ResetCreepMemoryCommand = FuncWrapper(
-  function ResetCreepMemoryCommand(id: string, roomName: string): number {
-    return InitializeCreepMemory(id, roomName).code;
-  }
-);
+  private static ResetCreepMemoryCommand = FuncWrapper(
+    function ResetCreepMemoryCommand(id: string, roomName: string): boolean {
+      return MemoryInitializationHandler.InitializeCreepMemory(id, roomName);
+    }
+  );
 
-export const DeleteRoomMemoryCommand = FuncWrapper(
-  function DeleteRoomMemoryCommand(id: string): number {
-    return RemoveRoom(id).code;
-  }
-);
+  private static DeleteRoomMemoryCommand = FuncWrapper(
+    function DeleteRoomMemoryCommand(id: string): boolean {
+      return GarbageCollectionHandler.RemoveRoom(id);
+    }
+  );
 
-export const DeleteStructureMemoryCommand = FuncWrapper(
-  function DeleteStructureMemoryCommand(
-    id: Id<Structure>,
-    roomName: string
-  ): number {
-    return RemoveStructure(id, roomName).code;
-  }
-);
+  private static DeleteStructureMemoryCommand = FuncWrapper(
+    function DeleteStructureMemoryCommand(
+      id: Id<Structure>,
+      roomName: string
+    ): boolean {
+      return GarbageCollectionHandler.RemoveStructure(id, roomName);
+    }
+  );
 
-export const DeleteCreepMemoryCommand = FuncWrapper(
-  function DeleteCreepMemoryCommand(id: string, roomName: string): number {
-    return RemoveCreep(id, roomName).code;
-  }
-);
+  private static DeleteCreepMemoryCommand = FuncWrapper(
+    function DeleteCreepMemoryCommand(id: string, roomName: string): boolean {
+      return GarbageCollectionHandler.RemoveCreep(id, roomName);
+    }
+  );
 
-export const HelpCommand = FuncWrapper(function HelpCommand(): string {
-  let helpMessage = "<span style='color:Cornsilk'>";
-  helpMessage += "All functions accessible using the Console";
-  helpMessage += DescribeFunction(
-    "ResetGlobalMemoryCommand",
-    "Reset all memory"
-  ).response;
-  helpMessage += DescribeFunction(
-    "ResetRoomMemoryCommand",
-    "Reset the memory of an room",
-    [{ name: "id", type: "string" }]
-  ).response;
-  helpMessage += DescribeFunction(
-    "ResetStructureMemoryCommand",
-    "Reset the memory of an structure",
-    [
-      { name: "id", type: "string" },
-      { name: "roomName", type: "string" },
-    ]
-  ).response;
-  helpMessage += DescribeFunction(
-    "ResetCreepMemoryCommand",
-    "Reset the memory of an creep",
-    [
-      { name: "id", type: "string" },
-      { name: "roomName", type: "string" },
-    ]
-  ).response;
+  private static HelpCommand = FuncWrapper(function HelpCommand(): string {
+    let helpMessage = "<span style='color:Cornsilk'>";
+    helpMessage += "All functions accessible using the Console";
+    helpMessage += ConsoleCommandsHandler.DescribeFunction(
+      "ResetGlobalMemoryCommand",
+      "Reset all memory"
+    );
+    helpMessage += ConsoleCommandsHandler.DescribeFunction(
+      "ResetRoomMemoryCommand",
+      "Reset the memory of an room",
+      [{ name: "id", type: "string" }]
+    );
+    helpMessage += ConsoleCommandsHandler.DescribeFunction(
+      "ResetStructureMemoryCommand",
+      "Reset the memory of an structure",
+      [
+        { name: "id", type: "string" },
+        { name: "roomName", type: "string" },
+      ]
+    );
+    helpMessage += ConsoleCommandsHandler.DescribeFunction(
+      "ResetCreepMemoryCommand",
+      "Reset the memory of an creep",
+      [
+        { name: "id", type: "string" },
+        { name: "roomName", type: "string" },
+      ]
+    );
 
-  helpMessage += DescribeFunction(
-    "DeleteRoomMemoryCommand",
-    "Remove an room out of the memory",
-    [{ name: "id", type: "string" }]
-  ).response;
-  helpMessage += DescribeFunction(
-    "DeleteStructureMemoryCommand",
-    "Remove an structure out of the memory",
-    [
-      { name: "id", type: "string" },
-      { name: "roomName", type: "string" },
-    ]
-  ).response;
-  helpMessage += DescribeFunction(
-    "DeleteCreepMemoryCommand",
-    "Remove an creep out of the memory",
-    [
-      { name: "id", type: "string" },
-      { name: "roomName", type: "string" },
-    ]
-  ).response;
-  helpMessage += "<br><br>EndOfList";
-  helpMessage += "</span";
-  return helpMessage;
-});
+    helpMessage += ConsoleCommandsHandler.DescribeFunction(
+      "DeleteRoomMemoryCommand",
+      "Remove an room out of the memory",
+      [{ name: "id", type: "string" }]
+    );
+    helpMessage += ConsoleCommandsHandler.DescribeFunction(
+      "DeleteStructureMemoryCommand",
+      "Remove an structure out of the memory",
+      [
+        { name: "id", type: "string" },
+        { name: "roomName", type: "string" },
+      ]
+    );
+    helpMessage += ConsoleCommandsHandler.DescribeFunction(
+      "DeleteCreepMemoryCommand",
+      "Remove an creep out of the memory",
+      [
+        { name: "id", type: "string" },
+        { name: "roomName", type: "string" },
+      ]
+    );
+    helpMessage += "<br><br>EndOfList";
+    helpMessage += "</span";
+    return helpMessage;
+  });
 
-// #endregion
+  // #endregion
 
-/**
- * Handles setting the console commands to the heap to used in the console.
- *
- * @return {FunctionReturn} HTTP response with code and data
- *
- * @example
- *
- *     AssignCommandsToHeap()
- */
-export const AssignCommandsToHeap = FuncWrapper(
-  function AssignCommandsToHeap(): FunctionReturn {
-    global.help = HelpCommand;
+  /**
+   * Handles setting the console commands to the heap to used in the console.
+   */
+  public static AssignCommandsToHeap = FuncWrapper(
+    function AssignCommandsToHeap(): void {
+      global.help = ConsoleCommandsHandler.HelpCommand;
 
-    global.resetGlobalMemory = ResetGlobalMemoryCommand;
-    global.resetRoomMemory = ResetRoomMemoryCommand;
-    global.resetStructureMemory = ResetStructureMemoryCommand;
-    global.resetCreepMemory = ResetCreepMemoryCommand;
+      global.resetGlobalMemory =
+        ConsoleCommandsHandler.ResetGlobalMemoryCommand;
+      global.resetRoomMemory = ConsoleCommandsHandler.ResetRoomMemoryCommand;
+      global.resetStructureMemory =
+        ConsoleCommandsHandler.ResetStructureMemoryCommand;
+      global.resetCreepMemory = ConsoleCommandsHandler.ResetCreepMemoryCommand;
 
-    global.deleteRoomMemory = DeleteRoomMemoryCommand;
-    global.deleteStructureMemory = DeleteStructureMemoryCommand;
-    global.deleteCreepMemory = DeleteCreepMemoryCommand;
-
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
-  }
-);
+      global.deleteRoomMemory = ConsoleCommandsHandler.DeleteRoomMemoryCommand;
+      global.deleteStructureMemory =
+        ConsoleCommandsHandler.DeleteStructureMemoryCommand;
+      global.deleteCreepMemory =
+        ConsoleCommandsHandler.DeleteCreepMemoryCommand;
+    }
+  );
+}

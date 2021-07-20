@@ -1,149 +1,108 @@
-import {
-  GetJobById,
-  DeleteJobById,
-  AssignNewJobForStructure,
-} from "../../room/jobs/handler";
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { GetObject } from "../../utils/helper";
-import { FuncWrapper } from "../../utils/wrapper";
-import { GetStructureMemory } from "../helper";
-import {
-  IsStructureDamaged,
-  RepairIfDamagedStructure,
-  TryToCreateTransferJob,
-} from "./helper";
+import JobHandler from "../../room/jobs/handler";
+import UtilsHelper from "../../utils/helper";
+import FuncWrapper from "../../utils/wrapper";
+import StructureHelper from "../helper";
 
-/**
- * Execute an attack job for a tower
- *
- * @param {StructureTower} str - Tower structure
- * @param {Job} job - attack job
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const ExecuteTowerAttack = FuncWrapper(function ExecuteTowerAttack(
-  str: StructureTower,
-  job: Job
-): FunctionReturn {
-  const getObject = GetObject(job.objId);
-  if (getObject.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getObject.code);
-  const creep: Creep = getObject.response as Creep;
+export default class TowerHandler {
+  /**
+   * Execute an attack job for a tower
+   */
+  private static ExecuteTowerAttack = FuncWrapper(function ExecuteTowerAttack(
+    str: StructureTower,
+    job: Job
+  ): void {
+    const creep = UtilsHelper.GetObject(job.objId) as Creep;
 
-  switch (str.attack(creep)) {
-    case ERR_INVALID_TARGET:
-      DeleteJobById(job.id, str.room.name);
-      break;
-    default:
-      break;
-  }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-/**
- * Execute an heal job for a tower
- *
- * @param {StructureTower} str - Tower structure
- * @param {Job} job - heal job
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const ExecuteTowerHeal = FuncWrapper(function ExecuteTowerHeal(
-  str: StructureTower,
-  job: Job
-): FunctionReturn {
-  const getObject = GetObject(job.objId);
-  if (getObject.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getObject.code);
-  const creep: Creep = getObject.response as Creep;
-
-  switch (str.heal(creep)) {
-    case ERR_INVALID_TARGET:
-      DeleteJobById(job.id, str.room.name);
-      break;
-    default:
-      break;
-  }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-/**
- * Execute an repair job for a tower
- *
- * @param {StructureTower} str - Tower structure
- * @param {Job} job - repair job
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const ExecuteTowerRepair = FuncWrapper(function ExecuteTowerRepair(
-  str: StructureTower,
-  job: Job
-): FunctionReturn {
-  const getObject = GetObject(job.objId);
-  if (getObject.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getObject.code);
-  const targetStr: Structure = getObject.response as Structure;
-
-  if (!IsStructureDamaged(targetStr).response) {
-    DeleteJobById(job.id, job.roomName);
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  }
-
-  switch (str.repair(targetStr)) {
-    case ERR_INVALID_TARGET:
-      DeleteJobById(job.id, str.room.name);
-      break;
-    default:
-      break;
-  }
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-export const GetNewTowerJob = FuncWrapper(function GetNewTowerJob(
-  str: StructureTower
-): FunctionReturn {
-  AssignNewJobForStructure(str);
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-/**
- * Execute an tower
- *
- * @param {StructureTower} str - tower structure
- * @return {FunctionReturn} HTTP response with code and data
- *
- */
-export const ExecuteTower = FuncWrapper(function ExecuteTower(
-  str: StructureTower
-): FunctionReturn {
-  RepairIfDamagedStructure(str);
-  TryToCreateTransferJob(str, 100, RESOURCE_ENERGY, true);
-
-  const getStructureMemory = GetStructureMemory(str.id);
-  if (getStructureMemory.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(getStructureMemory.code);
-  const strMem: StructureMemory = getStructureMemory.response;
-
-  if (strMem.jobId) {
-    const job: Job = GetJobById(strMem.jobId as Id<Job>, str.room.name)
-      .response;
-    switch (job.action) {
-      case "attack":
-        ExecuteTowerAttack(str, job);
-        break;
-      case "heal":
-        ExecuteTowerHeal(str, job);
-        break;
-      case "repair":
-        ExecuteTowerRepair(str, job);
+    switch (str.attack(creep)) {
+      case ERR_INVALID_TARGET:
+        JobHandler.DeleteJob(job.id, str.room.name);
         break;
       default:
         break;
     }
-  } else {
-    GetNewTowerJob(str);
-  }
+  });
 
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+  /**
+   * Execute an heal job for a tower
+   */
+  private static ExecuteTowerHeal = FuncWrapper(function ExecuteTowerHeal(
+    str: StructureTower,
+    job: Job
+  ): void {
+    const creep = UtilsHelper.GetObject(job.objId) as Creep;
+
+    switch (str.heal(creep)) {
+      case ERR_INVALID_TARGET:
+        JobHandler.DeleteJob(job.id, str.room.name);
+        break;
+      default:
+        break;
+    }
+  });
+
+  /**
+   * Execute an repair job for a tower
+   */
+  private static ExecuteTowerRepair = FuncWrapper(function ExecuteTowerRepair(
+    str: StructureTower,
+    job: Job
+  ): void {
+    const targetStructure = UtilsHelper.GetObject(job.objId) as Structure;
+
+    if (!StructureHelper.IsStructureDamaged(targetStructure)) {
+      JobHandler.DeleteJob(job.id, job.roomName);
+      return;
+    }
+
+    switch (str.repair(targetStructure)) {
+      case ERR_INVALID_TARGET:
+        JobHandler.DeleteJob(job.id, str.room.name);
+        break;
+      default:
+        break;
+    }
+  });
+
+  private static GetNewTowerJob = FuncWrapper(function GetNewTowerJob(
+    str: StructureTower
+  ): void {
+    JobHandler.AssignNewJobForStructure(str);
+  });
+
+  /**
+   * Execute an tower
+   */
+  public static ExecuteTower = FuncWrapper(function ExecuteTower(
+    str: StructureTower
+  ): void {
+    const structureMemory = StructureHelper.GetStructureMemory(str.id);
+    if (
+      StructureHelper.IsStructureDamaged(str) &&
+      structureMemory.jobId === undefined
+    )
+      JobHandler.CreateJob.CreateRepairJob(str);
+    StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY, true);
+
+    if (structureMemory.jobId) {
+      const job: Job = JobHandler.GetJob(
+        structureMemory.jobId as Id<Job>,
+        str.room.name
+      );
+      switch (job.action) {
+        case "attack":
+          TowerHandler.ExecuteTowerAttack(str, job);
+          break;
+        case "heal":
+          TowerHandler.ExecuteTowerHeal(str, job);
+          break;
+        case "repair":
+          TowerHandler.ExecuteTowerRepair(str, job);
+          break;
+        default:
+          break;
+      }
+    } else {
+      TowerHandler.GetNewTowerJob(str);
+    }
+  });
+}
