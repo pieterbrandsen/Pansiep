@@ -7,7 +7,7 @@ import { isUndefined } from "lodash";
  * @returns {F} Money patched function
  */
 // eslint-disable-next-line
-export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
+export default function FuncWrapper<F extends (...a: any[]) => any>(
   func: F
 ): F {
   return ((...args: Parameters<F>) => {
@@ -31,19 +31,8 @@ export const FuncWrapper = function FuncWrapper<F extends (...a: any[]) => any>(
       statsPath.callCount += 1;
       statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
     }
-    // try {
-    // } catch (error) {
-    //   throw error;
-    //   Log(LogTypes.Error, func.name, error, {
-    //     ...args,
-    //   });
-    //   return { code: 500 };
-    // } finally {
-    //   statsPath.callCount += 1;
-    //   statsPath.cpuUsed += Game.cpu.getUsed() - preProcessingCpu;
-    // }
   }) as F;
-};
+}
 
 /**
  * Wrap multiple functions using the FuncWrapper function wrapper.

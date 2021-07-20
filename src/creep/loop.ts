@@ -1,48 +1,32 @@
 import { forEach, isUndefined } from "lodash";
-import {
-  GetCachedCreepIds,
-  GetCreep,
-  ExecuteJob,
-  TryToCreateHealJob,
-} from "./helper";
-import { IsCreepMemoryInitialized } from "../memory/initialization";
-import { CreepStatsPreProcessing } from "../memory/stats";
-import { FuncWrapper } from "../utils/wrapper";
-import { FunctionReturnCodes } from "../utils/constants/global";
-import { FunctionReturnHelper } from "../utils/functionStatusGenerator";
-import { AssignNewJobForCreep } from "../room/jobs/handler";
+import FuncWrapper from "../utils/wrapper";
+import JobHandler from "../room/jobs/handler";
+import StatsHandler from "../memory/stats";
+import MemoryInitializationHandler from "../memory/initialization";
+import CreepHelper from "./helper";
 
-export const RunCreep = FuncWrapper(function RunCreep(
-  name: string
-): FunctionReturn {
-  const getCreep = GetCreep(name);
-  if (getCreep.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  const creep = getCreep.response as Creep;
-  const creepMem = Memory.creeps[name];
-  if (isUndefined(creepMem.jobId)) {
-    AssignNewJobForCreep(creep);
-  } else {
-    ExecuteJob(creep, creepMem);
-  }
+export default class CreepManager {
+  private static RunCreep = FuncWrapper(function RunCreep(name: string): void {
+    const creep = CreepHelper.GetCreep(name);
+    const creepMem = CreepHelper.GetCreepMemory(name);
+    if (isUndefined(creepMem.jobId)) {
+      JobHandler.AssignNewJobForCreep(creep);
+    } else {
+      CreepHelper.ExecuteJob(creep, creepMem);
+    }
 
-  TryToCreateHealJob(creep);
-  CreepStatsPreProcessing(creep);
-
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
-
-export const Run = FuncWrapper(function RunCreeps(
-  roomName: string
-): FunctionReturn {
-  const getCreepIds = GetCachedCreepIds(roomName);
-  if (getCreepIds.code !== FunctionReturnCodes.OK)
-    return FunctionReturnHelper(FunctionReturnCodes.NO_CONTENT);
-  forEach(getCreepIds.response, (name: string) => {
-    const isCreepMemoryInitialized = IsCreepMemoryInitialized(name);
-    if (isCreepMemoryInitialized.code === FunctionReturnCodes.OK)
-      RunCreep(name);
+    if (CreepHelper.IsCreepDamaged(creep))
+      JobHandler.CreateJob.CreateHealJob(creep);
+    StatsHandler.CreepStatsPreProcessing(creep);
   });
 
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
-});
+  public static Run = FuncWrapper(function RunCreeps(roomName: string): void {
+    const creepIds = CreepHelper.GetCachedCreepIds(roomName);
+    forEach(creepIds, (name: string) => {
+      const isCreepMemoryInitialized = MemoryInitializationHandler.IsCreepMemoryInitialized(
+        name
+      );
+      if (isCreepMemoryInitialized) CreepManager.RunCreep(name);
+    });
+  });
+}

@@ -1,13 +1,15 @@
 import { isUndefined, first, forEach, remove } from "lodash";
-import { FuncWrapper } from "../../utils/wrapper";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { GetCreepMemory } from "../../creep/helper";
-import { GetStructureMemory } from "../../structure/helper";
-import { JobActionPriority } from "../../utils/constants/room";
-import { RehydratedRoomPosition } from "../../utils/helper";
+import FuncWrapper from "../../utils/wrapper";
+import CreateJobHandler from "./create";
+import RoomHelper from "../helper";
+import CreepHelper from "../../creep/helper";
+import StructureHelper from "../../structure/helper";
+import UtilsHelper from "../../utils/helper";
+import RoomConstants from "../../utils/constants/room";
 
 export default class JobHandler {
+  public static CreateJob = CreateJobHandler;
+
   /**
    * Return all jobs from @param room
    */
@@ -15,9 +17,10 @@ export default class JobHandler {
     roomName: string,
     filterOnTypes?: JobActionTypes[]
   ): Job[] {
-    // TODO: Create room function that returns room memory
-    const jobs = Memory.rooms[roomName].jobs
-      .filter((j) => (filterOnTypes ? filterOnTypes.includes(j.action) : true))
+    const jobs = RoomHelper.GetRoomMemory(roomName)
+      .jobs.filter((j) =>
+        filterOnTypes ? filterOnTypes.includes(j.action) : true
+      )
       .sort((a, b) => {
         return Number(a.hasPriority) - Number(b.hasPriority);
       });
@@ -56,8 +59,9 @@ export default class JobHandler {
       .filter((job) => job.position)
       .forEach((job: Job) => {
         // eslint-disable-next-line
-        job.position = RehydratedRoomPosition(
-        job.position as RoomPosition);
+        job.position = UtilsHelper.RehydratedRoomPosition(
+          job.position as RoomPosition
+        );
       });
 
     const closestJob: Job = first(
@@ -70,23 +74,6 @@ export default class JobHandler {
 
     return closestJob;
   });
-
-  // /**
-  //  * Update job with new memory
-  //  */
-  //  public static UpdateJobById = FuncWrapper(function UpdateJobById(
-  //   job: Job,
-  //   roomName: string
-  // ): FunctionReturn {
-  //   const jobsMem = Memory.rooms[roomName].jobs;
-  //   const index = jobsMem.findIndex((j) => j.id === id);
-  //   if (index >= 0) {
-  //     jobsMem[index] = job;
-  //   } else {
-  //     jobsMem.push(job);
-  //   }
-  //   return FunctionReturnHelper(FunctionReturnCodes.OK);
-  // });
 
   /**
    * Switch creep jobs saved in memory
@@ -106,8 +93,6 @@ export default class JobHandler {
         creepMemory.secondJobId = creepMemory.jobId;
         creepMemory.jobId = oldId;
       }
-
-      // UpdateCreepMemory(creepName, creepMem);
     }
   );
 
@@ -120,7 +105,7 @@ export default class JobHandler {
       filterOnTypes?: JobActionTypes[]
     ): boolean {
       const strId: Id<Structure> = str.id;
-      const strMem = GetStructureMemory(strId);
+      const strMem = StructureHelper.GetStructureMemory(strId);
       let jobs: Job[] = [];
 
       if (filterOnTypes) {
@@ -148,9 +133,6 @@ export default class JobHandler {
       const closestJob = JobHandler.GetClosestJob(jobs, str.pos);
       closestJob.assignedStructuresIds.push(strId);
       strMem.jobId = closestJob.id;
-      // UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
-
-      // UpdateStructureMemory(str.id, strMem);
       return true;
     }
   );
@@ -164,12 +146,10 @@ export default class JobHandler {
       filterOnTypes?: JobActionTypes[],
       forcedJob?: Job
     ): boolean {
-      const creepMem = GetCreepMemory(creep.name);
+      const creepMem = CreepHelper.GetCreepMemory(creep.name);
       if (forcedJob) {
         forcedJob.assignedCreepsNames.push(creep.name);
         creepMem.jobId = forcedJob.id;
-        // UpdateJobById(forcedJob.id, forcedJob, forcedJob.roomName);
-        // UpdateCreepMemory(creep.name, creepMem);
         return true;
       }
 
@@ -251,7 +231,7 @@ export default class JobHandler {
       const jobsGroupedByPrioritize: StringMap<Job[]> = {};
       let highestPriorityJobsNumber = 99;
       forEach(jobs, (j: Job) => {
-        const num = JobActionPriority[j.action];
+        const num = RoomConstants.JobActionPriority[j.action];
         if (highestPriorityJobsNumber > num) {
           highestPriorityJobsNumber = num;
         }
@@ -267,9 +247,6 @@ export default class JobHandler {
       );
       closestJob.assignedCreepsNames.push(creep.name);
       creepMem.jobId = closestJob.id;
-      // UpdateJobById(closestJob.id, closestJob, closestJob.roomName);
-
-      // UpdateCreepMemory(creep.name, creepMem);
       return true;
     }
   );
@@ -277,7 +254,7 @@ export default class JobHandler {
   /**
    * Get job by @param jobId
    */
-  public static GetJobById = FuncWrapper(function GetJobById(
+  public static GetJob = FuncWrapper(function GetJobById(
     jobId: Id<Job>,
     roomName: string
   ): Job {
@@ -289,12 +266,12 @@ export default class JobHandler {
   /**
    * Update full job list with @param jobs
    */
-  public static UpdateJobList = FuncWrapper(function UpdateJobList(
+  public static OverwriteJobList = FuncWrapper(function OverwriteJobList(
     roomName: string,
     jobs: Job[]
-  ): FunctionReturn {
+  ): boolean {
     Memory.rooms[roomName].jobs = jobs;
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
+    return true;
   });
 
   /**
@@ -305,7 +282,7 @@ export default class JobHandler {
     id: Id<Structure> | string,
     roomName: string
   ): boolean {
-    const job = JobHandler.GetJobById(jobId, roomName);
+    const job = JobHandler.GetJob(jobId, roomName);
     const removedStructuresIds = remove(
       job.assignedStructuresIds,
       (strId: string) => strId === id
@@ -317,7 +294,7 @@ export default class JobHandler {
     // UpdateJobById(jobId, job, roomName);
 
     if (removedCreepsIds.length > 0) {
-      const creepMemory = GetCreepMemory(id);
+      const creepMemory = CreepHelper.GetCreepMemory(id);
       if (creepMemory.jobId === jobId) {
         creepMemory.jobId = undefined;
       } else if (creepMemory.secondJobId === jobId) {
@@ -326,7 +303,9 @@ export default class JobHandler {
       // UpdateCreepMemory(id, creepMem);
     }
     if (removedStructuresIds.length > 0) {
-      const structureMemory = GetStructureMemory(id as Id<Structure>);
+      const structureMemory = StructureHelper.GetStructureMemory(
+        id as Id<Structure>
+      );
       structureMemory.jobId = undefined;
       // UpdateStructureMemory(id as Id<Structure>, strMem);
     }
@@ -337,14 +316,14 @@ export default class JobHandler {
   /**
    * Delete job and unassign job for all creep and structure
    */
-  public static DeleteJobById = FuncWrapper(function DeleteJobById(
+  public static DeleteJob = FuncWrapper(function DeleteJobById(
     id: Id<Job>,
     roomName: string
-  ): FunctionReturn {
+  ): boolean {
     const jobs = JobHandler.GetAllJobs(roomName);
     const index = jobs.findIndex((j) => j.id === id);
     forEach(jobs[index].assignedCreepsNames, (name: string) => {
-      const creepMemory = GetCreepMemory(name);
+      const creepMemory = CreepHelper.GetCreepMemory(name);
       if (creepMemory.jobId === id) {
         creepMemory.jobId = undefined;
       } else {
@@ -354,12 +333,18 @@ export default class JobHandler {
       // UpdateCreepMemory(name, creepMem);
     });
     forEach(jobs[index].assignedStructuresIds, (strId: Id<Structure>) => {
-      const structureMemory = GetStructureMemory(strId);
+      const structureMemory = StructureHelper.GetStructureMemory(strId);
       structureMemory.jobId = undefined;
       // UpdateStructureMemory(strId, strMem);
     });
     remove(jobs, (j: Job) => j.id === id);
-    JobHandler.UpdateJobList(roomName, jobs);
-    return FunctionReturnHelper(FunctionReturnCodes.OK);
+    JobHandler.OverwriteJobList(roomName, jobs);
+    return true;
+  });
+
+  public static AddJob = FuncWrapper(function AddJob(job: Job): boolean {
+    const jobs = JobHandler.GetAllJobs(job.roomName);
+    jobs.push(job);
+    return true;
   });
 }

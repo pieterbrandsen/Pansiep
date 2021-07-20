@@ -1,8 +1,6 @@
-import { UnassignJob } from "../../room/jobs/handler";
-import { FunctionReturnCodes } from "../../utils/constants/global";
-import { FunctionReturnHelper } from "../../utils/functionStatusGenerator";
-import { CreateRoomPosition } from "../../utils/helper";
-import { FuncWrapper } from "../../utils/wrapper";
+import FuncWrapper from "../../utils/wrapper";
+import JobHandler from "../../room/jobs/handler";
+import UtilsHelper from "../../utils/helper";
 
 // export const GetPath = FuncWrapper(function GetPath(creep:Creep,targetPos:RoomPosition): FunctionReturn {
 //   const path = creep.pos.findPathTo(targetPos);
@@ -10,13 +8,12 @@ import { FuncWrapper } from "../../utils/wrapper";
 // })
 
 // eslint-disable-next-line
-export const ExecuteMove = FuncWrapper(function ExecuteMove(
+export default FuncWrapper(function ExecuteMove(
   creep: Creep,
   job: Job
-  // range = 2
-): FunctionReturn {
+): void {
   const targetPos: RoomPosition = job.position
-    ? CreateRoomPosition(job.position).response
+    ? UtilsHelper.RehydratedRoomPosition(job.position)
     : new RoomPosition(25, 25, job.roomName);
 
   switch (
@@ -34,12 +31,11 @@ export const ExecuteMove = FuncWrapper(function ExecuteMove(
       creep.say("move");
       break;
     case ERR_NO_PATH:
-      UnassignJob(job.id, creep.name, job.roomName);
+      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
       break;
     default:
       break;
   }
 
   // creepMem.walkPath = GetPath(creep,targetPos).response;
-  return FunctionReturnHelper(FunctionReturnCodes.OK);
 });

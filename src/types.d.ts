@@ -208,13 +208,13 @@ declare namespace NodeJS {
 
     help?(): string;
 
-    resetGlobalMemory(): number;
-    resetRoomMemory(roomName: string): number;
-    resetStructureMemory(id: Id<Structure>, roomName: string): number;
-    resetCreepMemory(creepName: string, roomName: string): number;
+    resetGlobalMemory(): boolean;
+    resetRoomMemory(roomName: string): boolean;
+    resetStructureMemory(id: Id<Structure>, roomName: string): boolean;
+    resetCreepMemory(creepName: string, roomName: string): boolean;
 
-    deleteRoomMemory(roomName: string): number;
-    deleteStructureMemory(id: Id<Structure>, roomName: string): number;
-    deleteCreepMemory(creepName: string, roomName: string): number;
+    deleteRoomMemory(roomName: string): boolean;
+    deleteStructureMemory(id: Id<Structure>, roomName: string): boolean;
+    deleteCreepMemory(creepName: string, roomName: string): boolean;
   }
 }
