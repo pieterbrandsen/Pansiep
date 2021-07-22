@@ -1,25 +1,24 @@
-import CreepHelper from "../../creep/helper";
 import FuncWrapper from "../../utils/wrapper";
 import RoomHelper from "../helper";
 import JobHandler from "./handler";
 
 export default class CreateJobHandler {
-    /**
+  /**
    * Returns Harvest job id based on @param pos
    */
-     public static GetHarvestJobId = FuncWrapper(function GetHarvestJobId(
-      pos: RoomPosition
-    ): Id<Job> {
-      const jobId: Id<Job> = `harvest-${pos.x}/${pos.y}` as Id<Job>;
-      return jobId;
-    });
+  public static GetHarvestJobId = FuncWrapper(function GetHarvestJobId(
+    pos: RoomPosition
+  ): Id<Job> {
+    const jobId: Id<Job> = `harvest-${pos.x}/${pos.y}` as Id<Job>;
+    return jobId;
+  });
 
   /**
    * Creates an harvest job
    */
   public static CreateHarvestJob = FuncWrapper(function CreateHarvestJob(
     source: Source
-  ): boolean {
+  ): Job {
     const jobId = CreateJobHandler.GetHarvestJobId(source.pos);
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       source.room,
@@ -40,26 +39,26 @@ export default class CreateJobHandler {
       resourceType: RESOURCE_ENERGY,
       position: source.pos,
     };
-    JobHandler.AddJob(job);
-    return true;
+    JobHandler.SetJob(job, true);
+    return job;
   });
 
-    /**
+  /**
    * Returns Heal job id based on @param creepName
    */
-     public static GetHealJobId = FuncWrapper(function GetHealJobId(
-      creepName: string
-    ): Id<Job> {
-      const jobId: Id<Job> = `heal-${creepName}` as Id<Job>;
-      return jobId;
-    });
+  public static GetHealJobId = FuncWrapper(function GetHealJobId(
+    creepName: string
+  ): Id<Job> {
+    const jobId: Id<Job> = `heal-${creepName}` as Id<Job>;
+    return jobId;
+  });
 
   /**
    * Creates an heal job
    */
   public static CreateHealJob = FuncWrapper(function CreateHealJob(
     creep: Creep
-  ): boolean {
+  ): Job {
     const jobId: Id<Job> = CreateJobHandler.GetHealJobId(creep.name);
     const job: Job = {
       id: jobId,
@@ -74,19 +73,19 @@ export default class CreateJobHandler {
       hasPriority: false,
       position: creep.pos,
     };
-    JobHandler.AddJob(job);
-    return true;
+    JobHandler.SetJob(job, true);
+    return job;
   });
 
-    /**
+  /**
    * Returns Move job id based on @param roomName
    */
-     public static GetMoveJobId = FuncWrapper(function GetMoveJobId(
-      roomName: string
-    ): Id<Job> {
-      const jobId: Id<Job> = `move-25/25-${roomName}` as Id<Job>;
-      return jobId;
-    });
+  public static GetMoveJobId = FuncWrapper(function GetMoveJobId(
+    roomName: string
+  ): Id<Job> {
+    const jobId: Id<Job> = `move-25/25-${roomName}` as Id<Job>;
+    return jobId;
+  });
 
   /**
    * Creates an move job
@@ -94,7 +93,7 @@ export default class CreateJobHandler {
   public static CreateMoveJob = FuncWrapper(function CreateMoveJob(
     roomName: string,
     pos: RoomPosition = new RoomPosition(25, 25, roomName)
-  ): boolean {
+  ): Job {
     const jobId = CreateJobHandler.GetMoveJobId(roomName);
     const job: Job = {
       id: jobId,
@@ -109,17 +108,17 @@ export default class CreateJobHandler {
       hasPriority: false,
       position: pos,
     };
-    JobHandler.AddJob(job);
-    return true;
+    JobHandler.SetJob(job, true);
+    return job;
   });
 
   /**
-   * Returns Build job id based on @param structureType && @param pos
+   * Returns Build job id based on @param pos
    */
-   public static GetBuildJobId = FuncWrapper(function GetBuildJobId(
-    structureType: StructureConstant, pos: RoomPosition
+  public static GetBuildJobId = FuncWrapper(function GetBuildJobId(
+    pos: RoomPosition
   ): Id<Job> {
-    const jobId: Id<Job> =  `build-${pos.x}/${pos.y}-${structureType}` as Id<Job>;
+    const jobId: Id<Job> = `build-${pos.x}/${pos.y}` as Id<Job>;
     return jobId;
   });
 
@@ -131,14 +130,13 @@ export default class CreateJobHandler {
     pos: RoomPosition,
     structureType: StructureConstant,
     hasPriority = false
-  ): boolean {
-    const jobId: Id<Job> = CreateJobHandler.GetBuildJobId(structureType, pos);
+  ): Job {
+    const jobId: Id<Job> = CreateJobHandler.GetBuildJobId(pos);
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       room,
       pos,
       2
     );
-    const constructionCost = CONSTRUCTION_COST[structureType];
     const job: Job = {
       id: jobId,
       action: "build",
@@ -151,21 +149,22 @@ export default class CreateJobHandler {
       objId: "undefined" as Id<ConstructionSite>,
       hasPriority,
       position: pos,
-      energyRequired: constructionCost,
+      energyRequired: CONSTRUCTION_COST[structureType],
     };
-    JobHandler.AddJob(job);
-    return true;
+    JobHandler.SetJob(job, true);
+    return job;
   });
 
-    /**
-   * Returns Withdraw job id based on @param action && @param pos && @param structureType 
+  /**
+   * Returns Withdraw job id based on @param action && @param pos
    */
-     public static GetWithdrawJobId = FuncWrapper(function GetWithdrawJobId(
-      action: JobActionTypes, pos: RoomPosition, structureType: StructureConstant
-    ): Id<Job> {
-      const jobId: Id<Job> = `${action}-${pos.x}/${pos.y}-${structureType}` as Id<Job>;
-      return jobId;
-    });
+  public static GetWithdrawJobId = FuncWrapper(function GetWithdrawJobId(
+    action: JobActionTypes,
+    pos: RoomPosition
+  ): Id<Job> {
+    const jobId: Id<Job> = `${action}-${pos.x}/${pos.y}` as Id<Job>;
+    return jobId;
+  });
 
   /**
    * Creates an withdraw job
@@ -174,10 +173,10 @@ export default class CreateJobHandler {
     str: Structure,
     energyRequired: number,
     resourceType: ResourceConstant,
-    action: JobActionTypes = "withdraw",
+    action: JobActionTypes,
     hasPriority = false
-  ): boolean {
-    const jobId: Id<Job> = CreateJobHandler.GetWithdrawJobId(action, str.pos, str.structureType);
+  ): Job {
+    const jobId: Id<Job> = CreateJobHandler.GetWithdrawJobId(action, str.pos);
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       str.room,
       str.pos,
@@ -198,19 +197,21 @@ export default class CreateJobHandler {
       energyRequired,
       resourceType,
     };
-    JobHandler.AddJob(job);
-    return true;
+    JobHandler.SetJob(job, true);
+    return job;
   });
 
   /**
-   * Returns Transfer job id based on @param action && @param pos && @param structureType 
+   * Returns Transfer job id based on @param action && @param pos && @param resourceType
    */
-   public static GetTransferJobId = FuncWrapper(function GetTransferJobId(
-    action: JobActionTypes, pos: RoomPosition, structureType: StructureConstant
-    ): Id<Job> {
-      const jobId: Id<Job> = `${action}-${pos.x}/${pos.y}-${structureType}` as Id<Job>;
-      return jobId;
-    });
+  public static GetTransferJobId = FuncWrapper(function GetTransferJobId(
+    action: JobActionTypes,
+    pos: RoomPosition,
+    resourceType: ResourceConstant
+  ): Id<Job> {
+    const jobId: Id<Job> = `${action}-${pos.x}/${pos.y}-${resourceType}` as Id<Job>;
+    return jobId;
+  });
 
   /**
    * Creates an transfer job
@@ -219,10 +220,14 @@ export default class CreateJobHandler {
     str: Structure,
     energyRequired: number,
     resourceType: ResourceConstant,
-    hasPriority = false,
-    action: JobActionTypes = "transfer"
-  ): boolean {
-    const jobId: Id<Job> = CreateJobHandler.GetTransferJobId(action, str.pos, str.structureType);
+    action: JobActionTypes,
+    hasPriority = false
+  ): Job {
+    const jobId: Id<Job> = CreateJobHandler.GetTransferJobId(
+      action,
+      str.pos,
+      resourceType
+    );
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       str.room,
       str.pos,
@@ -243,14 +248,14 @@ export default class CreateJobHandler {
       energyRequired: energyRequired * -1,
       resourceType,
     };
-    JobHandler.AddJob(job);
-    return true;
+    JobHandler.SetJob(job, true);
+    return job;
   });
 
   /**
    * Returns Upgrade job id for @param room
    */
-   public static GetUpgradeJobId = FuncWrapper(function GetUpgradeJobId(
+  public static GetUpgradeJobId = FuncWrapper(function GetUpgradeJobId(
     pos: RoomPosition
   ): Id<Job> {
     const jobId: Id<Job> = `upgrade-${pos.x}/${pos.y}` as Id<Job>;
@@ -263,7 +268,7 @@ export default class CreateJobHandler {
   public static CreateUpgradeJob = FuncWrapper(function CreateUpgradeJob(
     controller: StructureController,
     hasPriority = false
-  ): boolean {
+  ): Job {
     const { pos } = controller;
     const jobId: Id<Job> = CreateJobHandler.GetUpgradeJobId(pos);
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
@@ -285,8 +290,8 @@ export default class CreateJobHandler {
       position: pos,
       energyRequired: 5000,
     };
-    JobHandler.AddJob(job);
-    return true;
+    JobHandler.SetJob(job, true);
+    return job;
   });
 
   /**
@@ -305,7 +310,7 @@ export default class CreateJobHandler {
   public static CreateRepairJob = FuncWrapper(function CreateRepairJob(
     str: Structure,
     hasPriority = false
-  ): void {
+  ): Job {
     const jobId = CreateJobHandler.GetRepairJobId(str);
     const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
       str.room,
@@ -326,6 +331,7 @@ export default class CreateJobHandler {
       position: str.pos,
       energyRequired: (str.hitsMax - str.hits) / 100,
     };
-    JobHandler.AddJob(job);
+    JobHandler.SetJob(job, true);
+    return job;
   });
 }

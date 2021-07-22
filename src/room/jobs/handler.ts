@@ -257,10 +257,10 @@ export default class JobHandler {
   public static GetJob = FuncWrapper(function GetJobById(
     jobId: Id<Job>,
     roomName: string
-  ): Job {
+  ): Job | null {
     const jobs = JobHandler.GetAllJobs(roomName);
     const job: Job | undefined = jobs.find((j: Job) => j.id === jobId);
-    return job as Job;
+    return job || null;
   });
 
   /**
@@ -283,6 +283,7 @@ export default class JobHandler {
     roomName: string
   ): boolean {
     const job = JobHandler.GetJob(jobId, roomName);
+    if (job === null) return false;
     const removedStructuresIds = remove(
       job.assignedStructuresIds,
       (strId: string) => strId === id
@@ -329,22 +330,27 @@ export default class JobHandler {
       } else {
         creepMemory.secondJobId = undefined;
       }
-
-      // UpdateCreepMemory(name, creepMem);
     });
     forEach(jobs[index].assignedStructuresIds, (strId: Id<Structure>) => {
       const structureMemory = StructureHelper.GetStructureMemory(strId);
       structureMemory.jobId = undefined;
-      // UpdateStructureMemory(strId, strMem);
     });
     remove(jobs, (j: Job) => j.id === id);
+    Memory.rooms[roomName].jobs.splice(index, 1);
     JobHandler.OverwriteJobList(roomName, jobs);
     return true;
   });
 
-  public static AddJob = FuncWrapper(function AddJob(job: Job): boolean {
-    const jobs = JobHandler.GetAllJobs(job.roomName);
-    jobs.push(job);
-    return true;
+  public static SetJob = FuncWrapper(function SetJob(
+    job: Job,
+    isNew: boolean
+  ): void {
+    if (isNew) {
+      Memory.rooms[job.roomName].jobs.push(job);
+    } else {
+      const jobs = JobHandler.GetAllJobs(job.roomName);
+      const index = jobs.findIndex((j) => j.id === job.id);
+      Memory.rooms[job.roomName].jobs[index] = job;
+    }
   });
 }

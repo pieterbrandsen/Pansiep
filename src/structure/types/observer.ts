@@ -10,7 +10,10 @@ export default FuncWrapper(function ExecuteObserver(
 ): void {
   if (
     StructureHelper.IsStructureDamaged(str) &&
-     JobHandler.GetJob(JobHandler.CreateJob.GetRepairJobId(str), str.room.name) === null
+    JobHandler.GetJob(
+      JobHandler.CreateJob.GetRepairJobId(str),
+      str.room.name
+    ) === null
   )
     JobHandler.CreateJob.CreateRepairJob(str);
 });

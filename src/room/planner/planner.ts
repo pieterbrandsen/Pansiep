@@ -14,7 +14,9 @@ export default class RoomPlannerHandler {
   public static PlanSources = FuncWrapper(function Sources(room: Room): void {
     const sources = RoomHelper.Reader.GetSources(room);
     forEach(sources, (source: Source) => {
-      const harvestJobId: Id<Job> = JobHandler.CreateJob.GetHarvestJobId(source.pos);
+      const harvestJobId: Id<Job> = JobHandler.CreateJob.GetHarvestJobId(
+        source.pos
+      );
       if (JobHandler.GetJob(harvestJobId, room.name) === null) {
         JobHandler.CreateJob.CreateHarvestJob(source);
       }

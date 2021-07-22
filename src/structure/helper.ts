@@ -1,6 +1,7 @@
 import RoomHelper from "../room/helper";
 import JobHandler from "../room/jobs/handler";
 import StructureConstants from "../utils/constants/structure";
+import UtilsHelper from "../utils/helper";
 import FuncWrapper from "../utils/wrapper";
 import ExecuteContainer from "./types/container";
 import ExecuteController from "./types/controller";
@@ -19,6 +20,15 @@ import ExecuteTowerHandler from "./types/tower";
 type OverFlowObject = { hasOverflow: boolean; overflowAmount: number };
 
 export default class StructureHelper {
+  /**
+   * Return structure object
+   */
+  public static GetStructure = FuncWrapper(function GetStructure(
+    id: Id<Structure>
+  ): Structure {
+    return UtilsHelper.GetObject(id) as Structure;
+  });
+
   /**
    * Send in an structure and return if the hit points is lower than the maximum.
    */
@@ -239,7 +249,8 @@ export default class StructureHelper {
           JobHandler.CreateJob.CreateTransferJob(
             str,
             isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY
+            RESOURCE_ENERGY,
+            "transfer"
           );
       } else if (sourcesInRange.length > 0) {
         let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
@@ -251,7 +262,8 @@ export default class StructureHelper {
           JobHandler.CreateJob.CreateWithdrawJob(
             str,
             isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY
+            RESOURCE_ENERGY,
+            "withdraw"
           );
         isStructureFullEnough = StructureHelper.IsStructureFullEnough(
           str,
@@ -263,8 +275,8 @@ export default class StructureHelper {
             str,
             isStructureFullEnough.overflowAmount,
             RESOURCE_ENERGY,
-            false,
-            "transferSource"
+            "transferSource",
+            false
           );
       } else {
         const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
@@ -276,7 +288,8 @@ export default class StructureHelper {
           JobHandler.CreateJob.CreateWithdrawJob(
             str,
             isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY
+            RESOURCE_ENERGY,
+            "withdraw"
           );
       }
     }
@@ -321,7 +334,8 @@ export default class StructureHelper {
           JobHandler.CreateJob.CreateWithdrawJob(
             str,
             isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY
+            RESOURCE_ENERGY,
+            "withdraw"
           );
         isStructureFullEnough = StructureHelper.IsStructureFullEnough(
           str,
@@ -333,8 +347,8 @@ export default class StructureHelper {
             str,
             isStructureFullEnough.overflowAmount,
             RESOURCE_ENERGY,
-            false,
-            "transferSource"
+            "transferSource",
+            false
           );
       } else {
         const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
@@ -346,7 +360,8 @@ export default class StructureHelper {
           JobHandler.CreateJob.CreateWithdrawJob(
             str,
             isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY
+            RESOURCE_ENERGY,
+            "withdraw"
           );
       }
     }
@@ -366,7 +381,8 @@ export default class StructureHelper {
         JobHandler.CreateJob.CreateWithdrawJob(
           str,
           isStructureFullEnough.overflowAmount,
-          RESOURCE_ENERGY
+          RESOURCE_ENERGY,
+          "withdraw"
         );
       isStructureFullEnough = StructureHelper.IsStructureFullEnough(
         str,
@@ -377,7 +393,8 @@ export default class StructureHelper {
         JobHandler.CreateJob.CreateTransferJob(
           str,
           isStructureFullEnough.overflowAmount,
-          RESOURCE_ENERGY
+          RESOURCE_ENERGY,
+          "transfer"
         );
     }
   );
@@ -396,7 +413,8 @@ export default class StructureHelper {
         JobHandler.CreateJob.CreateWithdrawJob(
           str,
           isStructureFullEnough.overflowAmount,
-          RESOURCE_ENERGY
+          RESOURCE_ENERGY,
+          "withdraw"
         );
       isStructureFullEnough = StructureHelper.IsStructureFullEnough(
         str,
@@ -408,6 +426,7 @@ export default class StructureHelper {
           str,
           isStructureFullEnough.overflowAmount,
           RESOURCE_ENERGY,
+          "transfer",
           true
         );
     }

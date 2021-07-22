@@ -77,17 +77,24 @@ export default class TowerHandler {
   ): void {
     if (
       StructureHelper.IsStructureDamaged(str) &&
-       JobHandler.GetJob(JobHandler.CreateJob.GetRepairJobId(str), str.room.name) === null
+      JobHandler.GetJob(
+        JobHandler.CreateJob.GetRepairJobId(str),
+        str.room.name
+      ) === null
     )
       JobHandler.CreateJob.CreateRepairJob(str);
     StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY, true);
 
     const structureMemory = StructureHelper.GetStructureMemory(str.id);
     if (structureMemory.jobId) {
-      const job: Job = JobHandler.GetJob(
+      const job = JobHandler.GetJob(
         structureMemory.jobId as Id<Job>,
         str.room.name
       );
+      if (job === null) {
+        TowerHandler.GetNewTowerJob(str);
+        return;
+      }
       switch (job.action) {
         case "attack":
           TowerHandler.ExecuteTowerAttack(str, job);
