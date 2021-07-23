@@ -483,13 +483,8 @@ export default class StructureHelper {
         (controller.room.controller as StructureController).ticksToDowngrade <
         10 * 1000
       ) {
-        const deletedJob = JobHandler.DeleteJob(
-          spendJobs[0].id,
-          controller.room.name
-        );
-        if (deletedJob) {
-          JobHandler.CreateJob.CreateUpgradeJob(controller, true);
-        }
+        JobHandler.DeleteJob(spendJobs[0].id, controller.room.name);
+        JobHandler.CreateJob.CreateUpgradeJob(controller, true);
       }
     }
   );

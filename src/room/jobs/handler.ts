@@ -4,7 +4,6 @@ import CreateJobHandler from "./create";
 import RoomHelper from "../helper";
 import CreepHelper from "../../creep/helper";
 import StructureHelper from "../../structure/helper";
-import UtilsHelper from "../../utils/helper";
 import RoomConstants from "../../utils/constants/room";
 
 export default class JobHandler {
@@ -22,16 +21,14 @@ export default class JobHandler {
         filterOnTypes ? filterOnTypes.includes(j.action) : true
       )
       .sort((a, b) => {
-        return Number(a.hasPriority) - Number(b.hasPriority);
+        return Number(b.hasPriority) - Number(a.hasPriority);
       });
     return jobs;
   });
 
   /**
    * Return all available jobs from @param room
-   *
    */
-
   public static GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
     roomName: string,
     requesterIsCreep: boolean,
@@ -55,14 +52,14 @@ export default class JobHandler {
     jobs: Job[],
     pos: RoomPosition
   ): Job {
-    jobs
-      .filter((job) => job.position)
-      .forEach((job: Job) => {
-        // eslint-disable-next-line
-        job.position = UtilsHelper.RehydratedRoomPosition(
-          job.position as RoomPosition
-        );
-      });
+    // jobs
+    // .filter((job) => job.position)
+    // .forEach((job: Job) => {
+    // eslint-disable-next-line
+        // job.position = UtilsHelper.RehydratedRoomPosition(
+    //   job.position as RoomPosition
+    // );
+    // });
 
     const closestJob: Job = first(
       jobs.sort(
@@ -103,7 +100,7 @@ export default class JobHandler {
     function AssignNewJobForStructure(
       str: Structure,
       filterOnTypes?: JobActionTypes[]
-    ): boolean {
+    ): Job | null {
       const strId: Id<Structure> = str.id;
       const strMem = StructureHelper.GetStructureMemory(strId);
       let jobs: Job[] = [];
@@ -128,12 +125,12 @@ export default class JobHandler {
         }
       }
 
-      if (jobs.length === 0) return false;
+      if (jobs.length === 0) return null;
 
       const closestJob = JobHandler.GetClosestJob(jobs, str.pos);
       closestJob.assignedStructuresIds.push(strId);
       strMem.jobId = closestJob.id;
-      return true;
+      return closestJob;
     }
   );
 
@@ -145,19 +142,28 @@ export default class JobHandler {
       creep: Creep,
       filterOnTypes?: JobActionTypes[],
       forcedJob?: Job
-    ): boolean {
+    ): Job | null {
       const creepMem = CreepHelper.GetCreepMemory(creep.name);
       if (forcedJob) {
         forcedJob.assignedCreepsNames.push(creep.name);
         creepMem.jobId = forcedJob.id;
-        return true;
+        return forcedJob;
       }
 
       if (creepMem.secondJobId) {
+        const memoryJob = JobHandler.GetJob(
+          creepMem.secondJobId,
+          creepMem.commandRoom
+        );
         if (creepMem.jobId !== creepMem.secondJobId) {
           JobHandler.SwitchCreepSavedJobIds(creepMem, true);
+        } else {
+          creepMem.secondJobId = undefined;
         }
-        return true;
+
+        if (memoryJob) {
+          return memoryJob;
+        }
       }
 
       let jobs: Job[] = [];
@@ -226,7 +232,7 @@ export default class JobHandler {
         }
       }
 
-      if (jobs.length === 0) return false;
+      if (jobs.length === 0) return null;
 
       const jobsGroupedByPrioritize: StringMap<Job[]> = {};
       let highestPriorityJobsNumber = 99;
@@ -247,7 +253,7 @@ export default class JobHandler {
       );
       closestJob.assignedCreepsNames.push(creep.name);
       creepMem.jobId = closestJob.id;
-      return true;
+      return closestJob;
     }
   );
 
@@ -269,9 +275,8 @@ export default class JobHandler {
   public static OverwriteJobList = FuncWrapper(function OverwriteJobList(
     roomName: string,
     jobs: Job[]
-  ): boolean {
+  ): void {
     Memory.rooms[roomName].jobs = jobs;
-    return true;
   });
 
   /**
@@ -298,7 +303,8 @@ export default class JobHandler {
       const creepMemory = CreepHelper.GetCreepMemory(id);
       if (creepMemory.jobId === jobId) {
         creepMemory.jobId = undefined;
-      } else if (creepMemory.secondJobId === jobId) {
+      }
+      if (creepMemory.secondJobId === jobId) {
         creepMemory.secondJobId = undefined;
       }
       // UpdateCreepMemory(id, creepMem);
@@ -320,14 +326,15 @@ export default class JobHandler {
   public static DeleteJob = FuncWrapper(function DeleteJobById(
     id: Id<Job>,
     roomName: string
-  ): boolean {
+  ): void {
     const jobs = JobHandler.GetAllJobs(roomName);
     const index = jobs.findIndex((j) => j.id === id);
     forEach(jobs[index].assignedCreepsNames, (name: string) => {
       const creepMemory = CreepHelper.GetCreepMemory(name);
       if (creepMemory.jobId === id) {
         creepMemory.jobId = undefined;
-      } else {
+      }
+      if (creepMemory.secondJobId === id) {
         creepMemory.secondJobId = undefined;
       }
     });
@@ -338,7 +345,6 @@ export default class JobHandler {
     remove(jobs, (j: Job) => j.id === id);
     Memory.rooms[roomName].jobs.splice(index, 1);
     JobHandler.OverwriteJobList(roomName, jobs);
-    return true;
   });
 
   public static SetJob = FuncWrapper(function SetJob(

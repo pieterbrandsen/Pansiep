@@ -78,6 +78,40 @@ export default class CreateJobHandler {
   });
 
   /**
+   * Returns Attack job id based on @param targetId
+   */
+  public static GetAttackJobId = FuncWrapper(function GetHealJobId(
+    targetId: string
+  ): Id<Job> {
+    const jobId: Id<Job> = `attack-${targetId}` as Id<Job>;
+    return jobId;
+  });
+
+  /**
+   * Creates an attack job
+   */
+  public static CreateAttackJob = FuncWrapper(function CreateAttackJob(
+    roomName: string,
+    targetId: Id<Creep | Structure>
+  ): Job {
+    const jobId: Id<Job> = CreateJobHandler.GetAttackJobId(targetId);
+    const job: Job = {
+      id: jobId,
+      action: "attack",
+      updateJobAtTick: Game.time + 50,
+      assignedCreepsNames: [],
+      maxCreeps: 2,
+      assignedStructuresIds: [],
+      maxStructures: 99,
+      roomName,
+      objId: targetId,
+      hasPriority: false,
+    };
+    JobHandler.SetJob(job, true);
+    return job;
+  });
+
+  /**
    * Returns Move job id based on @param roomName
    */
   public static GetMoveJobId = FuncWrapper(function GetMoveJobId(
@@ -92,7 +126,8 @@ export default class CreateJobHandler {
    */
   public static CreateMoveJob = FuncWrapper(function CreateMoveJob(
     roomName: string,
-    pos: RoomPosition = new RoomPosition(25, 25, roomName)
+    pos: RoomPosition = new RoomPosition(25, 25, roomName),
+    hasPriority = false
   ): Job {
     const jobId = CreateJobHandler.GetMoveJobId(roomName);
     const job: Job = {
@@ -105,7 +140,7 @@ export default class CreateJobHandler {
       maxStructures: 99,
       roomName,
       objId: "UNDEFINED" as Id<Structure>,
-      hasPriority: false,
+      hasPriority,
       position: pos,
     };
     JobHandler.SetJob(job, true);
@@ -330,6 +365,42 @@ export default class CreateJobHandler {
       hasPriority,
       position: str.pos,
       energyRequired: (str.hitsMax - str.hits) / 100,
+    };
+    JobHandler.SetJob(job, true);
+    return job;
+  });
+
+  /**
+   * Returns Claim job id for @param roomName
+   */
+  public static GetClaimJobId = FuncWrapper(function GetClaimJobId(
+    roomName: string
+  ): Id<Job> {
+    const jobId: Id<Job> = `claim-${roomName}` as Id<Job>;
+    return jobId;
+  });
+
+  /**
+   * Creates an claim job
+   */
+  public static CreateClaimJob = FuncWrapper(function CreateClaimJob(
+    room: Room,
+    controller: StructureController,
+    hasPriority = false
+  ): Job {
+    const jobId = CreateJobHandler.GetClaimJobId(room.name);
+    const job: Job = {
+      id: jobId,
+      action: "claim",
+      updateJobAtTick: Game.time + 500,
+      assignedCreepsNames: [],
+      maxCreeps: 2,
+      assignedStructuresIds: [],
+      maxStructures: 0,
+      roomName: room.name,
+      objId: controller.id,
+      hasPriority,
+      position: controller.pos,
     };
     JobHandler.SetJob(job, true);
     return job;
