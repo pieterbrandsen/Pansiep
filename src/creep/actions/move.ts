@@ -1,19 +1,19 @@
-import FuncWrapper from "../../utils/wrapper";
 import JobHandler from "../../room/jobs/handler";
 import UtilsHelper from "../../utils/helper";
+import WrapperHandler from "../../utils/wrapper";
 
-// export const GetPath = FuncWrapper(function GetPath(creep:Creep,targetPos:RoomPosition): FunctionReturn {
+// export const GetPath = WrapperHandler.FuncWrapper(function GetPath(creep:Creep,targetPos:RoomPosition): FunctionReturn {
 //   const path = creep.pos.findPathTo(targetPos);
 //   return FunctionReturnHelper(FunctionReturnCodes.OK,path);
 // })
 
 // eslint-disable-next-line
-export default FuncWrapper(function ExecuteMove(
+export default WrapperHandler.FuncWrapper(function ExecuteMove(
   creep: Creep,
   job: Job
 ): void {
   const targetPos: RoomPosition = job.position
-    ? UtilsHelper.RehydratedRoomPosition(job.position)
+    ? UtilsHelper.RehydrateRoomPosition(job.position)
     : new RoomPosition(25, 25, job.roomName);
 
   switch (

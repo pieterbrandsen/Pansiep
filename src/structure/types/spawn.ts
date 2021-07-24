@@ -3,11 +3,11 @@ import CreepHelper from "../../creep/helper";
 import RoomHelper from "../../room/helper";
 import JobHandler from "../../room/jobs/handler";
 import LogHandler from "../../utils/logger";
-import FuncWrapper from "../../utils/wrapper";
 import MemoryInitializationHandler from "../../memory/initialization";
 import RoomConstants from "../../utils/constants/room";
 import GlobalConstants from "../../utils/constants/global";
 import StructureHelper from "../helper";
+import WrapperHandler from "../../utils/wrapper";
 
 type JobActionObj = { usableCreeps: number; wantedCreeps: number };
 
@@ -15,7 +15,7 @@ export default class SpawnHandler {
   /**
    * Get job actions array that are not at max creeps.
    */
-  private static GetJobActionsWithCreepNeed = FuncWrapper(
+  private static GetJobActionsWithCreepNeed = WrapperHandler.FuncWrapper(
     function GetJobActionsWithCreepNeed(
       roomName: string,
       usePriorityJobs: boolean
@@ -88,84 +88,87 @@ export default class SpawnHandler {
   /**
    * Return job type that needs to be fulfilled next spawn.
    */
-  private static GetNextCreepType = FuncWrapper(function GetNextCreepType(
-    roomName: string,
-    usePriorityJobs = false
-  ): CreepTypes | undefined {
-    const room = RoomHelper.GetRoom(roomName);
-    if (
-      room &&
-      (room.energyCapacityAvailable <= 300 ||
-        (room.energyCapacityAvailable / 4 > room.energyAvailable &&
-          room.energyCapacityAvailable > 300))
-    ) {
-      return CreepHelper.GetAllCreepsMemory(roomName, ["pioneer"]).length <
-        RoomConstants.MaxCreepsPerCreepType * 1.5
-        ? "pioneer"
-        : undefined;
-    }
-
-    const possibleJobActionTypes = SpawnHandler.GetJobActionsWithCreepNeed(
-      roomName,
-      usePriorityJobs
-    );
-    const possibleCreepTypes: CreepTypes[] = [];
-    forEach(possibleJobActionTypes, (key: JobActionTypes) => {
-      switch (key) {
-        case "move":
-          possibleCreepTypes.push("move");
-          break;
-        case "transfer":
-        case "withdraw":
-          possibleCreepTypes.push("transferring");
-          break;
-        case "harvest":
-        case "build":
-        case "repair":
-        case "dismantle":
-        case "upgrade":
-          possibleCreepTypes.push("work");
-          break;
-        case "attack":
-          possibleCreepTypes.push("attack");
-          break;
-        case "claim":
-          possibleCreepTypes.push("claim");
-          break;
-        case "heal":
-          possibleCreepTypes.push("heal");
-          break;
-        default:
-          break;
+  private static GetNextCreepType = WrapperHandler.FuncWrapper(
+    function GetNextCreepType(
+      roomName: string,
+      usePriorityJobs = false
+    ): CreepTypes | undefined {
+      const room = RoomHelper.GetRoom(roomName);
+      if (
+        room &&
+        (room.energyCapacityAvailable <= 300 ||
+          (room.energyCapacityAvailable / 4 > room.energyAvailable &&
+            room.energyCapacityAvailable > 300))
+      ) {
+        return CreepHelper.GetAllCreepsMemory(roomName, ["pioneer"]).length <
+          RoomConstants.MaxCreepsPerCreepType * 1.5
+          ? "pioneer"
+          : undefined;
       }
-    });
 
-    if (possibleCreepTypes.length === 0) return undefined;
+      const possibleJobActionTypes = SpawnHandler.GetJobActionsWithCreepNeed(
+        roomName,
+        usePriorityJobs
+      );
+      const possibleCreepTypes: CreepTypes[] = [];
+      forEach(possibleJobActionTypes, (key: JobActionTypes) => {
+        switch (key) {
+          case "move":
+            possibleCreepTypes.push("move");
+            break;
+          case "transfer":
+          case "withdraw":
+            possibleCreepTypes.push("transferring");
+            break;
+          case "harvest":
+          case "build":
+          case "repair":
+          case "dismantle":
+          case "upgrade":
+            possibleCreepTypes.push("work");
+            break;
+          case "attack":
+            possibleCreepTypes.push("attack");
+            break;
+          case "claim":
+            possibleCreepTypes.push("claim");
+            break;
+          case "heal":
+            possibleCreepTypes.push("heal");
+            break;
+          default:
+            break;
+        }
+      });
 
-    if (possibleCreepTypes.includes("work")) return "work";
-    if (possibleCreepTypes.includes("transferring")) return "transferring";
-    if (possibleCreepTypes.includes("attack")) return "attack";
-    if (possibleCreepTypes.includes("heal")) return "heal";
-    if (possibleCreepTypes.includes("move")) return "move";
-    if (possibleCreepTypes.includes("claim")) return "claim";
-    return undefined;
-  });
+      if (possibleCreepTypes.length === 0) return undefined;
+
+      if (possibleCreepTypes.includes("work")) return "work";
+      if (possibleCreepTypes.includes("transferring")) return "transferring";
+      if (possibleCreepTypes.includes("attack")) return "attack";
+      if (possibleCreepTypes.includes("heal")) return "heal";
+      if (possibleCreepTypes.includes("move")) return "move";
+      if (possibleCreepTypes.includes("claim")) return "claim";
+      return undefined;
+    }
+  );
 
   /**
    * Get unique creepName that is not yet defined in creep memory
    */
-  private static GetUniqueName = FuncWrapper(function GetUniqueName(
-    creepType: CreepTypes
-  ): string {
-    const currentNames = Object.keys(Memory.creeps);
-    const getName = () => `${creepType}-${Math.floor(Math.random() * 100001)}`;
+  private static GetUniqueName = WrapperHandler.FuncWrapper(
+    function GetUniqueName(creepType: CreepTypes): string {
+      const currentNames = Object.keys(Memory.creeps);
+      const getName = () =>
+        `${creepType}-${Math.floor(Math.random() * 100001)}`;
 
-    let name: string | undefined;
-    do name = getName();
-    while (currentNames.includes(name));
+      let name: string | undefined;
+      do name = getName();
+      while (currentNames.includes(name));
 
-    return name;
-  });
+      return name;
+    }
+  );
 
   /**
    * Calculate cost of complete body part by part.
@@ -180,94 +183,98 @@ export default class SpawnHandler {
   /**
    * Generate body array based on starting body and body iterations.
    */
-  private static GenerateBody = FuncWrapper(function GenerateBody(
-    parts: BodyPartConstant[],
-    bodyIteration: BodyPartConstant[],
-    energyAvailable: number,
-    maxLoopCount = 50
-  ): BodyPartConstant[] {
-    let body: BodyPartConstant[] = parts;
-    let i = 0;
+  private static GenerateBody = WrapperHandler.FuncWrapper(
+    function GenerateBody(
+      parts: BodyPartConstant[],
+      bodyIteration: BodyPartConstant[],
+      energyAvailable: number,
+      maxLoopCount = 50
+    ): BodyPartConstant[] {
+      let body: BodyPartConstant[] = parts;
+      let i = 0;
 
-    while (
-      SpawnHandler.CalcBodyCost(body) +
-        SpawnHandler.CalcBodyCost(bodyIteration) <=
-        energyAvailable &&
-      body.length + bodyIteration.length <= MAX_CREEP_SIZE &&
-      i < maxLoopCount
-    ) {
-      body = body.concat(bodyIteration);
-      i += 1;
+      while (
+        SpawnHandler.CalcBodyCost(body) +
+          SpawnHandler.CalcBodyCost(bodyIteration) <=
+          energyAvailable &&
+        body.length + bodyIteration.length <= MAX_CREEP_SIZE &&
+        i < maxLoopCount
+      ) {
+        body = body.concat(bodyIteration);
+        i += 1;
+      }
+
+      if (body.length === parts.length) body = [];
+
+      return body;
     }
-
-    if (body.length === parts.length) body = [];
-
-    return body;
-  });
+  );
 
   /**
    * Return a list of body parts that will be used to spawn inputted creep type
    */
-  private static GetBodyParts = FuncWrapper(function GetBodyParts(
-    creepType: CreepTypes,
-    room: Room
-  ): { parts: BodyPartConstant[]; bodyCost: number } {
-    let body: BodyPartConstant[] = [];
+  private static GetBodyParts = WrapperHandler.FuncWrapper(
+    function GetBodyParts(
+      creepType: CreepTypes,
+      room: Room
+    ): { parts: BodyPartConstant[]; bodyCost: number } {
+      let body: BodyPartConstant[] = [];
 
-    switch (creepType) {
-      case "attack":
-        body = SpawnHandler.GenerateBody(
-          [],
-          [TOUGH, MOVE, MOVE, ATTACK],
-          room.energyAvailable
-        );
-        break;
-      case "claim":
-        body = SpawnHandler.GenerateBody(
-          [],
-          [MOVE, MOVE, CLAIM],
-          room.energyAvailable
-        );
-        break;
-      case "heal":
-        body = SpawnHandler.GenerateBody(
-          [],
-          [MOVE, HEAL],
-          room.energyAvailable
-        );
-        break;
-      case "move":
-        body = SpawnHandler.GenerateBody([], [MOVE], room.energyAvailable, 2);
-        break;
-      case "transferring":
-        body = SpawnHandler.GenerateBody(
-          [],
-          [MOVE, CARRY, CARRY],
-          room.energyAvailable
-        );
-        break;
-      case "pioneer":
-      case "work":
-        body = SpawnHandler.GenerateBody(
-          [],
-          [MOVE, WORK, CARRY],
-          room.energyAvailable
-        );
-        break;
-      default:
-        break;
+      switch (creepType) {
+        case "attack":
+          body = SpawnHandler.GenerateBody(
+            [],
+            [TOUGH, MOVE, MOVE, ATTACK],
+            room.energyAvailable
+          );
+          break;
+        case "claim":
+          body = SpawnHandler.GenerateBody(
+            [],
+            [MOVE, MOVE, CLAIM],
+            room.energyAvailable
+          );
+          break;
+        case "heal":
+          body = SpawnHandler.GenerateBody(
+            [],
+            [MOVE, HEAL],
+            room.energyAvailable
+          );
+          break;
+        case "move":
+          body = SpawnHandler.GenerateBody([], [MOVE], room.energyAvailable, 2);
+          break;
+        case "transferring":
+          body = SpawnHandler.GenerateBody(
+            [],
+            [MOVE, CARRY, CARRY],
+            room.energyAvailable
+          );
+          break;
+        case "pioneer":
+        case "work":
+          body = SpawnHandler.GenerateBody(
+            [],
+            [MOVE, WORK, CARRY],
+            room.energyAvailable
+          );
+          break;
+        default:
+          break;
+      }
+
+      return {
+        parts: body,
+        bodyCost: SpawnHandler.CalcBodyCost(body),
+      };
     }
-
-    return {
-      parts: body,
-      bodyCost: SpawnHandler.CalcBodyCost(body),
-    };
-  });
+  );
 
   /**
    * Try to spawn creep from queue or a next creep type.
    */
-  private static SpawnCreep = FuncWrapper(function SpawnCreep(
+  private static SpawnCreep = WrapperHandler.FuncWrapper(function SpawnCreep(
     spawn: StructureSpawn
   ): boolean {
     const roomName: string = spawn.room.name;
@@ -329,19 +336,19 @@ export default class SpawnHandler {
   /**
    * Check if spawn is busy otherwise try to spawn an creep.
    */
-  private static TryToSpawnCreep = FuncWrapper(function TryToSpawnCreep(
-    spawn: StructureSpawn
-  ): boolean {
-    if (spawn.spawning) return false;
+  private static TryToSpawnCreep = WrapperHandler.FuncWrapper(
+    function TryToSpawnCreep(spawn: StructureSpawn): boolean {
+      if (spawn.spawning) return false;
 
-    SpawnHandler.SpawnCreep(spawn);
-    return true;
-  });
+      SpawnHandler.SpawnCreep(spawn);
+      return true;
+    }
+  );
 
   /**
    * Execute an spawn
    */
-  public static ExecuteSpawn = FuncWrapper(function ExecuteSpawn(
+  public static ExecuteSpawn = WrapperHandler.FuncWrapper(function ExecuteSpawn(
     str: StructureSpawn
   ): void {
     if (

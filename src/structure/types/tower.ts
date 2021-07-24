@@ -1,78 +1,76 @@
 import JobHandler from "../../room/jobs/handler";
 import UtilsHelper from "../../utils/helper";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import StructureHelper from "../helper";
 
 export default class TowerHandler {
   /**
    * Execute an attack job for a tower
    */
-  private static ExecuteTowerAttack = FuncWrapper(function ExecuteTowerAttack(
-    str: StructureTower,
-    job: Job
-  ): void {
-    const creep = UtilsHelper.GetObject(job.objId) as Creep;
+  private static ExecuteTowerAttack = WrapperHandler.FuncWrapper(
+    function ExecuteTowerAttack(str: StructureTower, job: Job): void {
+      const creep = UtilsHelper.GetObject(job.objId) as Creep;
 
-    switch (str.attack(creep)) {
-      case ERR_INVALID_TARGET:
-        JobHandler.DeleteJob(job.id, str.room.name);
-        break;
-      default:
-        break;
+      switch (str.attack(creep)) {
+        case ERR_INVALID_TARGET:
+          JobHandler.DeleteJob(job.id, str.room.name);
+          break;
+        default:
+          break;
+      }
     }
-  });
+  );
 
   /**
    * Execute an heal job for a tower
    */
-  private static ExecuteTowerHeal = FuncWrapper(function ExecuteTowerHeal(
-    str: StructureTower,
-    job: Job
-  ): void {
-    const creep = UtilsHelper.GetObject(job.objId) as Creep;
+  private static ExecuteTowerHeal = WrapperHandler.FuncWrapper(
+    function ExecuteTowerHeal(str: StructureTower, job: Job): void {
+      const creep = UtilsHelper.GetObject(job.objId) as Creep;
 
-    switch (str.heal(creep)) {
-      case ERR_INVALID_TARGET:
-        JobHandler.DeleteJob(job.id, str.room.name);
-        break;
-      default:
-        break;
+      switch (str.heal(creep)) {
+        case ERR_INVALID_TARGET:
+          JobHandler.DeleteJob(job.id, str.room.name);
+          break;
+        default:
+          break;
+      }
     }
-  });
+  );
 
   /**
    * Execute an repair job for a tower
    */
-  private static ExecuteTowerRepair = FuncWrapper(function ExecuteTowerRepair(
-    str: StructureTower,
-    job: Job
-  ): void {
-    const targetStructure = UtilsHelper.GetObject(job.objId) as Structure;
+  private static ExecuteTowerRepair = WrapperHandler.FuncWrapper(
+    function ExecuteTowerRepair(str: StructureTower, job: Job): void {
+      const targetStructure = UtilsHelper.GetObject(job.objId) as Structure;
 
-    if (!StructureHelper.IsStructureDamaged(targetStructure)) {
-      JobHandler.DeleteJob(job.id, job.roomName);
-      return;
+      if (!StructureHelper.IsStructureDamaged(targetStructure)) {
+        JobHandler.DeleteJob(job.id, job.roomName);
+        return;
+      }
+
+      switch (str.repair(targetStructure)) {
+        case ERR_INVALID_TARGET:
+          JobHandler.DeleteJob(job.id, str.room.name);
+          break;
+        default:
+          break;
+      }
     }
+  );
 
-    switch (str.repair(targetStructure)) {
-      case ERR_INVALID_TARGET:
-        JobHandler.DeleteJob(job.id, str.room.name);
-        break;
-      default:
-        break;
+  private static GetNewTowerJob = WrapperHandler.FuncWrapper(
+    function GetNewTowerJob(str: StructureTower): void {
+      JobHandler.AssignNewJobForStructure(str);
     }
-  });
-
-  private static GetNewTowerJob = FuncWrapper(function GetNewTowerJob(
-    str: StructureTower
-  ): void {
-    JobHandler.AssignNewJobForStructure(str);
-  });
+  );
 
   /**
    * Execute an tower
    */
-  public static ExecuteTower = FuncWrapper(function ExecuteTower(
+  public static ExecuteTower = WrapperHandler.FuncWrapper(function ExecuteTower(
     str: StructureTower
   ): void {
     if (

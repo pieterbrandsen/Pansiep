@@ -2,7 +2,8 @@ import { forEach, intersectionWith, isUndefined, sortBy } from "lodash";
 import StructureHelper from "../../structure/helper";
 import RoomConstants from "../../utils/constants/room";
 import UtilsHelper from "../../utils/helper";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import RoomHelper from "../helper";
 import JobHandler from "../jobs/handler";
 import RoomPartGeneratorHandler from "./partGenerators";
@@ -11,7 +12,9 @@ export default class RoomPlannerHandler {
   /**
    * Checks if source is missing energy structure, if this is true then try to build an link if the controller level is high enough otherwise an container.
    */
-  public static PlanSources = FuncWrapper(function Sources(room: Room): void {
+  public static PlanSources = WrapperHandler.FuncWrapper(function Sources(
+    room: Room
+  ): void {
     const sources = RoomHelper.Reader.GetSources(room);
     forEach(sources, (source: Source) => {
       const harvestJobId: Id<Job> = JobHandler.CreateJob.GetHarvestJobId(
@@ -48,7 +51,7 @@ export default class RoomPlannerHandler {
   /**
    * Checks if controller is missing energy structure, if this is true then try to build an link if the controller level is high enough otherwise an container.
    */
-  public static PlanController = FuncWrapper(function Controller(
+  public static PlanController = WrapperHandler.FuncWrapper(function Controller(
     room: Room
   ): void {
     if (isUndefined(room.controller) || room.controller.level === 1) {
@@ -78,7 +81,7 @@ export default class RoomPlannerHandler {
   /**
    * Return an boolean indicating if the inputted positions will fit in the currently placed base
    */
-  public static DoesPositionsOfBaseFit = FuncWrapper(
+  public static DoesPositionsOfBaseFit = WrapperHandler.FuncWrapper(
     function DoesPositionsOfBaseFit(
       room: Room,
       positions: RoomPosition[],
@@ -116,7 +119,7 @@ export default class RoomPlannerHandler {
   /**
    * Return room position array where parts can be placed around this position
    */
-  public static GetSurroundingRoomPositions = FuncWrapper(
+  public static GetSurroundingRoomPositions = WrapperHandler.FuncWrapper(
     function GetSurroundingRoomPositions(
       pos: RoomPosition,
       height: number,
@@ -160,7 +163,7 @@ export default class RoomPlannerHandler {
   /**
    * Return all positions in diagonal direction.
    */
-  public static GetDiagonalExtensionRoomPositions = FuncWrapper(
+  public static GetDiagonalExtensionRoomPositions = WrapperHandler.FuncWrapper(
     function GetDiagonalExtensionRoomPositions(
       pos: RoomPosition,
       height: number,
@@ -179,7 +182,7 @@ export default class RoomPlannerHandler {
   /**
    * Sets hearth, labs and hearth part in memory
    */
-  public static GetCompleteBasePlanned = FuncWrapper(
+  public static GetCompleteBasePlanned = WrapperHandler.FuncWrapper(
     function GetCompleteBasePlanned(room: Room): void {
       const freePositions = RoomHelper.Reader.GetTerrainInRange(
         new RoomPosition(25, 25, room.name),
@@ -329,7 +332,7 @@ export default class RoomPlannerHandler {
   /**
    * Build base parts what needs to be build
    */
-  public static GetBaseBuild = FuncWrapper(function GetBaseBuild(
+  public static GetBaseBuild = WrapperHandler.FuncWrapper(function GetBaseBuild(
     room: Room
   ): void {
     const mem = RoomHelper.GetRoomMemory(room.name);
@@ -372,21 +375,21 @@ export default class RoomPlannerHandler {
   /**
    * If the base is planned, build the base to current max stage
    */
-  public static ExecuteBasePlanner = FuncWrapper(function ExecuteRoomPlanner(
-    room: Room
-  ): void {
-    const mem = RoomHelper.GetRoomMemory(room.name);
+  public static ExecuteBasePlanner = WrapperHandler.FuncWrapper(
+    function ExecuteRoomPlanner(room: Room): void {
+      const mem = RoomHelper.GetRoomMemory(room.name);
 
-    if (isUndefined(mem.base)) {
-      RoomPlannerHandler.GetCompleteBasePlanned(room);
+      if (isUndefined(mem.base)) {
+        RoomPlannerHandler.GetCompleteBasePlanned(room);
+      }
+      RoomPlannerHandler.GetBaseBuild(room);
     }
-    RoomPlannerHandler.GetBaseBuild(room);
-  });
+  );
 
   /**
    * Execute room planner, if its supposed too it executes it.
    */
-  public static TryToExecuteRoomPlanner = FuncWrapper(
+  public static TryToExecuteRoomPlanner = WrapperHandler.FuncWrapper(
     function TryToExecuteRoomPlanner(room: Room, forceExecute = false): void {
       if (
         UtilsHelper.ExecuteEachTick(

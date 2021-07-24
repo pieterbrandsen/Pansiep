@@ -2,7 +2,7 @@ import RoomHelper from "../room/helper";
 import JobHandler from "../room/jobs/handler";
 import StructureConstants from "../utils/constants/structure";
 import UtilsHelper from "../utils/helper";
-import FuncWrapper from "../utils/wrapper";
+import WrapperHandler from "../utils/wrapper";
 import ExecuteContainer from "./types/container";
 import ExecuteController from "./types/controller";
 import ExecuteExtension from "./types/extension";
@@ -23,7 +23,7 @@ export default class StructureHelper {
   /**
    * Return structure object
    */
-  public static GetStructure = FuncWrapper(function GetStructure(
+  public static GetStructure = WrapperHandler.FuncWrapper(function GetStructure(
     id: Id<Structure>
   ): Structure {
     return UtilsHelper.GetObject(id) as Structure;
@@ -32,16 +32,16 @@ export default class StructureHelper {
   /**
    * Send in an structure and return if the hit points is lower than the maximum.
    */
-  public static IsStructureDamaged = FuncWrapper(function IsStructureDamaged(
-    str: Structure
-  ): boolean {
-    return str.hits < str.hitsMax;
-  });
+  public static IsStructureDamaged = WrapperHandler.FuncWrapper(
+    function IsStructureDamaged(str: Structure): boolean {
+      return str.hits < str.hitsMax;
+    }
+  );
 
   /**
    * Return structure capacity.
    */
-  public static GetCapacity = FuncWrapper(function GetCapacity(
+  public static GetCapacity = WrapperHandler.FuncWrapper(function GetCapacity(
     str: Structure,
     resourceType: ResourceConstant
   ): number {
@@ -52,33 +52,37 @@ export default class StructureHelper {
   /**
    * Return structure free capacity.
    */
-  public static GetFreeCapacity = FuncWrapper(function GetFreeCapacity(
-    str: Structure,
-    resourceType: ResourceConstant
-  ): number {
-    const freeCapacity = (str as StructureStorage).store.getFreeCapacity(
-      resourceType
-    );
-    return freeCapacity;
-  });
+  public static GetFreeCapacity = WrapperHandler.FuncWrapper(
+    function GetFreeCapacity(
+      str: Structure,
+      resourceType: ResourceConstant
+    ): number {
+      const freeCapacity = (str as StructureStorage).store.getFreeCapacity(
+        resourceType
+      );
+      return freeCapacity;
+    }
+  );
 
   /**
    * Return structure used capacity.
    */
-  public static GetUsedCapacity = FuncWrapper(function GetUsedCapacity(
-    str: Structure,
-    resourceType: ResourceConstant
-  ): number {
-    const usedCapacity = (str as StructureStorage).store.getUsedCapacity(
-      resourceType
-    );
-    return usedCapacity;
-  });
+  public static GetUsedCapacity = WrapperHandler.FuncWrapper(
+    function GetUsedCapacity(
+      str: Structure,
+      resourceType: ResourceConstant
+    ): number {
+      const usedCapacity = (str as StructureStorage).store.getUsedCapacity(
+        resourceType
+      );
+      return usedCapacity;
+    }
+  );
 
   /**
    * Return if the used capacity is higher inputted {requiredPercentageFull}.
    */
-  public static IsStructureFullEnough = FuncWrapper(
+  public static IsStructureFullEnough = WrapperHandler.FuncWrapper(
     function IsStructureFullEnough(
       str: Structure,
       requiredPercentageFull: number,
@@ -103,7 +107,7 @@ export default class StructureHelper {
   // /**
   //  * Update structure memory with inputted memory object. If no memory object is present, a new one will be created.
   //  */
-  // public static UpdateStructureMemory = FuncWrapper(function UpdateStructureMemory(
+  // public static UpdateStructureMemory = WrapperHandler.FuncWrapper(function UpdateStructureMemory(
   //   id: Id<Structure>,
   //   mem: StructureMemory
   // ) {
@@ -114,105 +118,107 @@ export default class StructureHelper {
   /**
    * Get copy of the structure memory your trying to find. If it is not found it returns an NotFound code.
    */
-  public static GetStructureMemory = FuncWrapper(function GetStructureMemory(
-    id: Id<Structure>
-  ): StructureMemory {
-    const strMem: StructureMemory = Memory.structures[id];
-    return strMem;
-  });
+  public static GetStructureMemory = WrapperHandler.FuncWrapper(
+    function GetStructureMemory(id: Id<Structure>): StructureMemory {
+      const strMem: StructureMemory = Memory.structures[id];
+      return strMem;
+    }
+  );
 
   /**
    * Get copy of all the structure memory id's of the roomName. If it is not found it returns an NotFound code.
    */
-  public static GetAllStructureIds = FuncWrapper(function GetAllStructureIds(
-    roomName: string
-  ): Id<Structure>[] {
-    const structureIds: string[] = Memory.cache.structures.data[roomName]
-      ? Memory.cache.structures.data[roomName].map((c) => c.id)
-      : [];
+  public static GetAllStructureIds = WrapperHandler.FuncWrapper(
+    function GetAllStructureIds(roomName: string): Id<Structure>[] {
+      const structureIds: string[] = Memory.cache.structures.data[roomName]
+        ? Memory.cache.structures.data[roomName].map((c) => c.id)
+        : [];
 
-    return structureIds as Id<Structure>[];
-  });
+      return structureIds as Id<Structure>[];
+    }
+  );
 
   /**
    * Build a structure in room and create build job.
    */
-  public static BuildStructure = FuncWrapper(function BuildStructure(
-    room: Room,
-    pos: RoomPosition,
-    structureType: StructureConstant,
-    hasPriority = false
-  ): boolean {
-    switch (room.createConstructionSite(pos, structureType)) {
-      case OK:
-        JobHandler.CreateJob.CreateBuildJob(
-          room,
-          pos,
-          structureType,
-          hasPriority
-        );
-        return true;
-      default:
-        break;
+  public static BuildStructure = WrapperHandler.FuncWrapper(
+    function BuildStructure(
+      room: Room,
+      pos: RoomPosition,
+      structureType: StructureConstant,
+      hasPriority = false
+    ): boolean {
+      switch (room.createConstructionSite(pos, structureType)) {
+        case OK:
+          JobHandler.CreateJob.CreateBuildJob(
+            room,
+            pos,
+            structureType,
+            hasPriority
+          );
+          return true;
+        default:
+          break;
+      }
+      return false;
     }
-    return false;
-  });
+  );
 
   /**
    * Run the structure, this function will run the correct structureType.
    */
-  public static ExecuteStructure = FuncWrapper(function ExecuteStructure(
-    str: Structure
-  ): void {
-    switch (str.structureType) {
-      case STRUCTURE_CONTAINER:
-        ExecuteContainer(str as StructureContainer);
-        break;
-      case STRUCTURE_CONTROLLER:
-        ExecuteController(str as StructureController);
-        break;
-      case STRUCTURE_EXTENSION:
-        ExecuteExtension(str as StructureExtension);
-        break;
-      case STRUCTURE_FACTORY:
-        ExecuteFactory(str as StructureFactory);
-        break;
-      case STRUCTURE_LAB:
-        ExecuteLab(str as StructureLab);
-        break;
-      case STRUCTURE_LINK:
-        ExecuteLink(str as StructureLink);
-        break;
-      case STRUCTURE_NUKER:
-        ExecuteNuker(str as StructureNuker);
-        break;
-      case STRUCTURE_OBSERVER:
-        ExecuteObserver(str as StructureObserver);
-        break;
-      case STRUCTURE_SPAWN:
-        ExecuteSpawnHandler.ExecuteSpawn(str as StructureSpawn);
-        break;
-      case STRUCTURE_STORAGE:
-        ExecuteStorage(str as StructureStorage);
-        break;
-      case STRUCTURE_TERMINAL:
-        ExecuteTerminal(str as StructureTerminal);
-        break;
-      case STRUCTURE_TOWER:
-        ExecuteTowerHandler.ExecuteTower(str as StructureTower);
-        break;
-      case STRUCTURE_ROAD:
-        ExecuteRoad(str as StructureRoad);
-        break;
-      default:
-        break;
+  public static ExecuteStructure = WrapperHandler.FuncWrapper(
+    function ExecuteStructure(str: Structure): void {
+      switch (str.structureType) {
+        case STRUCTURE_CONTAINER:
+          ExecuteContainer(str as StructureContainer);
+          break;
+        case STRUCTURE_CONTROLLER:
+          ExecuteController(str as StructureController);
+          break;
+        case STRUCTURE_EXTENSION:
+          ExecuteExtension(str as StructureExtension);
+          break;
+        case STRUCTURE_FACTORY:
+          ExecuteFactory(str as StructureFactory);
+          break;
+        case STRUCTURE_LAB:
+          ExecuteLab(str as StructureLab);
+          break;
+        case STRUCTURE_LINK:
+          ExecuteLink(str as StructureLink);
+          break;
+        case STRUCTURE_NUKER:
+          ExecuteNuker(str as StructureNuker);
+          break;
+        case STRUCTURE_OBSERVER:
+          ExecuteObserver(str as StructureObserver);
+          break;
+        case STRUCTURE_SPAWN:
+          ExecuteSpawnHandler.ExecuteSpawn(str as StructureSpawn);
+          break;
+        case STRUCTURE_STORAGE:
+          ExecuteStorage(str as StructureStorage);
+          break;
+        case STRUCTURE_TERMINAL:
+          ExecuteTerminal(str as StructureTerminal);
+          break;
+        case STRUCTURE_TOWER:
+          ExecuteTowerHandler.ExecuteTower(str as StructureTower);
+          break;
+        case STRUCTURE_ROAD:
+          ExecuteRoad(str as StructureRoad);
+          break;
+        default:
+          break;
+      }
     }
-  });
+  );
 
   /**
    * Control if an container need to be filled/withdraw from
    */
-  public static ControlStorageOfContainer = FuncWrapper(
+  public static ControlStorageOfContainer = WrapperHandler.FuncWrapper(
     function ControlStorageOfContainer(str: StructureContainer): void {
       const sourcesInRange = RoomHelper.Reader.GetSourcesInRange(
         str.pos,
@@ -298,7 +304,7 @@ export default class StructureHelper {
   /**
    * Control if an link need to be filled/withdraw from
    */
-  public static ControlStorageOfLink = FuncWrapper(
+  public static ControlStorageOfLink = WrapperHandler.FuncWrapper(
     function ControlStorageOfLink(str: StructureLink): void {
       const sourcesInRange = RoomHelper.Reader.GetSourcesInRange(
         str.pos,
@@ -370,7 +376,7 @@ export default class StructureHelper {
   /**
    * Control if the storage need to be filled/withdraw from
    */
-  public static ControlStorageOfStorage = FuncWrapper(
+  public static ControlStorageOfStorage = WrapperHandler.FuncWrapper(
     function ControlStorageOfStorage(str: StructureStorage): void {
       let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
         str,
@@ -402,7 +408,7 @@ export default class StructureHelper {
   /**
    * Control if the terminal need to be filled/withdraw from
    */
-  public static ControlStorageOfTerminal = FuncWrapper(
+  public static ControlStorageOfTerminal = WrapperHandler.FuncWrapper(
     function ControlStorageOfTerminal(str: StructureTerminal): void {
       let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
         str,
@@ -435,7 +441,7 @@ export default class StructureHelper {
   /**
    *
    */
-  public static KeepStructureFullEnough = FuncWrapper(
+  public static KeepStructureFullEnough = WrapperHandler.FuncWrapper(
     function KeepStructureFullEnough(
       str: Structure,
       requiredPercentageFull: number,
@@ -460,7 +466,7 @@ export default class StructureHelper {
   /**
    * Control if an upgrade job need to be created or deleted for the controller
    */
-  public static ControlUpgradingOfController = FuncWrapper(
+  public static ControlUpgradingOfController = WrapperHandler.FuncWrapper(
     function ControlUpgradingOfController(
       controller: StructureController
     ): void {

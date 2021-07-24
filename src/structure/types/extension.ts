@@ -1,11 +1,12 @@
 import JobHandler from "../../room/jobs/handler";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import StructureHelper from "../helper";
 
 /**
  * Execute an extension
  */
-export default FuncWrapper(function ExecuteExtension(
+export default WrapperHandler.FuncWrapper(function ExecuteExtension(
   str: StructureExtension
 ): void {
   if (

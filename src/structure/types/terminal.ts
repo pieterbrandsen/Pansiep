@@ -1,11 +1,12 @@
 import JobHandler from "../../room/jobs/handler";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import StructureHelper from "../helper";
 
 /**
  * Execute an terminal
  */
-export default FuncWrapper(function ExecuteTerminal(
+export default WrapperHandler.FuncWrapper(function ExecuteTerminal(
   str: StructureTerminal
 ): void {
   if (

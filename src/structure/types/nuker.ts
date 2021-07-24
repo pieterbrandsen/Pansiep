@@ -1,11 +1,14 @@
 import JobHandler from "../../room/jobs/handler";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import StructureHelper from "../helper";
 
 /**
  * Execute an nuker
  */
-export default FuncWrapper(function ExecuteNuker(str: StructureNuker): void {
+export default WrapperHandler.FuncWrapper(function ExecuteNuker(
+  str: StructureNuker
+): void {
   if (
     StructureHelper.IsStructureDamaged(str) &&
     JobHandler.GetJob(

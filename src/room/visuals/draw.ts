@@ -1,10 +1,10 @@
 import RoomConfig from "../../utils/config/room";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
 
 /**
  * Returns an boolean value indicating if room visuals are going to be displayed
  */
-export const ShouldVisualsBeDisplayed = FuncWrapper(
+export const ShouldVisualsBeDisplayed = WrapperHandler.FuncWrapper(
   function ShouldVisualsBeDisplayed(visualLevel: number): boolean {
     return visualLevel >= RoomConfig.VisualLevel;
   }
@@ -13,7 +13,7 @@ export const ShouldVisualsBeDisplayed = FuncWrapper(
 /**
  * Draw a line based on inputted positions
  */
-export const AddLineWPos = FuncWrapper(function AddLineWPos(
+export const AddLineWPos = WrapperHandler.FuncWrapper(function AddLineWPos(
   room: Room,
   pos1: RoomPosition,
   pos2: RoomPosition,
@@ -25,21 +25,23 @@ export const AddLineWPos = FuncWrapper(function AddLineWPos(
 /**
  * Draw a line based on inputted coords
  */
-export const AddLineWCoords = FuncWrapper(function AddLineWCoords(
-  room: Room,
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-  style?: LineStyle
-): void {
-  room.visual.line(x1, y1, x2, y2, style);
-});
+export const AddLineWCoords = WrapperHandler.FuncWrapper(
+  function AddLineWCoords(
+    room: Room,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    style?: LineStyle
+  ): void {
+    room.visual.line(x1, y1, x2, y2, style);
+  }
+);
 
 /**
  * Draw a circle based on inputted positions
  */
-export const AddCircleWPos = FuncWrapper(function AddCircleWPos(
+export const AddCircleWPos = WrapperHandler.FuncWrapper(function AddCircleWPos(
   room: Room,
   pos: RoomPosition,
   style?: CircleStyle
@@ -50,19 +52,21 @@ export const AddCircleWPos = FuncWrapper(function AddCircleWPos(
 /**
  * Draw a circle based on inputted coords
  */
-export const AddCircleWCoords = FuncWrapper(function AddCircleWCoords(
-  room: Room,
-  x: number,
-  y: number,
-  style?: CircleStyle
-): void {
-  room.visual.circle(x, y, style);
-});
+export const AddCircleWCoords = WrapperHandler.FuncWrapper(
+  function AddCircleWCoords(
+    room: Room,
+    x: number,
+    y: number,
+    style?: CircleStyle
+  ): void {
+    room.visual.circle(x, y, style);
+  }
+);
 
 /**
  * Draw a rectangle based on inputted position
  */
-export const AddRectWPos = FuncWrapper(function AddRectWPos(
+export const AddRectWPos = WrapperHandler.FuncWrapper(function AddRectWPos(
   room: Room,
   topLeftPos: RoomPosition,
   width: number,
@@ -75,21 +79,23 @@ export const AddRectWPos = FuncWrapper(function AddRectWPos(
 /**
  * Draw a rectangle based on inputted coords
  */
-export const AddRectWCoords = FuncWrapper(function AddRectWCoords(
-  room: Room,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  style?: PolyStyle
-): void {
-  room.visual.rect(x, y, width, height, style);
-});
+export const AddRectWCoords = WrapperHandler.FuncWrapper(
+  function AddRectWCoords(
+    room: Room,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    style?: PolyStyle
+  ): void {
+    room.visual.rect(x, y, width, height, style);
+  }
+);
 
 /**
  * Draw a polygon based on inputted points array
  */
-export const AddPoly = FuncWrapper(function AddPoly(
+export const AddPoly = WrapperHandler.FuncWrapper(function AddPoly(
   room: Room,
   points: Array<[number, number] | RoomPosition>,
   style?: PolyStyle
@@ -100,7 +106,7 @@ export const AddPoly = FuncWrapper(function AddPoly(
 /**
  * Draw text based on inputted position
  */
-export const AddTextWPos = FuncWrapper(function AddTextWPos(
+export const AddTextWPos = WrapperHandler.FuncWrapper(function AddTextWPos(
   room: Room,
   text: string,
   pos: RoomPosition,
@@ -112,12 +118,14 @@ export const AddTextWPos = FuncWrapper(function AddTextWPos(
 /**
  * Draw text based on inputted position
  */
-export const AddTextWCoords = FuncWrapper(function AddTextWCoords(
-  room: Room,
-  text: string,
-  x: number,
-  y: number,
-  style?: TextStyle
-): void {
-  room.visual.text(text, x, y, style);
-});
+export const AddTextWCoords = WrapperHandler.FuncWrapper(
+  function AddTextWCoords(
+    room: Room,
+    text: string,
+    x: number,
+    y: number,
+    style?: TextStyle
+  ): void {
+    room.visual.text(text, x, y, style);
+  }
+);

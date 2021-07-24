@@ -1,11 +1,14 @@
 import JobHandler from "../../room/jobs/handler";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import StructureHelper from "../helper";
 
 /**
  * Execute an road
  */
-export default FuncWrapper(function ExecuteRoad(str: StructureRoad): void {
+export default WrapperHandler.FuncWrapper(function ExecuteRoad(
+  str: StructureRoad
+): void {
   if (
     StructureHelper.IsStructureDamaged(str) &&
     JobHandler.GetJob(

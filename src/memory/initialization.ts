@@ -1,6 +1,5 @@
 import { forEach, isUndefined } from "lodash";
 import LoggerHandler from "../utils/logger";
-import FuncWrapper, { IntentWrapper } from "../utils/wrapper";
 import UpdateCacheHandler from "./updateCache";
 import StatsHandler from "./stats";
 import ConsoleCommandsHandler from "../utils/consoleCommands";
@@ -11,29 +10,20 @@ import CreepConstants from "../utils/constants/creep";
 import RoomHelper from "../room/helper";
 import RoomPlannerHandler from "../room/planner/planner";
 import CreepHelper from "../creep/helper";
+import WrapperHandler from "../utils/wrapper";
 
 export default class MemoryInitializationHandler {
-  public static AreHeapVarsValid = FuncWrapper(
+  public static AreHeapVarsValid = WrapperHandler.FuncWrapper(
     function AreHeapVarsValid(): boolean {
       const gbl = global;
-      if (
-        gbl.preProcessingStats &&
-        gbl.help &&
-        gbl.resetGlobalMemory &&
-        gbl.resetRoomMemory &&
-        gbl.resetStructureMemory &&
-        gbl.resetCreepMemory &&
-        gbl.deleteRoomMemory &&
-        gbl.deleteStructureMemory &&
-        gbl.deleteCreepMemory
-      ) {
+      if (gbl.preProcessingStats) {
         return true;
       }
       return false;
     }
   );
 
-  public static InitializeHeapVars = FuncWrapper(
+  public static InitializeHeapVars = WrapperHandler.FuncWrapper(
     function InitializeHeapVars(): boolean {
       StatsHandler.ResetPreProcessingStats();
       ConsoleCommandsHandler.AssignCommandsToHeap();
@@ -47,7 +37,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static AreCustomPrototypesInitialized = FuncWrapper(
+  public static AreCustomPrototypesInitialized = WrapperHandler.FuncWrapper(
     function AreCustomPrototypesInitialized(): boolean {
       if (
         Room.prototype.command &&
@@ -60,28 +50,40 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static InitializeCustomPrototypes = FuncWrapper(
+  public static InitializeCustomPrototypes = WrapperHandler.FuncWrapper(
     function InitializeCustomPrototypes(): boolean {
       forEach(RoomConstants.TrackedIntents, (key: string) => {
         // eslint-disable-next-line @typescript-eslint/ban-types
         Room.prototype.command = ((Room.prototype as unknown) as StringMap<Function>)[
           key
         ];
-        IntentWrapper(Room.prototype, key, Room.prototype.command);
+        WrapperHandler.IntentWrapper(
+          Room.prototype,
+          key,
+          Room.prototype.command
+        );
       });
       forEach(StructureConstants.TrackedIntents, (key: string) => {
         // eslint-disable-next-line @typescript-eslint/ban-types
         Structure.prototype.command = ((Structure.prototype as unknown) as StringMap<Function>)[
           key
         ];
-        IntentWrapper(Structure.prototype, key, Structure.prototype.command);
+        WrapperHandler.IntentWrapper(
+          Structure.prototype,
+          key,
+          Structure.prototype.command
+        );
       });
       forEach(CreepConstants.TrackedIntents, (key: string) => {
         // eslint-disable-next-line @typescript-eslint/ban-types
         Creep.prototype.command = ((Creep.prototype as unknown) as StringMap<Function>)[
           key
         ];
-        IntentWrapper(Creep.prototype, key, Creep.prototype.command);
+        WrapperHandler.IntentWrapper(
+          Creep.prototype,
+          key,
+          Creep.prototype.command
+        );
       });
 
       LoggerHandler.Log(
@@ -94,7 +96,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static IsGlobalMemoryInitialized = FuncWrapper(
+  public static IsGlobalMemoryInitialized = WrapperHandler.FuncWrapper(
     function IsGlobalMemoryInitialized(): boolean {
       if (
         Memory &&
@@ -112,7 +114,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static InitializeGlobalMemory = FuncWrapper(
+  public static InitializeGlobalMemory = WrapperHandler.FuncWrapper(
     function InitializeGlobalMemory(): boolean {
       Memory.flags = {};
       Memory.rooms = {};
@@ -139,7 +141,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static InitializeRoomMemory = FuncWrapper(
+  public static InitializeRoomMemory = WrapperHandler.FuncWrapper(
     function InitializeRoomMemory(roomName: string): boolean {
       Memory.rooms[roomName] = {
         jobs: [],
@@ -166,7 +168,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static InitializeStructureMemory = FuncWrapper(
+  public static InitializeStructureMemory = WrapperHandler.FuncWrapper(
     function InitializeStructureMemory(id: string, roomName: string): boolean {
       Memory.structures[id] = { room: roomName };
 
@@ -180,7 +182,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static InitializeCreepMemory = FuncWrapper(
+  public static InitializeCreepMemory = WrapperHandler.FuncWrapper(
     function InitializeCreepMemory(
       name: string,
       roomName: string,
@@ -211,7 +213,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static IsRoomMemoryInitialized = FuncWrapper(
+  public static IsRoomMemoryInitialized = WrapperHandler.FuncWrapper(
     function IsRoomMemoryInitialized(id: string): boolean {
       if (
         Memory.rooms &&
@@ -224,7 +226,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static IsStructureMemoryInitialized = FuncWrapper(
+  public static IsStructureMemoryInitialized = WrapperHandler.FuncWrapper(
     function IsStructureMemoryInitialized(id: Id<Structure>): boolean {
       if (Memory.structures[id]) {
         const strMem = Memory.structures[id];
@@ -240,7 +242,7 @@ export default class MemoryInitializationHandler {
     }
   );
 
-  public static IsCreepMemoryInitialized = FuncWrapper(
+  public static IsCreepMemoryInitialized = WrapperHandler.FuncWrapper(
     function IsCreepMemoryInitialized(id: string): boolean {
       if (Memory.creeps[id]) {
         const crpMem = Memory.creeps[id];

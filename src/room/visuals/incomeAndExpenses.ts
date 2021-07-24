@@ -1,6 +1,7 @@
 import { forEach } from "lodash";
 import RoomConstants from "../../utils/constants/room";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import {
   AddLineWCoords,
   AddRectWCoords,
@@ -11,7 +12,7 @@ import {
 /**
  * Draws all income and expenses visuals
  */
-export default FuncWrapper(function RoomIncomeAndExpensesVisuals(
+export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
   room: Room,
   roomStats: RoomStats
 ): void {

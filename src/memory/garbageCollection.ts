@@ -1,11 +1,11 @@
 import { forEach, forOwn, remove } from "lodash";
-import FuncWrapper from "../utils/wrapper";
 import JobHandler from "../room/jobs/handler";
 import GlobalConstants from "../utils/constants/global";
 import LoggerHandler from "../utils/logger";
+import WrapperHandler from "../utils/wrapper";
 
 export default class GarbageCollectionHandler {
-  public static RemoveCreep = FuncWrapper(function RemoveCreep(
+  public static RemoveCreep = WrapperHandler.FuncWrapper(function RemoveCreep(
     name: string,
     roomName: string
   ): boolean {
@@ -30,33 +30,32 @@ export default class GarbageCollectionHandler {
     return true;
   });
 
-  public static RemoveStructure = FuncWrapper(function RemoveStructure(
-    id: Id<Structure>,
-    roomName: string
-  ): boolean {
-    const jobs = JobHandler.GetAllJobs(roomName);
-    const structureJobs = jobs.filter((j) =>
-      j.assignedStructuresIds.includes(id)
-    );
-    forEach(structureJobs, (job: Job) => {
-      job.assignedStructuresIds = remove(job.assignedStructuresIds, id);
-    });
+  public static RemoveStructure = WrapperHandler.FuncWrapper(
+    function RemoveStructure(id: Id<Structure>, roomName: string): boolean {
+      const jobs = JobHandler.GetAllJobs(roomName);
+      const structureJobs = jobs.filter((j) =>
+        j.assignedStructuresIds.includes(id)
+      );
+      forEach(structureJobs, (job: Job) => {
+        job.assignedStructuresIds = remove(job.assignedStructuresIds, id);
+      });
 
-    remove(jobs, (j) => j.objId === id);
+      remove(jobs, (j) => j.objId === id);
 
-    delete Memory.structures[id];
+      delete Memory.structures[id];
 
-    LoggerHandler.Log(
-      GlobalConstants.LogTypes.Debug,
-      "memory/garbageCollection:RemoveStructure",
-      "Deleted Structure memory",
-      id
-    );
+      LoggerHandler.Log(
+        GlobalConstants.LogTypes.Debug,
+        "memory/garbageCollection:RemoveStructure",
+        "Deleted Structure memory",
+        id
+      );
 
-    return true;
-  });
+      return true;
+    }
+  );
 
-  public static RemoveRoom = FuncWrapper(function RemoveRoom(
+  public static RemoveRoom = WrapperHandler.FuncWrapper(function RemoveRoom(
     roomName: string
   ): boolean {
     forOwn(Memory.structures, (str: StructureMemory, key: string) => {

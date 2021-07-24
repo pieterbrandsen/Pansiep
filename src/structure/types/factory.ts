@@ -1,11 +1,12 @@
 import JobHandler from "../../room/jobs/handler";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import StructureHelper from "../helper";
 
 /**
  * Execute an factory
  */
-export default FuncWrapper(function ExecuteFactory(
+export default WrapperHandler.FuncWrapper(function ExecuteFactory(
   str: StructureFactory
 ): void {
   if (

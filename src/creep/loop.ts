@@ -1,12 +1,14 @@
 import { forEach, isUndefined } from "lodash";
-import FuncWrapper from "../utils/wrapper";
 import JobHandler from "../room/jobs/handler";
 import StatsHandler from "../memory/stats";
 import MemoryInitializationHandler from "../memory/initialization";
 import CreepHelper from "./helper";
+import WrapperHandler from "../utils/wrapper";
 
 export default class CreepManager {
-  private static RunCreep = FuncWrapper(function RunCreep(name: string): void {
+  private static RunCreep = WrapperHandler.FuncWrapper(function RunCreep(
+    name: string
+  ): void {
     const creep = CreepHelper.GetCreep(name);
     const creepMem = CreepHelper.GetCreepMemory(name);
     if (isUndefined(creepMem.jobId)) {
@@ -26,7 +28,9 @@ export default class CreepManager {
     StatsHandler.CreepStatsPreProcessing(creep);
   });
 
-  public static Run = FuncWrapper(function RunCreeps(roomName: string): void {
+  public static Run = WrapperHandler.FuncWrapper(function RunCreeps(
+    roomName: string
+  ): void {
     const creepIds = CreepHelper.GetCachedCreepIds(roomName);
     forEach(creepIds, (name: string) => {
       const isCreepMemoryInitialized = MemoryInitializationHandler.IsCreepMemoryInitialized(

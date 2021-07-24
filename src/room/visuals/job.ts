@@ -1,6 +1,7 @@
 import { forEach } from "lodash";
 import RoomConstants from "../../utils/constants/room";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import {
   AddLineWCoords,
   AddRectWCoords,
@@ -11,7 +12,7 @@ import {
 /**
  * Draws all job visuals
  */
-export default FuncWrapper(function RoomJobVisuals(
+export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
   room: Room,
   roomStats: RoomStats
 ) {

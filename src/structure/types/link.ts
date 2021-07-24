@@ -1,11 +1,13 @@
-import FuncWrapper from "../../utils/wrapper";
 import StructureHelper from "../helper";
 import JobHandler from "../../room/jobs/handler";
+import WrapperHandler from "../../utils/wrapper";
 
 /**
  * Execute an link
  */
-export default FuncWrapper(function ExecuteLink(str: StructureLink): void {
+export default WrapperHandler.FuncWrapper(function ExecuteLink(
+  str: StructureLink
+): void {
   if (
     StructureHelper.IsStructureDamaged(str) &&
     JobHandler.GetJob(

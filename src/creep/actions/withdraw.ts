@@ -1,13 +1,14 @@
 import { isUndefined } from "lodash";
-import FuncWrapper from "../../utils/wrapper";
+
 import UtilsHelper from "../../utils/helper";
 import JobHandler from "../../room/jobs/handler";
 import CreepActions from "./actions";
 import CreepHelper from "../helper";
 import StructureHelper from "../../structure/helper";
+import WrapperHandler from "../../utils/wrapper";
 
 // eslint-disable-next-line
-export default FuncWrapper(function ExecuteWithdraw(
+export default WrapperHandler.FuncWrapper(function ExecuteWithdraw(
   creep: Creep,
   job: Job
 ): void {

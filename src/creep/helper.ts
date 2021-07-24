@@ -1,16 +1,16 @@
 import { isUndefined, forOwn } from "lodash";
-import FuncWrapper from "../utils/wrapper";
 import JobHandler from "../room/jobs/handler";
 import CreepActions from "./actions/actions";
+import WrapperHandler from "../utils/wrapper";
 
 export default class CreepHelper {
-  public static IsCreepDamaged = FuncWrapper(function IsCreepDamaged(
-    creep: Creep
-  ): boolean {
-    return creep.hits < creep.hitsMax;
-  });
+  public static IsCreepDamaged = WrapperHandler.FuncWrapper(
+    function IsCreepDamaged(creep: Creep): boolean {
+      return creep.hits < creep.hitsMax;
+    }
+  );
 
-  // public static UpdateCreepMemory = FuncWrapper(function UpdateCreepMemory(
+  // public static UpdateCreepMemory = WrapperHandler.FuncWrapper(function UpdateCreepMemory(
   //   name: string,
   //   mem: CreepMemory
   // ) {
@@ -18,7 +18,7 @@ export default class CreepHelper {
   //   return FunctionReturnHelper(FunctionReturnCodes.OK);
   // });
 
-  public static ExecuteJob = FuncWrapper(function ExecuteJob(
+  public static ExecuteJob = WrapperHandler.FuncWrapper(function ExecuteJob(
     creep: Creep,
     creepMem: CreepMemory
   ): void {
@@ -73,45 +73,49 @@ export default class CreepHelper {
     }
   });
 
-  public static GetCreep = FuncWrapper(function GetCreep(id: string): Creep {
+  public static GetCreep = WrapperHandler.FuncWrapper(function GetCreep(
+    id: string
+  ): Creep {
     const creep = Game.creeps[id];
     return creep;
   });
 
-  public static GetCreepMemory = FuncWrapper(function GetCreepMemory(
-    creepName: string
-  ): CreepMemory {
-    const creepMemory = Memory.creeps[creepName];
-    return creepMemory;
-  });
+  public static GetCreepMemory = WrapperHandler.FuncWrapper(
+    function GetCreepMemory(creepName: string): CreepMemory {
+      const creepMemory = Memory.creeps[creepName];
+      return creepMemory;
+    }
+  );
 
-  public static GetAllCreepsMemory = FuncWrapper(function GetAllCreepMemory(
-    id: string,
-    filterOnType?: CreepTypes[]
-  ): CreepMemory[] {
-    const creepsMemory: CreepMemory[] = [];
+  public static GetAllCreepsMemory = WrapperHandler.FuncWrapper(
+    function GetAllCreepMemory(
+      id: string,
+      filterOnType?: CreepTypes[]
+    ): CreepMemory[] {
+      const creepsMemory: CreepMemory[] = [];
 
-    forOwn(Memory.creeps, (mem: CreepMemory) => {
-      if (
-        isUndefined(mem.isNotSeenSince) &&
-        mem.commandRoom === id &&
-        (filterOnType ? filterOnType.includes(mem.type) : true)
-      )
-        creepsMemory.push(mem);
-    });
+      forOwn(Memory.creeps, (mem: CreepMemory) => {
+        if (
+          isUndefined(mem.isNotSeenSince) &&
+          mem.commandRoom === id &&
+          (filterOnType ? filterOnType.includes(mem.type) : true)
+        )
+          creepsMemory.push(mem);
+      });
 
-    return creepsMemory;
-  });
+      return creepsMemory;
+    }
+  );
 
-  public static GetCachedCreepIds = FuncWrapper(function GetAllCreepIds(
-    id: string
-  ): string[] {
-    const creepsCache: CreepCache[] = Memory.cache.creeps.data[id];
-    const creepIds = creepsCache.map((c) => c.id);
-    return creepIds;
-  });
+  public static GetCachedCreepIds = WrapperHandler.FuncWrapper(
+    function GetAllCreepIds(id: string): string[] {
+      const creepsCache: CreepCache[] = Memory.cache.creeps.data[id];
+      const creepIds = creepsCache.map((c) => c.id);
+      return creepIds;
+    }
+  );
 
-  public static GetType = FuncWrapper(function GetType(
+  public static GetType = WrapperHandler.FuncWrapper(function GetType(
     creep: Creep
   ): CreepTypes {
     if (creep.getActiveBodyparts(CLAIM) > 0) {

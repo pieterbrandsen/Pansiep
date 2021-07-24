@@ -1,11 +1,12 @@
 import UtilsHelper from "../../utils/helper";
-import FuncWrapper from "../../utils/wrapper";
+
 import JobHandler from "../../room/jobs/handler";
 import CreepActions from "./actions";
 import CreepHelper from "../helper";
+import WrapperHandler from "../../utils/wrapper";
 
 // eslint-disable-next-line
-export default FuncWrapper(function ExecuteHeal(
+export default WrapperHandler.FuncWrapper(function ExecuteHeal(
   creep: Creep,
   job: Job
 ): void {

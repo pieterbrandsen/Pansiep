@@ -1,11 +1,12 @@
 import JobHandler from "../../room/jobs/handler";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import StructureHelper from "../helper";
 
 /**
  * Execute an observer
  */
-export default FuncWrapper(function ExecuteObserver(
+export default WrapperHandler.FuncWrapper(function ExecuteObserver(
   str: StructureObserver
 ): void {
   if (

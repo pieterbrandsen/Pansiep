@@ -1,24 +1,26 @@
-import FuncWrapper from "./wrapper";
+import WrapperHandler from "./wrapper";
 
 export default class UtilsHelper {
   /**
    * Checks if this tick the function should be executed.
    */
-  public static ExecuteEachTick = FuncWrapper(function ExecuteEachTick(
-    tickAmount: number,
-    forceExecute = false
-  ): boolean {
-    if (forceExecute) return forceExecute;
+  public static ExecuteEachTick = WrapperHandler.FuncWrapper(
+    function ExecuteEachTick(
+      tickAmount: number,
+      forceExecute = false
+    ): boolean {
+      if (forceExecute) return forceExecute;
 
-    const executeThisTick: boolean = Game.time % tickAmount === 0;
-    return executeThisTick;
-  });
+      const executeThisTick: boolean = Game.time % tickAmount === 0;
+      return executeThisTick;
+    }
+  );
 
   /**
    * Return live position because its otherwise not an active RoomPosition object.
    */
-  public static RehydratedRoomPosition = FuncWrapper(
-    function RehydratedRoomPosition(objPos: RoomPosition): RoomPosition {
+  public static RehydrateRoomPosition = WrapperHandler.FuncWrapper(
+    function RehydrateRoomPosition(objPos: RoomPosition): RoomPosition {
       const pos: RoomPosition = new RoomPosition(
         objPos.x,
         objPos.y,
@@ -28,17 +30,10 @@ export default class UtilsHelper {
     }
   );
 
-  // public static LoadMemory = function LoadMemory() {
-  //   const preCpu = Game.cpu.getUsed();
-  //   Memory;
-  //   console.log(`Pre-cpu: ${preCpu}, end-cpu: ${Game.cpu.getUsed()}`);
-  //   return FunctionReturnHelper(FunctionReturnCodes.OK)
-  // }
-
   /**
    * Return object based on inputted Id if its found in the database of Screeps
    */
-  public static GetObject = FuncWrapper(function GetObject(
+  public static GetObject = WrapperHandler.FuncWrapper(function GetObject(
     id: Id<Structure | Creep | ConstructionSite | Source>
   ): Structure | Creep | ConstructionSite | Source | null {
     const obj:

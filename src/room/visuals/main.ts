@@ -1,5 +1,6 @@
 import RoomConstants from "../../utils/constants/room";
-import FuncWrapper from "../../utils/wrapper";
+import WrapperHandler from "../../utils/wrapper";
+
 import {
   AddRectWCoords,
   AddTextWCoords,
@@ -9,7 +10,9 @@ import {
 /**
  * Draws all main visuals
  */
-export default FuncWrapper(function RoomMainVisuals(room: Room): void {
+export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
+  room: Room
+): void {
   const visualDisplayLevel = RoomConstants.VisualDisplayLevels.Info;
   if (ShouldVisualsBeDisplayed(visualDisplayLevel) === false) return;
 

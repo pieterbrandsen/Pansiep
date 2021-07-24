@@ -206,15 +206,15 @@ declare namespace NodeJS {
   interface Global {
     preProcessingStats: StatsMemory;
 
-    help?(): string;
+    help(): string;
 
     resetGlobalMemory(): boolean;
     resetRoomMemory(roomName: string): boolean;
-    resetStructureMemory(id: Id<Structure>, roomName: string): boolean;
-    resetCreepMemory(creepName: string, roomName: string): boolean;
+    resetStructureMemory(roomName: string, id: Id<Structure>): boolean;
+    resetCreepMemory(roomName: string, creepName: string): boolean;
 
     deleteRoomMemory(roomName: string): boolean;
-    deleteStructureMemory(id: Id<Structure>, roomName: string): boolean;
-    deleteCreepMemory(creepName: string, roomName: string): boolean;
+    deleteStructureMemory(roomName: string, id: Id<Structure>): boolean;
+    deleteCreepMemory(roomName: string, creepName: string): boolean;
   }
 }

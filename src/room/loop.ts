@@ -1,5 +1,4 @@
 import { forEach } from "lodash";
-import FuncWrapper from "../utils/wrapper";
 import RoomVisualHandler from "./visuals/handler";
 import StatsHandler from "../memory/stats";
 import MemoryInitializationHandler from "../memory/initialization";
@@ -7,6 +6,7 @@ import RoomHelper from "./helper";
 import CreepManager from "../creep/loop";
 import RoomPlannerHandler from "./planner/planner";
 import StructureManager from "../structure/loop";
+import WrapperHandler from "../utils/wrapper";
 
 export default class RoomManager {
   /**
@@ -16,7 +16,9 @@ export default class RoomManager {
    * @return {FunctionReturn} HTTP response with code and data
    *
    */
-  private static RunRoom = FuncWrapper(function RunRoom(name: string): void {
+  private static RunRoom = WrapperHandler.FuncWrapper(function RunRoom(
+    name: string
+  ): void {
     const room = RoomHelper.GetRoom(name);
 
     const roomStatsPreProcessing = StatsHandler.RoomStatsPreProcessing(room);
@@ -34,7 +36,7 @@ export default class RoomManager {
    * @return {FunctionReturn} HTTP response with code and data
    *
    */
-  public static Run = FuncWrapper(function RunRooms(): void {
+  public static Run = WrapperHandler.FuncWrapper(function RunRooms(): void {
     const roomIds = RoomHelper.GetRoomIds();
 
     forEach(roomIds, (key: string) => {

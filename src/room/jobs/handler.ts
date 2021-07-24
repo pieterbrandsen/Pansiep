@@ -1,10 +1,11 @@
 import { isUndefined, first, forEach, remove } from "lodash";
-import FuncWrapper from "../../utils/wrapper";
+
 import CreateJobHandler from "./create";
 import RoomHelper from "../helper";
 import CreepHelper from "../../creep/helper";
 import StructureHelper from "../../structure/helper";
 import RoomConstants from "../../utils/constants/room";
+import WrapperHandler from "../../utils/wrapper";
 
 export default class JobHandler {
   public static CreateJob = CreateJobHandler;
@@ -12,7 +13,7 @@ export default class JobHandler {
   /**
    * Return all jobs from @param room
    */
-  public static GetAllJobs = FuncWrapper(function GetAllJobs(
+  public static GetAllJobs = WrapperHandler.FuncWrapper(function GetAllJobs(
     roomName: string,
     filterOnTypes?: JobActionTypes[]
   ): Job[] {
@@ -29,53 +30,54 @@ export default class JobHandler {
   /**
    * Return all available jobs from @param room
    */
-  public static GetAvailableJobs = FuncWrapper(function GetAvailableJobs(
-    roomName: string,
-    requesterIsCreep: boolean,
-    filterOnTypes?: JobActionTypes[]
-  ): Job[] {
-    const jobs = JobHandler.GetAllJobs(
-      roomName,
-      filterOnTypes
-    ).filter((j: Job) =>
-      requesterIsCreep
-        ? j.assignedCreepsNames.length < j.maxCreeps
-        : j.assignedStructuresIds.length < j.maxStructures
-    );
-    return jobs;
-  });
+  public static GetAvailableJobs = WrapperHandler.FuncWrapper(
+    function GetAvailableJobs(
+      roomName: string,
+      requesterIsCreep: boolean,
+      filterOnTypes?: JobActionTypes[]
+    ): Job[] {
+      const jobs = JobHandler.GetAllJobs(
+        roomName,
+        filterOnTypes
+      ).filter((j: Job) =>
+        requesterIsCreep
+          ? j.assignedCreepsNames.length < j.maxCreeps
+          : j.assignedStructuresIds.length < j.maxStructures
+      );
+      return jobs;
+    }
+  );
 
   /**
    * Return closest job based on @param pos
    */
-  public static GetClosestJob = FuncWrapper(function GetClosestJob(
-    jobs: Job[],
-    pos: RoomPosition
-  ): Job {
-    // jobs
-    // .filter((job) => job.position)
-    // .forEach((job: Job) => {
-    // eslint-disable-next-line
+  public static GetClosestJob = WrapperHandler.FuncWrapper(
+    function GetClosestJob(jobs: Job[], pos: RoomPosition): Job {
+      // jobs
+      // .filter((job) => job.position)
+      // .forEach((job: Job) => {
+      // eslint-disable-next-line
         // job.position = UtilsHelper.RehydratedRoomPosition(
-    //   job.position as RoomPosition
-    // );
-    // });
+      //   job.position as RoomPosition
+      // );
+      // });
 
-    const closestJob: Job = first(
-      jobs.sort(
-        (a: Job, b: Job) =>
-          (a.position as RoomPosition).getRangeTo(pos) -
-          (b.position as RoomPosition).getRangeTo(pos)
-      )
-    ) as Job;
+      const closestJob: Job = first(
+        jobs.sort(
+          (a: Job, b: Job) =>
+            (a.position as RoomPosition).getRangeTo(pos) -
+            (b.position as RoomPosition).getRangeTo(pos)
+        )
+      ) as Job;
 
-    return closestJob;
-  });
+      return closestJob;
+    }
+  );
 
   /**
    * Switch creep jobs saved in memory
    */
-  public static SwitchCreepSavedJobIds = FuncWrapper(
+  public static SwitchCreepSavedJobIds = WrapperHandler.FuncWrapper(
     function SwitchCreepSavedJobIds(
       creepMemory: CreepMemory,
       switchBack = false
@@ -96,7 +98,7 @@ export default class JobHandler {
   /**
    * Assigns new job to @param str
    */
-  public static AssignNewJobForStructure = FuncWrapper(
+  public static AssignNewJobForStructure = WrapperHandler.FuncWrapper(
     function AssignNewJobForStructure(
       str: Structure,
       filterOnTypes?: JobActionTypes[]
@@ -137,7 +139,7 @@ export default class JobHandler {
   /**
    * Assigns new job to @param creep
    */
-  public static AssignNewJobForCreep = FuncWrapper(
+  public static AssignNewJobForCreep = WrapperHandler.FuncWrapper(
     function AssignNewJobForCreep(
       creep: Creep,
       filterOnTypes?: JobActionTypes[],
@@ -260,7 +262,7 @@ export default class JobHandler {
   /**
    * Get job by @param jobId
    */
-  public static GetJob = FuncWrapper(function GetJobById(
+  public static GetJob = WrapperHandler.FuncWrapper(function GetJobById(
     jobId: Id<Job>,
     roomName: string
   ): Job | null {
@@ -272,17 +274,16 @@ export default class JobHandler {
   /**
    * Update full job list with @param jobs
    */
-  public static OverwriteJobList = FuncWrapper(function OverwriteJobList(
-    roomName: string,
-    jobs: Job[]
-  ): void {
-    Memory.rooms[roomName].jobs = jobs;
-  });
+  public static OverwriteJobList = WrapperHandler.FuncWrapper(
+    function OverwriteJobList(roomName: string, jobs: Job[]): void {
+      Memory.rooms[roomName].jobs = jobs;
+    }
+  );
 
   /**
    * Unassign job from creep or structure
    */
-  public static UnassignJob = FuncWrapper(function UnassignJob(
+  public static UnassignJob = WrapperHandler.FuncWrapper(function UnassignJob(
     jobId: Id<Job>,
     id: Id<Structure> | string,
     roomName: string
@@ -323,7 +324,7 @@ export default class JobHandler {
   /**
    * Delete job and unassign job for all creep and structure
    */
-  public static DeleteJob = FuncWrapper(function DeleteJobById(
+  public static DeleteJob = WrapperHandler.FuncWrapper(function DeleteJobById(
     id: Id<Job>,
     roomName: string
   ): void {
@@ -347,7 +348,7 @@ export default class JobHandler {
     JobHandler.OverwriteJobList(roomName, jobs);
   });
 
-  public static SetJob = FuncWrapper(function SetJob(
+  public static SetJob = WrapperHandler.FuncWrapper(function SetJob(
     job: Job,
     isNew: boolean
   ): void {

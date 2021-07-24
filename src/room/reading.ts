@@ -1,13 +1,13 @@
 import { first, forEach, union } from "lodash";
 import StructureConstants from "../utils/constants/structure";
-import FuncWrapper from "../utils/wrapper";
+import WrapperHandler from "../utils/wrapper";
 import RoomHelper from "./helper";
 
 export default class RoomReadingHelper {
   /**
    * Return the terrain of the room
    */
-  public static GetTerrain = FuncWrapper(function GetTerrain(
+  public static GetTerrain = WrapperHandler.FuncWrapper(function GetTerrain(
     room: Room
   ): RoomTerrain {
     const terrain: RoomTerrain = room.getTerrain();
@@ -17,7 +17,7 @@ export default class RoomReadingHelper {
   /**
    * Return all structures in range of the inputted position
    */
-  public static GetStructuresInRange = FuncWrapper(
+  public static GetStructuresInRange = WrapperHandler.FuncWrapper(
     function GetStructuresInRange(
       pos: RoomPosition,
       range: number,
@@ -46,7 +46,7 @@ export default class RoomReadingHelper {
   /**
    * Return all construction sites in range of the inputted position
    */
-  public static GetConstructionSitesInRange = FuncWrapper(
+  public static GetConstructionSitesInRange = WrapperHandler.FuncWrapper(
     function GetConstructionSitesInRange(
       pos: RoomPosition,
       range: number,
@@ -75,68 +75,74 @@ export default class RoomReadingHelper {
   /**
    * Return all sources in range of the inputted position
    */
-  public static GetSourcesInRange = FuncWrapper(function GetSourcesInRange(
-    pos: RoomPosition,
-    range: number,
-    room: Room
-  ): Source[] {
-    const sources = room
-      .lookForAtArea(
-        LOOK_SOURCES,
-        pos.y - range,
-        pos.x - range,
-        pos.y + range,
-        pos.x + range,
-        true
-      )
-      .map((s) => s.source);
-    return sources;
-  });
+  public static GetSourcesInRange = WrapperHandler.FuncWrapper(
+    function GetSourcesInRange(
+      pos: RoomPosition,
+      range: number,
+      room: Room
+    ): Source[] {
+      const sources = room
+        .lookForAtArea(
+          LOOK_SOURCES,
+          pos.y - range,
+          pos.x - range,
+          pos.y + range,
+          pos.x + range,
+          true
+        )
+        .map((s) => s.source);
+      return sources;
+    }
+  );
 
   /**
    * Return all terrain in range of the inputted position
    */
-  public static GetTerrainInRange = FuncWrapper(function GetTerrainInRange(
-    pos: RoomPosition,
-    range: number,
-    room: Room,
-    filterOnTerrainType?: Terrain[]
-  ): RoomPosition[] {
-    const terrain = room
-      .lookForAtArea(
-        LOOK_TERRAIN,
-        pos.y - range,
-        pos.x - range,
-        pos.y + range,
-        pos.x + range,
-        true
-      )
-      .filter((t) =>
-        filterOnTerrainType ? filterOnTerrainType.includes(t.terrain) : true
-      )
-      .map((t) => new RoomPosition(t.x, t.y, room.name));
+  public static GetTerrainInRange = WrapperHandler.FuncWrapper(
+    function GetTerrainInRange(
+      pos: RoomPosition,
+      range: number,
+      room: Room,
+      filterOnTerrainType?: Terrain[]
+    ): RoomPosition[] {
+      const terrain = room
+        .lookForAtArea(
+          LOOK_TERRAIN,
+          pos.y - range,
+          pos.x - range,
+          pos.y + range,
+          pos.x + range,
+          true
+        )
+        .filter((t) =>
+          filterOnTerrainType ? filterOnTerrainType.includes(t.terrain) : true
+        )
+        .map((t) => new RoomPosition(t.x, t.y, room.name));
 
-    return terrain;
-  });
+      return terrain;
+    }
+  );
 
   /**
    * Return all structures of inputted room
    */
-  public static GetStructures = FuncWrapper(function GetStructures(
-    roomName: string,
-    filterOnStrTypes?: StructureConstant[]
-  ): Structure<StructureConstant>[] {
-    if (Memory.cache.structures.data[roomName] === undefined) return [];
-    return RoomHelper.GetObjectsFromIDs<Structure>(
-      Memory.cache.structures.data[roomName]
-        .filter((s) =>
-          filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
-        )
-        .map((s) => s.id)
-    );
-  });
+  public static GetStructures = WrapperHandler.FuncWrapper(
+    function GetStructures(
+      roomName: string,
+      filterOnStrTypes?: StructureConstant[]
+    ): Structure<StructureConstant>[] {
+      if (Memory.cache.structures.data[roomName] === undefined) return [];
+      return RoomHelper.GetObjectsFromIDs<Structure>(
+        Memory.cache.structures.data[roomName]
+          .filter((s) =>
+            filterOnStrTypes ? filterOnStrTypes.includes(s.structureType) : true
+          )
+          .map((s) => s.id)
+      );
+    }
+  );
 
-  public static GetDangerousStructures = FuncWrapper(
+  public static GetDangerousStructures = WrapperHandler.FuncWrapper(
     function GetDangerousStructures(
       roomName: string
     ): Structure<StructureConstant>[] {
@@ -151,7 +157,7 @@ export default class RoomReadingHelper {
   /**
    * Find all exits in an room
    */
-  public static FindExits = FuncWrapper(function FindExits(
+  public static FindExits = WrapperHandler.FuncWrapper(function FindExits(
     room: Room
   ): RoomPosition[] {
     return room.find(FIND_EXIT);
@@ -160,7 +166,7 @@ export default class RoomReadingHelper {
   /**
    * Find all exits in an room
    */
-  public static GetAccessibleSurroundingRoomNames = FuncWrapper(
+  public static GetAccessibleSurroundingRoomNames = WrapperHandler.FuncWrapper(
     function GetAccessibleSurroundingRoomNames(roomName: string): string[] {
       const exits = Game.map.describeExits(roomName);
       const surroundingRoomNames: string[] = Object.values(exits) as string[];
@@ -171,50 +177,49 @@ export default class RoomReadingHelper {
   /**
    * Returns an boolean indicating if position is surrounded
    */
-  public static IsPositionDefended = FuncWrapper(function IsPositionDefended(
-    roomPos: RoomPosition,
-    room: Room
-  ): boolean {
-    const structures: Structure[] = RoomReadingHelper.GetStructuresInRange(
-      roomPos,
-      2,
-      room,
-      [
-        STRUCTURE_TOWER,
-        STRUCTURE_SPAWN,
-        STRUCTURE_RAMPART,
-        STRUCTURE_WALL,
-        STRUCTURE_CONTROLLER,
-      ]
-    );
-    const terrain: RoomPosition[] = RoomReadingHelper.GetTerrainInRange(
-      roomPos,
-      2,
-      room,
-      ["wall"]
-    );
-    const positions = union(
-      structures.map((s) => s.pos),
-      terrain
-    );
+  public static IsPositionDefended = WrapperHandler.FuncWrapper(
+    function IsPositionDefended(roomPos: RoomPosition, room: Room): boolean {
+      const structures: Structure[] = RoomReadingHelper.GetStructuresInRange(
+        roomPos,
+        2,
+        room,
+        [
+          STRUCTURE_TOWER,
+          STRUCTURE_SPAWN,
+          STRUCTURE_RAMPART,
+          STRUCTURE_WALL,
+          STRUCTURE_CONTROLLER,
+        ]
+      );
+      const terrain: RoomPosition[] = RoomReadingHelper.GetTerrainInRange(
+        roomPos,
+        2,
+        room,
+        ["wall"]
+      );
+      const positions = union(
+        structures.map((s) => s.pos),
+        terrain
+      );
 
-    let isStructureDefended = false;
-    const strOpenSpotsClassifiedByRange = { 0: 1, 1: 8, 2: 16 };
-    forEach(positions, (pos: RoomPosition) => {
-      strOpenSpotsClassifiedByRange[pos.getRangeTo(roomPos)] -= 1;
-    });
+      let isStructureDefended = false;
+      const strOpenSpotsClassifiedByRange = { 0: 1, 1: 8, 2: 16 };
+      forEach(positions, (pos: RoomPosition) => {
+        strOpenSpotsClassifiedByRange[pos.getRangeTo(roomPos)] -= 1;
+      });
 
-    forEach(Object.values(strOpenSpotsClassifiedByRange), (total: number) => {
-      if (total === 0) isStructureDefended = true;
-    });
+      forEach(Object.values(strOpenSpotsClassifiedByRange), (total: number) => {
+        if (total === 0) isStructureDefended = true;
+      });
 
-    return isStructureDefended;
-  });
+      return isStructureDefended;
+    }
+  );
 
   /**
    * Return the mineral if its in the room
    */
-  public static GetMineral = FuncWrapper(function GetMineral(
+  public static GetMineral = WrapperHandler.FuncWrapper(function GetMineral(
     room: Room
   ): Mineral | null {
     const minerals = room.find(FIND_MINERALS);
@@ -224,23 +229,25 @@ export default class RoomReadingHelper {
   /**
    * Return an boolean indicating if there is an extractor at the minerals position
    */
-  public static GetMineralStructure = FuncWrapper(function GetMineralStructure(
-    mineral: Mineral
-  ): StructureExtractor | null {
-    const structures: Structure[] = RoomReadingHelper.GetStructuresInRange(
-      mineral.pos,
-      0,
-      mineral.room as Room,
-      [STRUCTURE_EXTRACTOR]
-    );
+  public static GetMineralStructure = WrapperHandler.FuncWrapper(
+    function GetMineralStructure(mineral: Mineral): StructureExtractor | null {
+      const structures: Structure[] = RoomReadingHelper.GetStructuresInRange(
+        mineral.pos,
+        0,
+        mineral.room as Room,
+        [STRUCTURE_EXTRACTOR]
+      );
 
-    return structures.length > 0 ? (structures[0] as StructureExtractor) : null;
-  });
+      return structures.length > 0
+        ? (structures[0] as StructureExtractor)
+        : null;
+    }
+  );
 
   /**
    * Return all sources if they are found in the room
    */
-  public static GetSources = FuncWrapper(function GetSources(
+  public static GetSources = WrapperHandler.FuncWrapper(function GetSources(
     room: Room
   ): Source[] {
     const sources = room.find(FIND_SOURCES);
@@ -250,7 +257,7 @@ export default class RoomReadingHelper {
   /**
    * Return an boolean indicating if the the position has an structure where it energy can be dispensed in
    */
-  public static GetPositionEnergyStructure = FuncWrapper(
+  public static GetPositionEnergyStructure = WrapperHandler.FuncWrapper(
     function GetPositionEnergyStructure(
       room: Room,
       pos: RoomPosition
@@ -281,7 +288,7 @@ export default class RoomReadingHelper {
   /**
    * Get the amount of acces points that are around the position
    */
-  public static GetAccesSpotsAroundPosition = FuncWrapper(
+  public static GetAccesSpotsAroundPosition = WrapperHandler.FuncWrapper(
     function GetAccesSpotsAroundPosition(
       room: Room,
       pos: RoomPosition,
@@ -331,7 +338,7 @@ export default class RoomReadingHelper {
    * @return {boolean} HTTP response with code and data
    *
    */
-  public static GetBestEnergyStructurePosAroundPosition = FuncWrapper(
+  public static GetBestEnergyStructurePosAroundPosition = WrapperHandler.FuncWrapper(
     function GetBestEnergyStructurePosAroundPosition(
       room: Room,
       position: RoomPosition,
@@ -371,7 +378,7 @@ export default class RoomReadingHelper {
     }
   );
 
-  // public static GetBestWallSpots = FuncWrapper(function GetBestWallSpots(room: Room): boolean {
+  // public static GetBestWallSpots = WrapperHandler.FuncWrapper(function GetBestWallSpots(room: Room): boolean {
   //   const getTerrain = GetTerrain(room);
   //   if (getTerrain.code !== FunctionReturnCodes.OK)
   //     return FunctionReturnHelper(FunctionReturnCodes.INTERNAL_SERVER_ERROR);

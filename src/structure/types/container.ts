@@ -1,11 +1,11 @@
-import FuncWrapper from "../../utils/wrapper";
 import StructureHelper from "../helper";
 import JobHandler from "../../room/jobs/handler";
+import WrapperHandler from "../../utils/wrapper";
 
 /**
  * Execute an container
  */
-export default FuncWrapper(function ExecuteContainer(
+export default WrapperHandler.FuncWrapper(function ExecuteContainer(
   str: StructureContainer
 ): void {
   if (

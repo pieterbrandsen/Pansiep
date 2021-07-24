@@ -1,10 +1,9 @@
 /**
  * Generates an http response object based on params
  */
-// eslint-disable-next-line import/prefer-default-export
-export default function FunctionReturnHelper<T>(
+export default function FunctionReturnHelper(
   code: number,
-  response?: T
+  response?: unknown
 ): FunctionReturn {
   return { code, response };
 }
