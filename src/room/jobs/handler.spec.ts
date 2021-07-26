@@ -112,8 +112,8 @@ describe("JobHandler", () => {
   beforeEach(() => {
     MemoryInitializationHandler.InitializeGlobalMemory();
     MemoryInitializationHandler.InitializeRoomMemory(roomName);
-    MemoryInitializationHandler.InitializeCreepMemory(creepId, roomName);
-    MemoryInitializationHandler.InitializeCreepMemory(creepId2, roomName);
+    MemoryInitializationHandler.InitializeCreepMemory(roomName, creepId);
+    MemoryInitializationHandler.InitializeCreepMemory(roomName, creepId2);
   });
 
   describe("GetAllJobs", () => {

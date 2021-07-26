@@ -47,36 +47,36 @@ export default class ConsoleCommandsHandler {
       id: string
     ): boolean {
       return MemoryInitializationHandler.InitializeStructureMemory(
-        id,
-        roomName
+        roomName,
+        id
       );
     }
   );
 
   private static ResetCreepMemoryCommand = WrapperHandler.FuncWrapper(
     function ResetCreepMemoryCommand(roomName: string, id: string): boolean {
-      return MemoryInitializationHandler.InitializeCreepMemory(id, roomName);
+      return MemoryInitializationHandler.InitializeCreepMemory(roomName, id);
     }
   );
 
   private static DeleteRoomMemoryCommand = WrapperHandler.FuncWrapper(
-    function DeleteRoomMemoryCommand(id: string): boolean {
-      return GarbageCollectionHandler.RemoveRoom(id);
+    function DeleteRoomMemoryCommand(roomName: string): void {
+      GarbageCollectionHandler.RemoveRoom(roomName);
     }
   );
 
   private static DeleteStructureMemoryCommand = WrapperHandler.FuncWrapper(
     function DeleteStructureMemoryCommand(
-      id: Id<Structure>,
-      roomName: string
-    ): boolean {
-      return GarbageCollectionHandler.RemoveStructure(id, roomName);
+      roomName: string,
+      id: Id<Structure>
+    ): void {
+      GarbageCollectionHandler.RemoveStructure(roomName, id);
     }
   );
 
   private static DeleteCreepMemoryCommand = WrapperHandler.FuncWrapper(
-    function DeleteCreepMemoryCommand(id: string, roomName: string): boolean {
-      return GarbageCollectionHandler.RemoveCreep(id, roomName);
+    function DeleteCreepMemoryCommand(id: string, roomName: string): void {
+      GarbageCollectionHandler.RemoveCreep(roomName, id);
     }
   );
 

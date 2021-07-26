@@ -194,6 +194,9 @@ interface Cache {
     nextCheckTick: number;
     data: StringMap<CreepCache[]>;
   };
+  jobs: {
+    nextCheckTick: number;
+  };
 }
 
 interface Memory {
@@ -213,8 +216,8 @@ declare namespace NodeJS {
     resetStructureMemory(roomName: string, id: Id<Structure>): boolean;
     resetCreepMemory(roomName: string, creepName: string): boolean;
 
-    deleteRoomMemory(roomName: string): boolean;
-    deleteStructureMemory(roomName: string, id: Id<Structure>): boolean;
-    deleteCreepMemory(roomName: string, creepName: string): boolean;
+    deleteRoomMemory(roomName: string): void;
+    deleteStructureMemory(roomName: string, id: Id<Structure>): void;
+    deleteCreepMemory(roomName: string, creepName: string): void;
   }
 }

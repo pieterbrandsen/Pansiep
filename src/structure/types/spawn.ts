@@ -325,8 +325,8 @@ export default class SpawnHandler {
       `spawned a creep with the type: ${creepType}`
     );
     MemoryInitializationHandler.InitializeCreepMemory(
-      name,
       roomName,
+      name,
       creepType,
       true
     );

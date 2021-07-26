@@ -330,6 +330,8 @@ export default class JobHandler {
   ): void {
     const jobs = JobHandler.GetAllJobs(roomName);
     const index = jobs.findIndex((j) => j.id === id);
+    if (index === -1) return;
+
     forEach(jobs[index].assignedCreepsNames, (name: string) => {
       const creepMemory = CreepHelper.GetCreepMemory(name);
       if (creepMemory.jobId === id) {

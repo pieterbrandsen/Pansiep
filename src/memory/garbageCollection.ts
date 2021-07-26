@@ -6,32 +6,32 @@ import WrapperHandler from "../utils/wrapper";
 
 export default class GarbageCollectionHandler {
   public static RemoveCreep = WrapperHandler.FuncWrapper(function RemoveCreep(
-    name: string,
-    roomName: string
-  ): boolean {
+    roomName: string,
+    creepName: string
+  ): void {
     const jobs = JobHandler.GetAllJobs(roomName);
-    const creepJobs = jobs.filter((j) => j.assignedCreepsNames.includes(name));
+    const creepJobs = jobs.filter((j) =>
+      j.assignedCreepsNames.includes(creepName)
+    );
     forEach(creepJobs, (job: Job) => {
-      job.assignedCreepsNames = remove(job.assignedCreepsNames, name);
+      job.assignedCreepsNames = remove(job.assignedCreepsNames, creepName);
     });
 
-    remove(jobs, (j) => j.objId === name);
+    remove(jobs, (j) => j.objId === creepName);
     JobHandler.OverwriteJobList(roomName, jobs);
 
-    delete Memory.creeps[name];
+    delete Memory.creeps[creepName];
 
     LoggerHandler.Log(
       GlobalConstants.LogTypes.Debug,
       "memory/garbageCollection:RemoveCreep",
       "Deleted Creep memory",
-      name
+      creepName
     );
-
-    return true;
   });
 
   public static RemoveStructure = WrapperHandler.FuncWrapper(
-    function RemoveStructure(id: Id<Structure>, roomName: string): boolean {
+    function RemoveStructure(roomName: string, id: Id<Structure>): void {
       const jobs = JobHandler.GetAllJobs(roomName);
       const structureJobs = jobs.filter((j) =>
         j.assignedStructuresIds.includes(id)
@@ -50,25 +50,23 @@ export default class GarbageCollectionHandler {
         "Deleted Structure memory",
         id
       );
-
-      return true;
     }
   );
 
   public static RemoveRoom = WrapperHandler.FuncWrapper(function RemoveRoom(
     roomName: string
-  ): boolean {
-    forOwn(Memory.structures, (str: StructureMemory, key: string) => {
+  ): void {
+    forOwn(Memory.structures, (str: StructureMemory, structureId: string) => {
       if (str.room === roomName) {
         GarbageCollectionHandler.RemoveStructure(
-          key as Id<Structure>,
-          roomName
+          roomName,
+          structureId as Id<Structure>
         );
       }
     });
-    forOwn(Memory.creeps, (crp: CreepMemory, key: string) => {
+    forOwn(Memory.creeps, (crp: CreepMemory, creepName: string) => {
       if (crp.commandRoom === roomName) {
-        GarbageCollectionHandler.RemoveCreep(key as Id<Creep>, roomName);
+        GarbageCollectionHandler.RemoveCreep(roomName, creepName);
       }
     });
 
@@ -81,7 +79,5 @@ export default class GarbageCollectionHandler {
       "Deleted Room memory",
       roomName
     );
-
-    return true;
   });
 }

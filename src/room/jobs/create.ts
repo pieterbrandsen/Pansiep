@@ -143,7 +143,7 @@ export default class CreateJobHandler {
         assignedStructuresIds: [],
         maxStructures: 99,
         roomName,
-        objId: "UNDEFINED" as Id<Structure>,
+        objId: "undefined" as Id<Structure>,
         hasPriority,
         position: pos,
       };

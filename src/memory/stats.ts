@@ -6,7 +6,7 @@ import WrapperHandler from "../utils/wrapper";
 
 export default class StatsHandler {
   public static ResetPreProcessingStats = WrapperHandler.FuncWrapper(
-    function ResetPreProcessingStats(): boolean {
+    function ResetPreProcessingStats(): void {
       global.preProcessingStats = {
         intentCalls: {},
         funcCalls: {},
@@ -15,12 +15,11 @@ export default class StatsHandler {
         gcl: Game.gcl,
         cpu: { bucket: {}, usage: {} },
       };
-      return true;
     }
   );
 
   public static ResetStats = WrapperHandler.FuncWrapper(
-    function ResetStats(): boolean {
+    function ResetStats(): void {
       Memory.stats = {
         intentCalls: {},
         funcCalls: {},
@@ -29,13 +28,11 @@ export default class StatsHandler {
         gcl: { progress: 0, progressTotal: 0, level: 0 },
         cpu: { bucket: {}, usage: {} },
       };
-
-      return true;
     }
   );
 
   public static ResetPreProcessingRoomStats = WrapperHandler.FuncWrapper(
-    function ResetPreProcessingRoomStats(id: string): boolean {
+    function ResetPreProcessingRoomStats(id: string): void {
       global.preProcessingStats.rooms[id] = {
         creepCount: 0,
         structureCount: 0,
@@ -50,13 +47,11 @@ export default class StatsHandler {
           terminal: 0,
         },
       };
-
-      return true;
     }
   );
 
   public static ResetRoomStats = WrapperHandler.FuncWrapper(
-    function ResetRoomStats(id: string): boolean {
+    function ResetRoomStats(id: string): void {
       Memory.stats.rooms[id] = {
         creepCount: 0,
         structureCount: 0,
@@ -71,13 +66,11 @@ export default class StatsHandler {
           terminal: 0,
         },
       };
-
-      return true;
     }
   );
 
   public static GetAveragedValue = WrapperHandler.FuncWrapper(
-    function GetAveragedValue(current = 0, num = 0): number {
+    function GetAveragedValue(current: number, num: number): number {
       const currentPercentage =
         (1 / GlobalConstants.AverageValueOverAmountTicks) * -1 + 1;
       const numPercentage = 1 / GlobalConstants.AverageValueOverAmountTicks;
@@ -92,33 +85,19 @@ export default class StatsHandler {
   );
 
   public static RoomStatsPreProcessing = WrapperHandler.FuncWrapper(
-    function RoomStatsPreProcessing(room: Room): boolean {
-      if (!GlobalConfig.UpdateStats) return false;
-
-      StatsHandler.ResetPreProcessingRoomStats(room.name);
-
-      return true;
+    function RoomStatsPreProcessing(roomName: string): void {
+      StatsHandler.ResetPreProcessingRoomStats(roomName);
     }
   );
 
   public static RoomStats = WrapperHandler.FuncWrapper(function RoomStats(
     room: Room
-  ): boolean {
-    if (!GlobalConfig.UpdateStats) return false;
+  ): void {
+    if (!GlobalConfig.UpdateStats) return;
 
-    let preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
+    const preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
     const roomMem: RoomMemory = RoomHelper.GetRoomMemory(room.name);
     const roomStats: RoomStats = RoomHelper.GetRoomStatsMemory(room.name);
-
-    if (preProcessingRoomStats === undefined) {
-      StatsHandler.ResetPreProcessingRoomStats(room.name);
-      preProcessingRoomStats = global.preProcessingStats.rooms[room.name];
-    }
-
-    // if (roomStats === undefined) {
-    //   ResetRoomStats(room.name);
-    //   roomStats = Memory.stats.rooms[room.name];
-    // }
 
     Memory.stats.rooms[room.name] = {
       creepCount: StatsHandler.GetAveragedValue(
@@ -228,61 +207,55 @@ export default class StatsHandler {
     });
 
     Memory.stats.rooms[room.name].energyExpenses.spawn = spawnCosts;
-    return true;
   });
 
   public static StructureStatsPreProcessing = WrapperHandler.FuncWrapper(
-    function StructureStatsPreProcessing(structure: Structure): boolean {
-      if (!GlobalConfig.UpdateStats) return false;
+    function StructureStatsPreProcessing(structure: Structure): void {
+      if (!GlobalConfig.UpdateStats) return;
 
-      const roomStats = global.preProcessingStats.rooms[structure.room.name];
-      roomStats.structureCount += 1;
+      const preProcessingRoomStats =
+        global.preProcessingStats.rooms[structure.room.name];
+      preProcessingRoomStats.structureCount += 1;
 
       switch (structure.structureType) {
         case STRUCTURE_STORAGE:
-          roomStats.energyInStorages.storage = (structure as StructureStorage).store.energy;
+          preProcessingRoomStats.energyInStorages.storage = (structure as StructureStorage).store.energy;
           break;
         case STRUCTURE_TERMINAL:
-          roomStats.energyInStorages.terminal = (structure as StructureTerminal).store.energy;
+          preProcessingRoomStats.energyInStorages.terminal = (structure as StructureTerminal).store.energy;
           break;
         case STRUCTURE_CONTAINER:
-          if (roomStats.energyInStorages.containers > 0)
-            roomStats.energyInStorages.containers += (structure as StructureContainer).store.energy;
-          else
-            roomStats.energyInStorages.containers = (structure as StructureContainer).store.energy;
+          // if (roomStats.energyInStorages.containers > 0)
+          // roomStats.energyInStorages.containers += (structure as StructureContainer).store.energy;
+          // else
+          preProcessingRoomStats.energyInStorages.containers += (structure as StructureContainer).store.energy;
           break;
         default:
           break;
       }
-
-      return true;
     }
   );
 
   public static CreepStatsPreProcessing = WrapperHandler.FuncWrapper(
-    function CreepStatsPreProcessing(creep: Creep): boolean {
-      if (!GlobalConfig.UpdateStats) return false;
+    function CreepStatsPreProcessing(roomName: string): void {
+      if (!GlobalConfig.UpdateStats) return;
 
-      const roomStats = global.preProcessingStats.rooms[creep.room.name];
+      const roomStats = global.preProcessingStats.rooms[roomName];
       roomStats.creepCount += 1;
-
-      return true;
     }
   );
 
   public static GlobalStatsPreProcessing = WrapperHandler.FuncWrapper(
-    function GlobalStatsPreProcessing(): boolean {
-      if (!GlobalConfig.UpdateStats) return false;
+    function GlobalStatsPreProcessing(): void {
+      if (!GlobalConfig.UpdateStats) return;
 
       StatsHandler.ResetPreProcessingStats();
-
-      return true;
     }
   );
 
   public static GlobalStats = WrapperHandler.FuncWrapper(
-    function GlobalStats(): boolean {
-      if (!GlobalConfig.UpdateStats) return false;
+    function GlobalStats(): void {
+      if (!GlobalConfig.UpdateStats) return;
 
       Memory.stats.ticksStatsCollecting += 1;
       Memory.stats.gcl = Game.gcl;
@@ -358,8 +331,6 @@ export default class StatsHandler {
         };
       });
       Memory.stats.funcCalls = averagedFuncCallsList;
-
-      return true;
     }
   );
 }

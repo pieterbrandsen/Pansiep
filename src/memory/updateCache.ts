@@ -12,37 +12,25 @@ type RoomObjTypes = StringMap<StructureCache[] | CreepCache[]>;
 
 export default class UpdateCacheHandler {
   /**
-   * Creates move job to move to roomName if job does not already exists
-   */
-  // private static TryToCreateMoveJob = WrapperHandler.FuncWrapper(function TryToCreateMoveJob(
-  //   jobId: Id<Job>,
-  //   roomName: string
-  // ): boolean {
-  //   if (JobHandler.GetJobById(jobId, roomName) === null) {
-  //     JobHandler.CreateJob.CreateMoveJob(jobId, roomName);
-  //     return true;
-  //   }
-  //   return true;
-  // });
-
-  /**
    * Returns the complete cache of Structures or Creeps
    */
-  // TODO: Remove function return
   private static ReturnCompleteCache = WrapperHandler.FuncWrapper(
     function ReturnCompleteCache(
       currentCache: RoomObjTypes,
       newCache: RoomObjTypes,
       roomObject: StringMap<StructureMemory> | StringMap<CreepMemory>
     ): RoomObjTypes {
+      // const completeCache = UpdateCacheHandler.ReturnCompleteCache(
+      //   Memory.cache.structures.data,
+      //   cache,
+      //   Memory.structures
+      // );
       const returnCache = newCache;
-      Object.keys(currentCache).forEach((key) => {
-        // const noVisionJobId = `move-25/25-${key}` as Id<Job>;
-
-        if (!returnCache[key]) returnCache[key] = [];
-        const newCacheArr = returnCache[key];
+      Object.keys(currentCache).forEach((roomName) => {
+        if (!returnCache[roomName]) returnCache[roomName] = [];
+        const newCacheArr = returnCache[roomName];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        forEach(currentCache[key], (obj: any) => {
+        forEach(currentCache[roomName], (obj: any) => {
           if (
             obj &&
             roomObject[obj.id] &&
@@ -58,13 +46,13 @@ export default class UpdateCacheHandler {
               const firstJobId: Id<Job> | undefined = roomObject[obj.id]
                 .jobId as Id<Job>;
               if (firstJobId) {
-                JobHandler.UnassignJob(firstJobId, obj.id, key);
+                JobHandler.UnassignJob(firstJobId, obj.id, roomName);
               }
               const secondJobId: Id<Job> | undefined = (roomObject[
                 obj.id
               ] as CreepMemory).secondJobId as Id<Job>;
               if (secondJobId) {
-                JobHandler.UnassignJob(secondJobId, obj.id, key);
+                JobHandler.UnassignJob(secondJobId, obj.id, roomName);
               }
             } else if (
               (roomObject[obj.id].isNotSeenSince as number) +
@@ -72,15 +60,18 @@ export default class UpdateCacheHandler {
               Game.time
             ) {
               if ((roomObject[obj.id] as StructureMemory).room !== undefined)
-                GarbageCollectionHandler.RemoveStructure(obj.id, key);
-              else GarbageCollectionHandler.RemoveCreep(obj.id, key);
+                GarbageCollectionHandler.RemoveStructure(roomName, obj.id);
+              else GarbageCollectionHandler.RemoveCreep(roomName, obj.id);
               newCacheArr.pop();
             }
           } else if (
             roomObject[obj.id] &&
             roomObject[obj.id].isNotSeenSince !== undefined
           ) {
-            JobHandler.DeleteJob(JobHandler.CreateJob.GetMoveJobId(key), key);
+            JobHandler.DeleteJob(
+              JobHandler.CreateJob.GetMoveJobId(roomName),
+              roomName
+            );
             // eslint-disable-next-line no-param-reassign
             delete roomObject[obj.id].isNotSeenSince;
           }
@@ -110,26 +101,32 @@ export default class UpdateCacheHandler {
         cache.push(key);
       });
 
-      forEach(savedCache, (key: string) => {
-        if (Memory.rooms[key] && !cache.includes(key)) {
-          cache.push(key);
+      forEach(savedCache, (roomName: string) => {
+        if (Memory.rooms[roomName] && !cache.includes(roomName)) {
+          cache.push(roomName);
 
-          const roomMem: RoomMemory = Memory.rooms[key];
+          const roomMem: RoomMemory = Memory.rooms[roomName];
           if (roomMem.isNotSeenSince === undefined) {
             roomMem.isNotSeenSince = Game.time;
+            JobHandler.CreateJob.CreateMoveJob(roomName);
           } else if (
             (roomMem.isNotSeenSince as number) +
               GlobalConstants.SaveUnloadedObjectForAmountTicks * 2 <=
             Game.time
           ) {
-            GarbageCollectionHandler.RemoveRoom(key);
+            JobHandler.DeleteJob(
+              JobHandler.CreateJob.GetMoveJobId(roomName),
+              roomName
+            );
+            GarbageCollectionHandler.RemoveRoom(roomName);
             cache.pop();
           }
         } else if (
-          Memory.rooms[key] &&
-          Memory.rooms[key].isNotSeenSince !== undefined
-        )
-          delete Memory.rooms[key].isNotSeenSince;
+          Memory.rooms[roomName] &&
+          Memory.rooms[roomName].isNotSeenSince !== undefined
+        ) {
+          delete Memory.rooms[roomName].isNotSeenSince;
+        }
       });
 
       Memory.cache.rooms.data = cache;
@@ -145,7 +142,7 @@ export default class UpdateCacheHandler {
   /**
    * Checks if the structure cache needs to be updated, if so updates the cache
    */
-  private static UpdateStructuresCache = WrapperHandler.FuncWrapper(
+  public static UpdateStructuresCache = WrapperHandler.FuncWrapper(
     function UpdateStructuresCache(): void {
       if (Memory.cache.structures.nextCheckTick > Game.time) return;
 
@@ -155,14 +152,13 @@ export default class UpdateCacheHandler {
       const cache: StringMap<StructureCache[]> = {};
       forEach(Game.rooms, (room: Room) => {
         forEach(
-          room.find(FIND_STRUCTURES, {
-            filter: (str: Structure) => {
-              return (
+          room
+            .find(FIND_STRUCTURES)
+            .filter(
+              (str: Structure) =>
                 str.structureType === STRUCTURE_CONTAINER ||
                 str.structureType === STRUCTURE_ROAD
-              );
-            },
-          }),
+            ),
           (str: Structure) => {
             Game.structures[str.id] = str;
           }
@@ -180,8 +176,8 @@ export default class UpdateCacheHandler {
             ) === false
           ) {
             MemoryInitializationHandler.InitializeStructureMemory(
-              id,
-              str.room.name
+              str.room.name,
+              id
             );
             strMem = Memory.structures[id];
           }
@@ -215,7 +211,7 @@ export default class UpdateCacheHandler {
   /**
    * Checks if the creep cache needs to be updated, if so updates the cache
    */
-  private static UpdateCreepsCache = WrapperHandler.FuncWrapper(
+  public static UpdateCreepsCache = WrapperHandler.FuncWrapper(
     function UpdateCreepsCache(): void {
       if (Memory.cache.creeps.nextCheckTick > Game.time) return;
 
@@ -229,8 +225,8 @@ export default class UpdateCacheHandler {
           MemoryInitializationHandler.IsCreepMemoryInitialized(name) === false
         ) {
           MemoryInitializationHandler.InitializeCreepMemory(
-            name,
-            creep.room.name
+            creep.room.name,
+            name
           );
           creepMemory = Memory.creeps[name];
         }
@@ -259,13 +255,18 @@ export default class UpdateCacheHandler {
   /**
    * Checks if the job cache needs to be updated, if so updates the cache
    */
-  private static UpdateJobsCache = WrapperHandler.FuncWrapper(
+  public static UpdateJobsCache = WrapperHandler.FuncWrapper(
     function UpdateJobsCache(): void {
-      forOwn(Memory.rooms, (mem: RoomMemory, key: string) => {
-        const room = RoomHelper.GetRoom(key);
+      if (Memory.cache.jobs.nextCheckTick > Game.time) return;
+      let nextCheckTick =
+        Game.time + GlobalConstants.CacheNextCheckIncrement.jobs;
+
+      forOwn(Memory.rooms, (mem: RoomMemory, roomName: string) => {
+        const room = RoomHelper.GetRoom(roomName);
         if (mem.isNotSeenSince === undefined && room !== null) {
           for (let i = 0; i < mem.jobs.length; i += 1) {
             const job = mem.jobs[i];
+
             if (job.updateJobAtTick <= Game.time) {
               let obj: Structure | ConstructionSite | Creep;
               switch (job.action) {
@@ -286,7 +287,7 @@ export default class UpdateCacheHandler {
                     job.updateJobAtTick =
                       Game.time + GlobalConstants.CacheNextCheckIncrement.jobs;
                   } else {
-                    JobHandler.DeleteJob(job.id, key);
+                    JobHandler.DeleteJob(job.id, roomName);
                     UpdateCacheHandler.UpdateStructuresCache();
                   }
                   break;
@@ -294,9 +295,17 @@ export default class UpdateCacheHandler {
                   break;
               }
             }
+            if (
+              Game.time < job.updateJobAtTick &&
+              job.updateJobAtTick < nextCheckTick
+            ) {
+              nextCheckTick = job.updateJobAtTick;
+            }
           }
         }
       });
+
+      Memory.cache.jobs.nextCheckTick = nextCheckTick;
     }
   );
 

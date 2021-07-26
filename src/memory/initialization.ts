@@ -24,7 +24,7 @@ export default class MemoryInitializationHandler {
   );
 
   public static InitializeHeapVars = WrapperHandler.FuncWrapper(
-    function InitializeHeapVars(): boolean {
+    function InitializeHeapVars(): void {
       StatsHandler.ResetPreProcessingStats();
       ConsoleCommandsHandler.AssignCommandsToHeap();
 
@@ -33,7 +33,6 @@ export default class MemoryInitializationHandler {
         "memory/initialization:InitializeHeapVars",
         "Initialized heap vars"
       );
-      return true;
     }
   );
 
@@ -51,7 +50,7 @@ export default class MemoryInitializationHandler {
   );
 
   public static InitializeCustomPrototypes = WrapperHandler.FuncWrapper(
-    function InitializeCustomPrototypes(): boolean {
+    function InitializeCustomPrototypes(): void {
       forEach(RoomConstants.TrackedIntents, (key: string) => {
         // eslint-disable-next-line @typescript-eslint/ban-types
         Room.prototype.command = ((Room.prototype as unknown) as StringMap<Function>)[
@@ -91,8 +90,6 @@ export default class MemoryInitializationHandler {
         "memory/initialization:InitializeCustomPrototypes",
         "Initialized custom prototypes"
       );
-
-      return true;
     }
   );
 
@@ -115,7 +112,7 @@ export default class MemoryInitializationHandler {
   );
 
   public static InitializeGlobalMemory = WrapperHandler.FuncWrapper(
-    function InitializeGlobalMemory(): boolean {
+    function InitializeGlobalMemory(): void {
       Memory.flags = {};
       Memory.rooms = {};
       Memory.spawns = {};
@@ -126,6 +123,7 @@ export default class MemoryInitializationHandler {
         creeps: { data: {}, nextCheckTick: 0 },
         structures: { data: {}, nextCheckTick: 0 },
         rooms: { data: [], nextCheckTick: 0 },
+        jobs: { nextCheckTick: 0 },
       };
 
       StatsHandler.ResetStats();
@@ -136,13 +134,11 @@ export default class MemoryInitializationHandler {
         "memory/initialization:InitializeGlobalMemory",
         "Initialized Global memory"
       );
-
-      return true;
     }
   );
 
   public static InitializeRoomMemory = WrapperHandler.FuncWrapper(
-    function InitializeRoomMemory(roomName: string): boolean {
+    function InitializeRoomMemory(roomName: string): void {
       Memory.rooms[roomName] = {
         jobs: [],
         spawnQueue: [],
@@ -154,8 +150,8 @@ export default class MemoryInitializationHandler {
       forEach(csSites, (site: ConstructionSite) => {
         site.remove();
       });
-      const sources: Source[] | undefined = RoomHelper.Reader.GetSources(room);
-      Memory.rooms[roomName].sourceCount = sources ? sources.length : 0;
+      const sources: Source[] = RoomHelper.Reader.GetSources(room);
+      Memory.rooms[roomName].sourceCount = sources.length;
       RoomPlannerHandler.TryToExecuteRoomPlanner(room, true);
 
       LoggerHandler.Log(
@@ -163,14 +159,26 @@ export default class MemoryInitializationHandler {
         "memory/initialization:InitializeRoomMemory",
         "Initialized Room memory"
       );
-
-      return true;
     }
   );
 
   public static InitializeStructureMemory = WrapperHandler.FuncWrapper(
-    function InitializeStructureMemory(id: string, roomName: string): boolean {
+    function InitializeStructureMemory(
+      roomName: string,
+      id: string,
+      structureType?: StructureConstants,
+      addToCache = false
+    ): boolean {
       Memory.structures[id] = { room: roomName };
+
+      if (addToCache) {
+        if (isUndefined(Memory.cache.structures.data[roomName]))
+          Memory.cache.structures.data[roomName] = [];
+        Memory.cache.structures.data[roomName].push({
+          id,
+          structureType: structureType as StructureConstant,
+        });
+      }
 
       LoggerHandler.Log(
         GlobalConstants.LogTypes.Debug,
@@ -184,8 +192,8 @@ export default class MemoryInitializationHandler {
 
   public static InitializeCreepMemory = WrapperHandler.FuncWrapper(
     function InitializeCreepMemory(
-      name: string,
       roomName: string,
+      name: string,
       creepType?: CreepTypes,
       addToCache = false
     ): boolean {
@@ -214,11 +222,11 @@ export default class MemoryInitializationHandler {
   );
 
   public static IsRoomMemoryInitialized = WrapperHandler.FuncWrapper(
-    function IsRoomMemoryInitialized(id: string): boolean {
+    function IsRoomMemoryInitialized(roomName: string): boolean {
       if (
         Memory.rooms &&
-        Memory.rooms[id] &&
-        Memory.cache.rooms.data.includes(id)
+        Memory.rooms[roomName] &&
+        Memory.cache.rooms.data.includes(roomName)
       ) {
         return true;
       }
