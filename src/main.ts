@@ -23,7 +23,7 @@ export const loop = ErrorMapper.wrapLoop((): void => {
   }
 
   UpdateCacheHandler.UpdateAll();
-  const globalStatsPreProcessing = StatsHandler.GlobalStatsPreProcessing();
+  StatsHandler.GlobalStatsPreProcessing();
   RoomManager.Run();
-  if (globalStatsPreProcessing) StatsHandler.GlobalStats();
+  StatsHandler.GlobalStats();
 });

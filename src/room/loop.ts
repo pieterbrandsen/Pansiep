@@ -21,10 +21,10 @@ export default class RoomManager {
   ): void {
     const room = RoomHelper.GetRoom(name);
 
-    const roomStatsPreProcessing = StatsHandler.RoomStatsPreProcessing(room);
+    StatsHandler.RoomStatsPreProcessing(room.name);
     StructureManager.Run(name);
     CreepManager.Run(name);
-    if (roomStatsPreProcessing) StatsHandler.RoomStats(room);
+    StatsHandler.RoomStats(room);
 
     RoomPlannerHandler.TryToExecuteRoomPlanner(room);
     RoomVisualHandler.DrawRoomVisuals(room);

@@ -25,7 +25,7 @@ export default class CreepManager {
       ) === null
     )
       JobHandler.CreateJob.CreateHealJob(creep);
-    StatsHandler.CreepStatsPreProcessing(creep);
+    StatsHandler.CreepStatsPreProcessing(creep.name);
   });
 
   public static Run = WrapperHandler.FuncWrapper(function RunCreeps(

@@ -30,13 +30,13 @@ export default class ConsoleCommandsHandler {
 
   // #region Commands
   private static ResetGlobalMemoryCommand = WrapperHandler.FuncWrapper(
-    function ResetGlobalMemoryCommand(): boolean {
+    function ResetGlobalMemoryCommand(): void {
       return MemoryInitializationHandler.InitializeGlobalMemory();
     }
   );
 
   private static ResetRoomMemoryCommand = WrapperHandler.FuncWrapper(
-    function ResetRoomMemoryCommand(id: string): boolean {
+    function ResetRoomMemoryCommand(id: string): void {
       return MemoryInitializationHandler.InitializeRoomMemory(id);
     }
   );
@@ -45,7 +45,7 @@ export default class ConsoleCommandsHandler {
     function ResetStructureMemoryCommand(
       roomName: string,
       id: string
-    ): boolean {
+    ): void {
       return MemoryInitializationHandler.InitializeStructureMemory(
         roomName,
         id
@@ -54,7 +54,7 @@ export default class ConsoleCommandsHandler {
   );
 
   private static ResetCreepMemoryCommand = WrapperHandler.FuncWrapper(
-    function ResetCreepMemoryCommand(roomName: string, id: string): boolean {
+    function ResetCreepMemoryCommand(roomName: string, id: string): void {
       return MemoryInitializationHandler.InitializeCreepMemory(roomName, id);
     }
   );

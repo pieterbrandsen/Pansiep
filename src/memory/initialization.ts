@@ -168,7 +168,7 @@ export default class MemoryInitializationHandler {
       id: string,
       structureType?: StructureConstants,
       addToCache = false
-    ): boolean {
+    ): void {
       Memory.structures[id] = { room: roomName };
 
       if (addToCache) {
@@ -185,8 +185,6 @@ export default class MemoryInitializationHandler {
         "memory/initialization:InitializeStructureMemory",
         "Initialized Structure memory"
       );
-
-      return true;
     }
   );
 
@@ -196,7 +194,7 @@ export default class MemoryInitializationHandler {
       name: string,
       creepType?: CreepTypes,
       addToCache = false
-    ): boolean {
+    ): void {
       const creep = CreepHelper.GetCreep(name);
 
       Memory.creeps[name] = {
@@ -216,8 +214,6 @@ export default class MemoryInitializationHandler {
         "memory/initialization:InitializeCreepMemory",
         "Initialized Creep memory"
       );
-
-      return true;
     }
   );
 

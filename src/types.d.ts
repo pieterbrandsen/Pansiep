@@ -211,10 +211,10 @@ declare namespace NodeJS {
 
     help(): string;
 
-    resetGlobalMemory(): boolean;
-    resetRoomMemory(roomName: string): boolean;
-    resetStructureMemory(roomName: string, id: Id<Structure>): boolean;
-    resetCreepMemory(roomName: string, creepName: string): boolean;
+    resetGlobalMemory(): void;
+    resetRoomMemory(roomName: string): void;
+    resetStructureMemory(roomName: string, id: Id<Structure>): void;
+    resetCreepMemory(roomName: string, creepName: string): void;
 
     deleteRoomMemory(roomName: string): void;
     deleteStructureMemory(roomName: string, id: Id<Structure>): void;
