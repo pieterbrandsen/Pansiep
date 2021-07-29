@@ -6,20 +6,19 @@ import RoomManager from "./room/loop";
 
 // eslint-disable-next-line import/prefer-default-export
 export const loop = ErrorMapper.wrapLoop((): void => {
-  // export function loop(): FunctionReturn {
-  if (MemoryInitializationHandler.AreCustomPrototypesInitialized()) {
+  if (!MemoryInitializationHandler.AreCustomPrototypesInitialized()) {
     MemoryInitializationHandler.InitializeCustomPrototypes();
-    if (MemoryInitializationHandler.AreCustomPrototypesInitialized()) return;
+    if (!MemoryInitializationHandler.AreCustomPrototypesInitialized()) return;
   }
 
-  if (MemoryInitializationHandler.AreHeapVarsValid()) {
+  if (!MemoryInitializationHandler.AreHeapVarsValid()) {
     MemoryInitializationHandler.InitializeHeapVars();
-    if (MemoryInitializationHandler.AreHeapVarsValid()) return;
+    if (!MemoryInitializationHandler.AreHeapVarsValid()) return;
   }
 
-  if (MemoryInitializationHandler.IsGlobalMemoryInitialized()) {
+  if (!MemoryInitializationHandler.IsGlobalMemoryInitialized()) {
     MemoryInitializationHandler.InitializeGlobalMemory();
-    if (MemoryInitializationHandler.IsGlobalMemoryInitialized()) return;
+    if (!MemoryInitializationHandler.IsGlobalMemoryInitialized()) return;
   }
 
   UpdateCacheHandler.UpdateAll();
@@ -27,3 +26,5 @@ export const loop = ErrorMapper.wrapLoop((): void => {
   RoomManager.Run();
   StatsHandler.GlobalStats();
 });
+
+export const unwrappedLoop = ErrorMapper.wrapLoop(loop);
