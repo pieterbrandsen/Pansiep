@@ -32,6 +32,9 @@ orbs:
 version: 2.1
 workflows:
   testing:
+     docker:
+      - image: buildpack-deps:trusty
+    resource_class: large
     jobs:
       - build
       - test-cov
