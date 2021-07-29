@@ -26,5 +26,3 @@ export const loop = ErrorMapper.wrapLoop((): void => {
   RoomManager.Run();
   StatsHandler.GlobalStats();
 });
-
-export const unwrappedLoop = ErrorMapper.wrapLoop(loop);
