@@ -1,5 +1,6 @@
 jobs:
   build:
+    resource_class: large
     executor: node/default
     steps:
       - checkout
@@ -33,8 +34,5 @@ version: 2.1
 workflows:
   testing:
     jobs:
-      docker:
-        - image: buildpack-deps:trusty
-      resource_class: large
       - build
       - test-cov
