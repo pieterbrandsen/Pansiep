@@ -7,14 +7,14 @@ jobs:
           cache-path: ~/project/node_modules
           override-ci-command: npm install
       - run: npm run build
-  test:
-    executor: node/default
-    steps:
-      - checkout
-      - node/install-packages:
-          cache-path: ~/project/node_modules
-          override-ci-command: npm install
-      - run: npm run test
+  # test:
+  #   executor: node/default
+  #   steps:
+  #     - checkout
+  #     - node/install-packages:
+  #         cache-path: ~/project/node_modules
+  #         override-ci-command: npm install
+  #     - run: npm run test
   test-cov:
     executor: node/default
     steps:
