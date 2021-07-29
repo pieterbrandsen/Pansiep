@@ -1,11 +1,6 @@
 import RoomConstants from "../../utils/constants/room";
 import WrapperHandler from "../../utils/wrapper";
-
-import {
-  AddRectWCoords,
-  AddTextWCoords,
-  ShouldVisualsBeDisplayed,
-} from "./draw";
+import DrawVisualHandler from "./drawVisual";
 
 /**
  * Draws all main visuals
@@ -13,8 +8,12 @@ import {
 export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
   room: Room
 ): void {
-  const visualDisplayLevel = RoomConstants.VisualDisplayLevels.Info;
-  if (ShouldVisualsBeDisplayed(visualDisplayLevel) === false) return;
+  if (
+    DrawVisualHandler.ShouldVisualsBeDisplayed(
+      RoomConstants.VisualDisplayLevels.Info
+    ) === false
+  )
+    return;
 
   const defaultXCoord = 1;
   const textXPos = defaultXCoord + 0.3;
@@ -30,7 +29,7 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
   const textStyle: TextStyle = {
     align: "left",
   };
-  AddRectWCoords(
+  DrawVisualHandler.AddRectWCoords(
     room,
     defaultXCoord,
     (topLeftPos += 1),
@@ -44,22 +43,28 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
   );
 
   // Empire
-  AddTextWCoords(room, "Empire:", textXPos, (topLeftPos += 1), titleTextStyle);
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
+    room,
+    "Empire:",
+    textXPos,
+    (topLeftPos += 1),
+    titleTextStyle
+  );
+  DrawVisualHandler.AddTextWCoords(
     room,
     "> Main",
     textXPos,
     (topLeftPos += 1),
     subTitleTextStyle
   );
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `GCL lvl: ${Game.gcl.level}`,
     textXPos,
     (topLeftPos += 1),
     textStyle
   );
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `GCL progress: ${(
       (Game.gcl.progress / Game.gcl.progressTotal) *
@@ -69,14 +74,14 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
     (topLeftPos += 1),
     textStyle
   );
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `GPL lvl: ${Game.gpl.level}`,
     textXPos,
     (topLeftPos += 1),
     textStyle
   );
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `GPL progress: ${(
       (Game.gpl.progress / Game.gpl.progressTotal) *
@@ -86,14 +91,14 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
     (topLeftPos += 1),
     textStyle
   );
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Structure count: ${Object.keys(Memory.structures).length}`,
     textXPos,
     (topLeftPos += 1),
     textStyle
   );
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Creep count: ${Object.keys(Memory.creeps).length}`,
     textXPos,
@@ -103,8 +108,14 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
 
   // Room
   topLeftPos += 3;
-  AddTextWCoords(room, "Room:", textXPos, (topLeftPos += 1), titleTextStyle);
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
+    room,
+    "Room:",
+    textXPos,
+    (topLeftPos += 1),
+    titleTextStyle
+  );
+  DrawVisualHandler.AddTextWCoords(
     room,
     "> Main",
     textXPos,
@@ -112,14 +123,14 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
     subTitleTextStyle
   );
   if (room.controller) {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `RCL lvl: ${room.controller.level}`,
       textXPos,
       (topLeftPos += 1),
       textStyle
     );
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `RCL progress: ${(
         (room.controller.progress / room.controller.progressTotal) *
@@ -130,7 +141,7 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
       textStyle
     );
   } else {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `RCL: No controller`,
       textXPos,
@@ -138,7 +149,7 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
       textStyle
     );
   }
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Structure count: ${
       Memory.cache.structures.data[room.name]
@@ -149,7 +160,7 @@ export default WrapperHandler.FuncWrapper(function RoomMainVisuals(
     (topLeftPos += 1),
     textStyle
   );
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Creep count: ${
       Memory.cache.creeps.data[room.name]

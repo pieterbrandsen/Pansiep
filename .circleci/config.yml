@@ -36,4 +36,4 @@ workflows:
   testing:
     jobs:
       - build
-      - test-cov
+      - test-cov-runInBand

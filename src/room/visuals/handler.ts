@@ -10,13 +10,11 @@ export default class RoomVisualHandler {
    */
   public static DrawRoomVisuals = WrapperHandler.FuncWrapper(
     function DrawRoomVisuals(room: Room) {
-      MainVisuals(room);
-
       const roomStats = RoomHelper.GetRoomStatsMemory(room.name);
-      if (roomStats) {
-        IncomeAndExpensesVisuals(room, roomStats);
-        JobVisuals(room, roomStats);
-      }
+
+      MainVisuals(room);
+      IncomeAndExpensesVisuals(room, roomStats);
+      JobVisuals(room, roomStats);
     }
   );
 }

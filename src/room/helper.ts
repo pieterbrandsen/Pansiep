@@ -30,7 +30,7 @@ export default class RoomHelper {
    * Fetches room memory and returns it
    */
   public static GetRoomMemory = WrapperHandler.FuncWrapper(
-    function GetRoomMemoryUsingName(name: string): RoomMemory {
+    function GetRoomMemory(name: string): RoomMemory {
       const roomMemory = Memory.rooms[name];
       return roomMemory;
     }

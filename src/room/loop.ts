@@ -17,17 +17,18 @@ export default class RoomManager {
    *
    */
   private static RunRoom = WrapperHandler.FuncWrapper(function RunRoom(
-    name: string
+    roomName: string
   ): void {
-    const room = RoomHelper.GetRoom(name);
+    const room = RoomHelper.GetRoom(roomName);
 
-    StatsHandler.RoomStatsPreProcessing(room.name);
-    StructureManager.Run(name);
-    CreepManager.Run(name);
-    StatsHandler.RoomStats(room);
+    StatsHandler.RoomStatsPreProcessing(roomName);
+    StructureManager.Run(roomName);
+    CreepManager.Run(roomName);
 
     RoomPlannerHandler.TryToExecuteRoomPlanner(room);
     RoomVisualHandler.DrawRoomVisuals(room);
+
+    StatsHandler.RoomStats(room);
   });
 
   /**
@@ -39,9 +40,9 @@ export default class RoomManager {
   public static Run = WrapperHandler.FuncWrapper(function RunRooms(): void {
     const roomIds = RoomHelper.GetRoomIds();
 
-    forEach(roomIds, (key: string) => {
-      if (MemoryInitializationHandler.IsRoomMemoryInitialized(key))
-        RoomManager.RunRoom(key);
+    forEach(roomIds, (roomName: string) => {
+      if (MemoryInitializationHandler.IsRoomMemoryInitialized(roomName))
+        RoomManager.RunRoom(roomName);
     });
   });
 }

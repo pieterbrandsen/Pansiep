@@ -1,13 +1,7 @@
 import { forEach } from "lodash";
 import RoomConstants from "../../utils/constants/room";
 import WrapperHandler from "../../utils/wrapper";
-
-import {
-  AddLineWCoords,
-  AddRectWCoords,
-  AddTextWCoords,
-  ShouldVisualsBeDisplayed,
-} from "./draw";
+import DrawVisualHandler from "./drawVisual";
 
 /**
  * Draws all job visuals
@@ -16,8 +10,12 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
   room: Room,
   roomStats: RoomStats
 ) {
-  const visualDisplayLevel = RoomConstants.VisualDisplayLevels.Debug;
-  if (ShouldVisualsBeDisplayed(visualDisplayLevel) === false) return;
+  if (
+    DrawVisualHandler.ShouldVisualsBeDisplayed(
+      RoomConstants.VisualDisplayLevels.Debug
+    ) === false
+  )
+    return;
   const defaultX = 27;
   const textXPos = defaultX + 0.3;
 
@@ -32,7 +30,7 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
   };
   let topLeftPos = 5;
   let topLeftSecondRowPos = 8;
-  AddLineWCoords(
+  DrawVisualHandler.AddLineWCoords(
     room,
     defaultX,
     topLeftPos + 1,
@@ -41,7 +39,7 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
 
     { opacity: 1 }
   );
-  AddRectWCoords(
+  DrawVisualHandler.AddRectWCoords(
     room,
     defaultX,
     (topLeftPos += 1),
@@ -56,8 +54,14 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
 
   // Empire
   topLeftPos += 1;
-  AddTextWCoords(room, "> Job", textXPos, (topLeftPos += 1), subTitleTextStyle);
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
+    room,
+    "> Job",
+    textXPos,
+    (topLeftPos += 1),
+    subTitleTextStyle
+  );
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Active Job Types:`,
     textXPos,
@@ -68,15 +72,20 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
     activeJobs: StringMap<number>;
     creepCountPerJob: StringMap<number>;
   } = { activeJobs: {}, creepCountPerJob: {} };
-  forEach(Object.values(Memory.stats.rooms), (rs: RoomStats) => {
-    forEach(Object.entries(rs.activeJobs), ([key, value]) => {
-      if (jobList.activeJobs[key]) jobList.activeJobs[key] += value;
-      else jobList.activeJobs[key] = value;
+  forEach(Object.values(Memory.stats.rooms), (memRoomStats: RoomStats) => {
+    forEach(Object.entries(memRoomStats.activeJobs), ([jobName, count]) => {
+      // if (jobList.activeJobs[jobName]) jobList.activeJobs[jobName] += count;
+      // else jobList.activeJobs[jobName] = count;
+      jobList.activeJobs[jobName] = count;
     });
-    forEach(Object.entries(rs.creepCountPerJob), ([key, value]) => {
-      if (jobList.creepCountPerJob[key]) jobList.creepCountPerJob[key] += value;
-      else jobList.creepCountPerJob[key] = value;
-    });
+    forEach(
+      Object.entries(memRoomStats.creepCountPerJob),
+      ([jobName, creepCount]) => {
+        // if (jobList.creepCountPerJob[jobName]) jobList.creepCountPerJob[jobName] += creepCount;
+        // else jobList.creepCountPerJob[jobName] = creepCount;
+        jobList.creepCountPerJob[jobName] = creepCount;
+      }
+    );
   });
   const globalActiveJobs = Object.entries(jobList.activeJobs)
     .slice(0, 5)
@@ -85,10 +94,10 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
 
-  forEach(globalActiveJobs, ([key, value]) => {
-    AddTextWCoords(
+  forEach(globalActiveJobs, ([jobName, count]) => {
+    DrawVisualHandler.AddTextWCoords(
       room,
-      `${key}: ${value.toFixed(3)}`,
+      `${jobName}: ${count.toFixed(3)}`,
       textXPos,
       (topLeftPos += 1),
       textStyle
@@ -96,7 +105,7 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
   });
   if (globalActiveJobs.length < 5) topLeftPos += 5 - globalActiveJobs.length;
 
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Creep Count Per Job Type:`,
     textSecondRowXPos,
@@ -104,7 +113,7 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
     textStyle
   );
   forEach(globalCreepCountPerJob, ([key, value]) => {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
       textSecondRowXPos,
@@ -117,8 +126,14 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
 
   // Room
   topLeftPos += 4;
-  AddTextWCoords(room, "> Job", textXPos, (topLeftPos += 1), subTitleTextStyle);
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
+    room,
+    "> Job",
+    textXPos,
+    (topLeftPos += 1),
+    subTitleTextStyle
+  );
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Active Job Types:`,
     textXPos,
@@ -129,7 +144,7 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
   forEach(activeJobs, ([key, value]) => {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
       textXPos,
@@ -140,7 +155,7 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
   if (activeJobs.length < 5) topLeftPos += 5 - activeJobs.length;
 
   topLeftSecondRowPos += 5;
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     `Creep Count Per Job Type:`,
     textSecondRowXPos,
@@ -151,7 +166,7 @@ export default WrapperHandler.FuncWrapper(function RoomJobVisuals(
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
   forEach(creepCountPerJob, ([key, value]) => {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
       textSecondRowXPos,

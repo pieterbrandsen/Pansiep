@@ -1,13 +1,7 @@
 import { forEach } from "lodash";
 import RoomConstants from "../../utils/constants/room";
 import WrapperHandler from "../../utils/wrapper";
-
-import {
-  AddLineWCoords,
-  AddRectWCoords,
-  AddTextWCoords,
-  ShouldVisualsBeDisplayed,
-} from "./draw";
+import DrawVisualHandler from "./drawVisual";
 
 /**
  * Draws all income and expenses visuals
@@ -17,7 +11,8 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
   roomStats: RoomStats
 ): void {
   const visualDisplayLevel = RoomConstants.VisualDisplayLevels.Info;
-  if (ShouldVisualsBeDisplayed(visualDisplayLevel) === false) return;
+  if (DrawVisualHandler.ShouldVisualsBeDisplayed(visualDisplayLevel) === false)
+    return;
 
   const defaultXCoord = 9;
   const textXPos = defaultXCoord + 0.3;
@@ -33,7 +28,7 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
   };
   let topLeftPos = 5;
   let topLeftSecondRowPos = 5;
-  AddLineWCoords(
+  DrawVisualHandler.AddLineWCoords(
     room,
     defaultXCoord,
     topLeftPos + 1,
@@ -42,7 +37,7 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
 
     { opacity: 1 }
   );
-  AddRectWCoords(
+  DrawVisualHandler.AddRectWCoords(
     room,
     defaultXCoord,
     (topLeftPos += 1),
@@ -57,7 +52,7 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
 
   // Empire
   topLeftPos += 1;
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     "> Net Profit",
     textXPos,
@@ -69,27 +64,35 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
     income: StringMap<number>;
     expenses: StringMap<number>;
   } = { income: {}, expenses: {} };
-  forEach(Object.values(Memory.stats.rooms), (rs: RoomStats) => {
-    forEach(Object.entries(rs.energyIncome), ([key, value]) => {
-      if (energyIncomeAndExpensesList.income[key])
-        energyIncomeAndExpensesList.income[key] += value;
-      else energyIncomeAndExpensesList.income[key] = value;
-    });
-    forEach(Object.entries(rs.energyExpenses), ([key, value]) => {
-      let number = 0;
-      if (typeof value === "number") {
-        number = value;
-      } else {
-        number = Object.values(value).reduce<number>((acc, curr) => {
-          // eslint-disable-next-line no-param-reassign
-          acc += curr as number;
-          return acc;
-        }, 0);
+  forEach(Object.values(Memory.stats.rooms), (memRoomStats: RoomStats) => {
+    forEach(
+      Object.entries(memRoomStats.energyIncome),
+      ([incomeName, incomeAmount]) => {
+        // if (energyIncomeAndExpensesList.income[key])
+        // energyIncomeAndExpensesList.income[key] += value;
+        // else energyIncomeAndExpensesList.income[key] = value;
+        energyIncomeAndExpensesList.income[incomeName] = incomeAmount;
       }
-      if (energyIncomeAndExpensesList.expenses[key])
-        energyIncomeAndExpensesList.expenses[key] += number;
-      else energyIncomeAndExpensesList.expenses[key] = number;
-    });
+    );
+    forEach(
+      Object.entries(memRoomStats.energyExpenses),
+      ([expenseName, expenseCostObj]) => {
+        let cost = 0;
+        if (typeof expenseCostObj === "number") {
+          cost = expenseCostObj;
+        } else {
+          cost = Object.values(expenseCostObj).reduce<number>((acc, curr) => {
+            // DELETEME -eslint-disable-next-line no-param-reassign
+            acc += curr as number;
+            return acc;
+          }, 0);
+        }
+        // if (energyIncomeAndExpensesList.expenses[expenseName])
+        // energyIncomeAndExpensesList.expenses[expenseName] += cost;
+        // else energyIncomeAndExpensesList.expenses[expenseName] = cost;
+        energyIncomeAndExpensesList.expenses[expenseName] = cost;
+      }
+    );
   });
   const globalEnergyIncome = Object.entries(energyIncomeAndExpensesList.income)
     .slice(0, 5)
@@ -100,9 +103,15 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
 
-  AddTextWCoords(room, "Income:", textXPos, (topLeftPos += 1), textStyle);
+  DrawVisualHandler.AddTextWCoords(
+    room,
+    "Income:",
+    textXPos,
+    (topLeftPos += 1),
+    textStyle
+  );
   forEach(globalEnergyIncome, ([key, value]) => {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
       textXPos,
@@ -110,11 +119,11 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
       textStyle
     );
   });
-  if (globalEnergyIncome.length < 5)
-    topLeftPos += 5 - globalEnergyIncome.length;
+  // if (globalEnergyIncome.length < 5)
+  topLeftPos += 5 - globalEnergyIncome.length;
 
   topLeftSecondRowPos += 3;
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     "Expenses:",
     textSecondRowXPos,
@@ -122,7 +131,7 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
     textStyle
   );
   forEach(globalEnergyExpenses, ([key, value]) => {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
       textSecondRowXPos,
@@ -130,24 +139,30 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
       textStyle
     );
   });
-  if (globalEnergyIncome.length < 5)
-    topLeftSecondRowPos += 5 - globalEnergyExpenses.length;
+  // if (globalEnergyIncome.length < 5)
+  topLeftSecondRowPos += 5 - globalEnergyExpenses.length;
 
   // Room
   topLeftPos += 4;
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     "> Net Profit",
     textXPos,
     (topLeftPos += 1),
     subTitleTextStyle
   );
-  AddTextWCoords(room, "Income:", textXPos, (topLeftPos += 1), textStyle);
+  DrawVisualHandler.AddTextWCoords(
+    room,
+    "Income:",
+    textXPos,
+    (topLeftPos += 1),
+    textStyle
+  );
   const energyIncome = Object.entries(roomStats.energyIncome)
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
   forEach(energyIncome, ([key, value]) => {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
       textXPos,
@@ -155,10 +170,11 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
       textStyle
     );
   });
-  if (energyIncome.length < 5) topLeftPos += 5 - energyIncome.length;
+  // if (energyIncome.length < 5) topLeftPos += 5 - energyIncome.length;
+  topLeftPos += 5 - energyIncome.length;
 
   topLeftSecondRowPos += 5;
-  AddTextWCoords(
+  DrawVisualHandler.AddTextWCoords(
     room,
     "Expenses:",
     textSecondRowXPos,
@@ -180,7 +196,7 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
     .slice(0, 5)
     .sort((a, b) => b[1] - a[1]);
   forEach(energyExpenses, ([key, value]) => {
-    AddTextWCoords(
+    DrawVisualHandler.AddTextWCoords(
       room,
       `${key}: ${value.toFixed(3)}`,
       textSecondRowXPos,
@@ -188,5 +204,6 @@ export default WrapperHandler.FuncWrapper(function RoomIncomeAndExpensesVisuals(
       textStyle
     );
   });
-  if (energyIncome.length < 5) topLeftSecondRowPos += 5 - energyExpenses.length;
+  // if (energyIncome.length < 5) topLeftSecondRowPos += 5 - energyExpenses.length;
+  topLeftSecondRowPos += 5 - energyExpenses.length;
 });

@@ -145,9 +145,10 @@ export default class MemoryInitializationHandler {
         spawnQueue: [],
         sourceCount: 0,
       };
+      StatsHandler.ResetRoomStats(roomName);
       StatsHandler.ResetPreProcessingRoomStats(roomName);
-      const room = RoomHelper.GetRoom(roomName);
 
+      const room = RoomHelper.GetRoom(roomName);
       const csSites: ConstructionSite[] = room.find(FIND_CONSTRUCTION_SITES);
       forEach(csSites, (site: ConstructionSite) => {
         site.remove();
