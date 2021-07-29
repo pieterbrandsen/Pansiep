@@ -34,5 +34,4 @@ workflows:
   testing:
     jobs:
       - build
-      - test
       - test-cov
