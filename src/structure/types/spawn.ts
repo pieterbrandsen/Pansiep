@@ -92,7 +92,7 @@ export default class SpawnHandler {
     function GetNextCreepType(
       roomName: string,
       usePriorityJobs = false
-    ): CreepTypes | undefined {
+    ): CreepTypes {
       const room = RoomHelper.GetRoom(roomName);
       if (
         room &&
@@ -103,7 +103,7 @@ export default class SpawnHandler {
         return CreepHelper.GetAllCreepsMemory(roomName, ["pioneer"]).length <
           RoomConstants.MaxCreepsPerCreepType * 1.5
           ? "pioneer"
-          : undefined;
+          : "none";
       }
 
       const possibleJobActionTypes = SpawnHandler.GetJobActionsWithCreepNeed(
@@ -141,15 +141,14 @@ export default class SpawnHandler {
         }
       });
 
-      if (possibleCreepTypes.length === 0) return undefined;
+      if (possibleCreepTypes.length === 0) return "none";
 
       if (possibleCreepTypes.includes("work")) return "work";
       if (possibleCreepTypes.includes("transferring")) return "transferring";
       if (possibleCreepTypes.includes("attack")) return "attack";
       if (possibleCreepTypes.includes("heal")) return "heal";
       if (possibleCreepTypes.includes("move")) return "move";
-      if (possibleCreepTypes.includes("claim")) return "claim";
-      return undefined;
+      return "claim";
     }
   );
 
@@ -282,25 +281,20 @@ export default class SpawnHandler {
     let usedQueue = false;
 
     if (Memory.rooms[roomName].spawnQueue.length === 0) {
-      let getNextCreepType = SpawnHandler.GetNextCreepType(roomName, true);
-      if (getNextCreepType !== undefined) {
-        creepType = getNextCreepType;
+      let nextCreepType = SpawnHandler.GetNextCreepType(roomName, true);
+      if (nextCreepType !== "none") {
+        creepType = nextCreepType;
       } else {
-        getNextCreepType = SpawnHandler.GetNextCreepType(roomName);
-        if (getNextCreepType !== undefined) {
-          creepType = getNextCreepType;
+        nextCreepType = SpawnHandler.GetNextCreepType(roomName);
+        if (nextCreepType !== "none") {
+          creepType = nextCreepType;
         } else {
           return false;
         }
       }
     } else {
-      const getNextCreepType = Memory.rooms[roomName].spawnQueue.shift();
-      if (getNextCreepType !== undefined) {
-        creepType = getNextCreepType;
-        usedQueue = true;
-      } else {
-        return false;
-      }
+      creepType = Memory.rooms[roomName].spawnQueue.shift() as CreepTypes;
+      usedQueue = true;
     }
 
     const name = SpawnHandler.GetUniqueName(creepType);
@@ -334,33 +328,20 @@ export default class SpawnHandler {
   });
 
   /**
-   * Check if spawn is busy otherwise try to spawn an creep.
-   */
-  private static TryToSpawnCreep = WrapperHandler.FuncWrapper(
-    function TryToSpawnCreep(spawn: StructureSpawn): boolean {
-      if (spawn.spawning) return false;
-
-      SpawnHandler.SpawnCreep(spawn);
-      return true;
-    }
-  );
-
-  /**
    * Execute an spawn
    */
   public static ExecuteSpawn = WrapperHandler.FuncWrapper(function ExecuteSpawn(
     str: StructureSpawn
   ): void {
-    if (
-      StructureHelper.IsStructureDamaged(str) &&
-      JobHandler.GetJob(
-        JobHandler.CreateJob.GetRepairJobId(str),
-        str.room.name
-      ) === null
-    )
-      JobHandler.CreateJob.CreateRepairJob(str);
-    StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY, true);
+    StructureHelper.ControlDamagedStructures(str, true);
+    StructureHelper.KeepStructureFullEnough(
+      str,
+      100,
+      RESOURCE_ENERGY,
+      "transfer",
+      true
+    );
 
-    SpawnHandler.TryToSpawnCreep(str);
+    if (str.spawning === null) SpawnHandler.SpawnCreep(str);
   });
 }

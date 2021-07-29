@@ -3,19 +3,7 @@ import JobHandler from "../room/jobs/handler";
 import StructureConstants from "../utils/constants/structure";
 import UtilsHelper from "../utils/helper";
 import WrapperHandler from "../utils/wrapper";
-import ExecuteContainer from "./types/container";
-import ExecuteController from "./types/controller";
-import ExecuteExtension from "./types/extension";
-import ExecuteFactory from "./types/factory";
-import ExecuteLab from "./types/lab";
-import ExecuteLink from "./types/link";
-import ExecuteNuker from "./types/nuker";
-import ExecuteObserver from "./types/observer";
-import ExecuteRoad from "./types/road";
-import ExecuteSpawnHandler from "./types/spawn";
-import ExecuteStorage from "./types/storage";
-import ExecuteTerminal from "./types/terminal";
-import ExecuteTowerHandler from "./types/tower";
+import StructureActions from "./types/actionsGroup";
 
 type OverFlowObject = { hasOverflow: boolean; overflowAmount: number };
 
@@ -98,7 +86,9 @@ export default class StructureHelper {
         (percentageFull - requiredPercentageFull) * (capacity / 100);
       return {
         hasOverflow:
-          percentageFull < 100 ? percentageFull > requiredPercentageFull : true,
+          percentageFull < 100
+            ? percentageFull > requiredPercentageFull
+            : false,
         overflowAmount,
       };
     }
@@ -171,43 +161,43 @@ export default class StructureHelper {
     function ExecuteStructure(str: Structure): void {
       switch (str.structureType) {
         case STRUCTURE_CONTAINER:
-          ExecuteContainer(str as StructureContainer);
+          StructureActions.Container(str as StructureContainer);
           break;
         case STRUCTURE_CONTROLLER:
-          ExecuteController(str as StructureController);
+          StructureActions.Controller(str as StructureController);
           break;
         case STRUCTURE_EXTENSION:
-          ExecuteExtension(str as StructureExtension);
+          StructureActions.Extension(str as StructureExtension);
           break;
         case STRUCTURE_FACTORY:
-          ExecuteFactory(str as StructureFactory);
+          StructureActions.Factory(str as StructureFactory);
           break;
         case STRUCTURE_LAB:
-          ExecuteLab(str as StructureLab);
+          StructureActions.Lab(str as StructureLab);
           break;
         case STRUCTURE_LINK:
-          ExecuteLink(str as StructureLink);
+          StructureActions.Link(str as StructureLink);
           break;
         case STRUCTURE_NUKER:
-          ExecuteNuker(str as StructureNuker);
+          StructureActions.Nuker(str as StructureNuker);
           break;
         case STRUCTURE_OBSERVER:
-          ExecuteObserver(str as StructureObserver);
+          StructureActions.Observer(str as StructureObserver);
           break;
         case STRUCTURE_SPAWN:
-          ExecuteSpawnHandler.ExecuteSpawn(str as StructureSpawn);
+          StructureActions.SpawnHandler.ExecuteSpawn(str as StructureSpawn);
           break;
         case STRUCTURE_STORAGE:
-          ExecuteStorage(str as StructureStorage);
+          StructureActions.Storage(str as StructureStorage);
           break;
         case STRUCTURE_TERMINAL:
-          ExecuteTerminal(str as StructureTerminal);
+          StructureActions.Terminal(str as StructureTerminal);
           break;
         case STRUCTURE_TOWER:
-          ExecuteTowerHandler.ExecuteTower(str as StructureTower);
+          StructureActions.TowerHandler.ExecuteTower(str as StructureTower);
           break;
         case STRUCTURE_ROAD:
-          ExecuteRoad(str as StructureRoad);
+          StructureActions.Road(str as StructureRoad);
           break;
         default:
           break;
@@ -233,70 +223,23 @@ export default class StructureHelper {
           StructureConstants.ControllerEnergyStructureRange
         )
       ) {
-        let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        StructureHelper.KeepStructureEmptyEnough(
           str,
           0,
-          RESOURCE_ENERGY
+          RESOURCE_ENERGY,
+          "withdrawController"
         );
-        if (isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateWithdrawJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "withdrawController"
-          );
-
-        isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-          str,
-          100,
-          RESOURCE_ENERGY
-        );
-        if (!isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateTransferJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "transfer"
-          );
+        StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY);
       } else if (sourcesInRange.length > 0) {
-        let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-          str,
-          0,
-          RESOURCE_ENERGY
-        );
-        if (isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateWithdrawJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "withdraw"
-          );
-        isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        StructureHelper.KeepStructureEmptyEnough(str, 0, RESOURCE_ENERGY);
+        StructureHelper.KeepStructureFullEnough(
           str,
           100,
-          RESOURCE_ENERGY
+          RESOURCE_ENERGY,
+          "transferSource"
         );
-        if (!isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateTransferJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "transferSource",
-            false
-          );
       } else {
-        const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-          str,
-          50,
-          RESOURCE_ENERGY
-        );
-        if (isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateWithdrawJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "withdraw"
-          );
+        StructureHelper.KeepStructureEmptyEnough(str, 50, RESOURCE_ENERGY);
       }
     }
   );
@@ -318,57 +261,22 @@ export default class StructureHelper {
           StructureConstants.ControllerEnergyStructureRange
         )
       ) {
-        const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        StructureHelper.KeepStructureEmptyEnough(
           str,
           0,
-          RESOURCE_ENERGY
+          RESOURCE_ENERGY,
+          "withdrawController"
         );
-        if (isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateWithdrawJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "withdrawController"
-          );
       } else if (sourcesInRange.length > 0) {
-        let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-          str,
-          0,
-          RESOURCE_ENERGY
-        );
-        if (isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateWithdrawJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "withdraw"
-          );
-        isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        StructureHelper.KeepStructureEmptyEnough(str, 0, RESOURCE_ENERGY);
+        StructureHelper.KeepStructureFullEnough(
           str,
           100,
-          RESOURCE_ENERGY
+          RESOURCE_ENERGY,
+          "transferSource"
         );
-        if (!isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateTransferJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "transferSource",
-            false
-          );
       } else {
-        const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-          str,
-          100,
-          RESOURCE_ENERGY
-        );
-        if (isStructureFullEnough.hasOverflow)
-          JobHandler.CreateJob.CreateWithdrawJob(
-            str,
-            isStructureFullEnough.overflowAmount,
-            RESOURCE_ENERGY,
-            "withdraw"
-          );
+        StructureHelper.KeepStructureEmptyEnough(str, 100, RESOURCE_ENERGY);
       }
     }
   );
@@ -378,30 +286,8 @@ export default class StructureHelper {
    */
   public static ControlStorageOfStorage = WrapperHandler.FuncWrapper(
     function ControlStorageOfStorage(str: StructureStorage): void {
-      let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-        str,
-        50,
-        RESOURCE_ENERGY
-      );
-      if (isStructureFullEnough.hasOverflow)
-        JobHandler.CreateJob.CreateWithdrawJob(
-          str,
-          isStructureFullEnough.overflowAmount,
-          RESOURCE_ENERGY,
-          "withdraw"
-        );
-      isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-        str,
-        20,
-        RESOURCE_ENERGY
-      );
-      if (!isStructureFullEnough.hasOverflow)
-        JobHandler.CreateJob.CreateTransferJob(
-          str,
-          isStructureFullEnough.overflowAmount,
-          RESOURCE_ENERGY,
-          "transfer"
-        );
+      StructureHelper.KeepStructureEmptyEnough(str, 50, RESOURCE_ENERGY);
+      StructureHelper.KeepStructureFullEnough(str, 20, RESOURCE_ENERGY);
     }
   );
 
@@ -410,42 +296,26 @@ export default class StructureHelper {
    */
   public static ControlStorageOfTerminal = WrapperHandler.FuncWrapper(
     function ControlStorageOfTerminal(str: StructureTerminal): void {
-      let isStructureFullEnough = StructureHelper.IsStructureFullEnough(
-        str,
-        35,
-        RESOURCE_ENERGY
-      );
-      if (isStructureFullEnough.hasOverflow)
-        JobHandler.CreateJob.CreateWithdrawJob(
-          str,
-          isStructureFullEnough.overflowAmount,
-          RESOURCE_ENERGY,
-          "withdraw"
-        );
-      isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+      StructureHelper.KeepStructureEmptyEnough(str, 35, RESOURCE_ENERGY);
+      StructureHelper.KeepStructureFullEnough(
         str,
         20,
-        RESOURCE_ENERGY
+        RESOURCE_ENERGY,
+        "transfer",
+        true
       );
-      if (!isStructureFullEnough.hasOverflow)
-        JobHandler.CreateJob.CreateTransferJob(
-          str,
-          isStructureFullEnough.overflowAmount,
-          RESOURCE_ENERGY,
-          "transfer",
-          true
-        );
     }
   );
 
   /**
-   *
+   * Keep structure resource under @param requiredPercentageFull
    */
   public static KeepStructureFullEnough = WrapperHandler.FuncWrapper(
     function KeepStructureFullEnough(
       str: Structure,
       requiredPercentageFull: number,
-      resourceType: ResourceConstant = RESOURCE_ENERGY,
+      resourceType: ResourceConstant,
+      jobType: JobTransferActionTypes = "transfer",
       hasPriority = false
     ): void {
       const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
@@ -453,13 +323,43 @@ export default class StructureHelper {
         requiredPercentageFull,
         resourceType
       );
-      if (!isStructureFullEnough.hasOverflow)
+      if (!isStructureFullEnough.hasOverflow) {
         JobHandler.CreateJob.CreateTransferJob(
           str,
           isStructureFullEnough.overflowAmount,
           RESOURCE_ENERGY,
+          jobType,
           hasPriority
         );
+      }
+    }
+  );
+
+  /**
+   * Keep structure resource under @param requiredPercentageEmpty
+   */
+  public static KeepStructureEmptyEnough = WrapperHandler.FuncWrapper(
+    function KeepStructureEmptyEnough(
+      str: Structure,
+      requiredPercentageEmpty: number,
+      resourceType: ResourceConstant,
+      jobType: JobWithdrawActionTypes = "withdraw",
+      hasPriority = false
+    ): void {
+      const isStructureFullEnough = StructureHelper.IsStructureFullEnough(
+        str,
+        requiredPercentageEmpty,
+        resourceType
+      );
+      if (isStructureFullEnough.hasOverflow) {
+        JobHandler.CreateJob.CreateTransferJob(
+          str,
+          isStructureFullEnough.overflowAmount,
+          RESOURCE_ENERGY,
+          jobType,
+          hasPriority
+        );
+      }
     }
   );
 
@@ -473,25 +373,45 @@ export default class StructureHelper {
       const spendJobs = JobHandler.GetAllJobs(controller.room.name, [
         "build",
         "dismantle",
-        "upgrade",
       ]);
-      const upgradeJobs: Job[] = spendJobs.filter(
-        (j) => j.action === "upgrade"
-      );
 
-      // TODO: When energy is low and not near downgrade, delete upgrade job
+      const energyLeftToSpend = spendJobs.reduce<number>((acc, job) => {
+        // eslint-disable-next-line no-param-reassign
+        acc += job.energyRequired ? job.energyRequired : 0;
+        return acc;
+      }, 0);
 
-      if (upgradeJobs.length === 0) {
+      const jobId = JobHandler.CreateJob.GetUpgradeJobId(controller.pos);
+      const job = JobHandler.GetJob(jobId, controller.room.name);
+
+      if (controller.ticksToDowngrade < 5 * 1000) {
+        if (job)
+          JobHandler.DeleteJob(
+            controller.room.name,
+            JobHandler.CreateJob.GetUpgradeJobId(controller.pos)
+          );
         JobHandler.CreateJob.CreateUpgradeJob(controller, true);
-      } else if (spendJobs.length === 0) {
+      } else if (energyLeftToSpend > 50 * 1000) {
+        return JobHandler.DeleteJob(controller.room.name, jobId);
+      } else if (!job) {
         JobHandler.CreateJob.CreateUpgradeJob(controller);
-      } else if (
-        (controller.room.controller as StructureController).ticksToDowngrade <
-        10 * 1000
-      ) {
-        JobHandler.DeleteJob(spendJobs[0].id, controller.room.name);
-        JobHandler.CreateJob.CreateUpgradeJob(controller, true);
       }
+    }
+  );
+
+  public static ControlDamagedStructures = WrapperHandler.FuncWrapper(
+    function ControlDamagedStructures(
+      str: Structure,
+      hasPriority = false
+    ): void {
+      if (
+        StructureHelper.IsStructureDamaged(str) &&
+        JobHandler.GetJob(
+          JobHandler.CreateJob.GetRepairJobId(str),
+          str.room.name
+        ) === null
+      )
+        JobHandler.CreateJob.CreateRepairJob(str, hasPriority);
     }
   );
 }

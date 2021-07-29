@@ -1,6 +1,6 @@
 import { isUndefined, forOwn } from "lodash";
 import JobHandler from "../room/jobs/handler";
-import CreepActions from "./actions/actions";
+import CreepActions from "./actions/actionsGroup";
 import WrapperHandler from "../utils/wrapper";
 
 export default class CreepHelper {

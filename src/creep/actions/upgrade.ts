@@ -3,7 +3,7 @@ import JobHandler from "../../room/jobs/handler";
 import WrapperHandler from "../../utils/wrapper";
 
 import CreepHelper from "../helper";
-import CreepActions from "./actions";
+import CreepActions from "./actionsGroup";
 
 // eslint-disable-next-line
 export default WrapperHandler.FuncWrapper(function ExecuteUpgrade(
@@ -16,7 +16,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteUpgrade(
     isUndefined(job.energyRequired) ||
     job.energyRequired <= 0
   ) {
-    JobHandler.DeleteJob(job.id, job.roomName);
+    JobHandler.DeleteJob(job.roomName, job.id);
     return;
   }
   const { controller } = creep.room;
@@ -47,7 +47,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteUpgrade(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.id, job.roomName);
+      JobHandler.DeleteJob(job.roomName, job.id);
       break;
     default:
       break;

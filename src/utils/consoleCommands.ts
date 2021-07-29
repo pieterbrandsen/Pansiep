@@ -42,10 +42,7 @@ export default class ConsoleCommandsHandler {
   );
 
   private static ResetStructureMemoryCommand = WrapperHandler.FuncWrapper(
-    function ResetStructureMemoryCommand(
-      roomName: string,
-      id: string
-    ): void {
+    function ResetStructureMemoryCommand(roomName: string, id: string): void {
       return MemoryInitializationHandler.InitializeStructureMemory(
         roomName,
         id

@@ -1,7 +1,7 @@
 import UtilsHelper from "../../utils/helper";
 
 import JobHandler from "../../room/jobs/handler";
-import CreepActions from "./actions";
+import CreepActions from "./actionsGroup";
 import CreepHelper from "../helper";
 import StructureHelper from "../../structure/helper";
 import WrapperHandler from "../../utils/wrapper";
@@ -34,7 +34,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteTransfer(
   }
 
   if (job.energyRequired === undefined || job.energyRequired <= 0) {
-    JobHandler.DeleteJob(job.id, job.roomName);
+    JobHandler.DeleteJob(job.roomName, job.id);
     return;
   }
 
@@ -66,7 +66,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteTransfer(
       break;
     case ERR_INVALID_TARGET:
     case ERR_FULL:
-      JobHandler.DeleteJob(job.id, job.roomName);
+      JobHandler.DeleteJob(job.roomName, job.id);
       break;
     default:
       break;

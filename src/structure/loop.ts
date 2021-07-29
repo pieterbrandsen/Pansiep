@@ -9,13 +9,13 @@ export default class StructureManager {
   /**
    * Execute an structure using its ID.
    */
-  private static RunStructure = WrapperHandler.FuncWrapper(
-    function RunStructure(id: Id<Structure>): void {
-      const structure = UtilsHelper.GetObject(id) as Structure;
-      StatsHandler.StructureStatsPreProcessing(structure);
-      StructureHelper.ExecuteStructure(structure);
-    }
-  );
+  public static RunStructure = WrapperHandler.FuncWrapper(function RunStructure(
+    id: Id<Structure>
+  ): void {
+    const structure = UtilsHelper.GetObject(id) as Structure;
+    StatsHandler.StructureStatsPreProcessing(structure);
+    StructureHelper.ExecuteStructure(structure);
+  });
 
   /**
    * Execute all structures in room using room name as id.

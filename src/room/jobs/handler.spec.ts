@@ -431,7 +431,7 @@ describe("JobHandler", () => {
       job.assignedCreepsNames.push(creep.name);
       JobHandler.AssignNewJobForStructure(structure, ["move"]);
 
-      JobHandler.DeleteJob(job.id, roomName);
+      JobHandler.DeleteJob(roomName, job.id);
       const jobs = JobHandler.GetAllJobs(roomName);
       expect(jobs.length).toBe(0);
 
@@ -439,13 +439,13 @@ describe("JobHandler", () => {
       creepMemory.jobId = job.id;
       creepMemory.secondJobId = undefined;
       job.assignedCreepsNames.push(creep.name);
-      JobHandler.DeleteJob(job.id, roomName);
+      JobHandler.DeleteJob(roomName, job.id);
 
       job = JobHandler.CreateJob.CreateMoveJob(roomName);
       creepMemory.jobId = undefined;
       creepMemory.secondJobId = job.id;
       job.assignedCreepsNames.push(creep.name);
-      JobHandler.DeleteJob(job.id, roomName);
+      JobHandler.DeleteJob(roomName, job.id);
     });
   });
   describe("SetJob", () => {

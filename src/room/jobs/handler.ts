@@ -262,7 +262,7 @@ export default class JobHandler {
   /**
    * Get job by @param jobId
    */
-  public static GetJob = WrapperHandler.FuncWrapper(function GetJobById(
+  public static GetJob = WrapperHandler.FuncWrapper(function GetJob(
     jobId: Id<Job>,
     roomName: string
   ): Job | null {
@@ -298,7 +298,6 @@ export default class JobHandler {
       job.assignedCreepsNames,
       (name: string) => name === id
     );
-    // UpdateJobById(jobId, job, roomName);
 
     if (removedCreepsIds.length > 0) {
       const creepMemory = CreepHelper.GetCreepMemory(id);
@@ -324,9 +323,9 @@ export default class JobHandler {
   /**
    * Delete job and unassign job for all creep and structure
    */
-  public static DeleteJob = WrapperHandler.FuncWrapper(function DeleteJobById(
-    id: Id<Job>,
-    roomName: string
+  public static DeleteJob = WrapperHandler.FuncWrapper(function DeleteJob(
+    roomName: string,
+    id: Id<Job>
   ): void {
     const jobs = JobHandler.GetAllJobs(roomName);
     const index = jobs.findIndex((j) => j.id === id);

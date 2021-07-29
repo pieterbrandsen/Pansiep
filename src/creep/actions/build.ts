@@ -2,7 +2,7 @@ import { isUndefined } from "lodash";
 
 import UtilsHelper from "../../utils/helper";
 import JobHandler from "../../room/jobs/handler";
-import CreepActions from "./actions";
+import CreepActions from "./actionsGroup";
 import CreepHelper from "../helper";
 import WrapperHandler from "../../utils/wrapper";
 
@@ -37,7 +37,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteBuild(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.id, job.roomName);
+      JobHandler.DeleteJob(job.roomName, job.id);
       break;
     default:
       break;

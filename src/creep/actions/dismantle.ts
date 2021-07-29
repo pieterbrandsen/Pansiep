@@ -4,7 +4,7 @@ import UtilsHelper from "../../utils/helper";
 import WrapperHandler from "../../utils/wrapper";
 
 import CreepHelper from "../helper";
-import CreepActions from "./actions";
+import CreepActions from "./actionsGroup";
 
 // eslint-disable-next-line
 export default WrapperHandler.FuncWrapper(function ExecuteDismantle(
@@ -26,7 +26,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteDismantle(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.id, job.roomName);
+      JobHandler.DeleteJob(job.roomName, job.id);
       break;
     default:
       break;

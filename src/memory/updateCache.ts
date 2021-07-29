@@ -69,8 +69,8 @@ export default class UpdateCacheHandler {
             roomObject[obj.id].isNotSeenSince !== undefined
           ) {
             JobHandler.DeleteJob(
-              JobHandler.CreateJob.GetMoveJobId(roomName),
-              roomName
+              roomName,
+              JobHandler.CreateJob.GetMoveJobId(roomName)
             );
             // eslint-disable-next-line no-param-reassign
             delete roomObject[obj.id].isNotSeenSince;
@@ -115,8 +115,8 @@ export default class UpdateCacheHandler {
             Game.time
           ) {
             JobHandler.DeleteJob(
-              JobHandler.CreateJob.GetMoveJobId(roomName),
-              roomName
+              roomName,
+              JobHandler.CreateJob.GetMoveJobId(roomName)
             );
             GarbageCollectionHandler.RemoveRoom(roomName);
             cache.pop();
@@ -287,7 +287,7 @@ export default class UpdateCacheHandler {
                     job.updateJobAtTick =
                       Game.time + GlobalConstants.CacheNextCheckIncrement.jobs;
                   } else {
-                    JobHandler.DeleteJob(job.id, roomName);
+                    JobHandler.DeleteJob(roomName, job.id);
                     UpdateCacheHandler.UpdateStructuresCache();
                   }
                   break;

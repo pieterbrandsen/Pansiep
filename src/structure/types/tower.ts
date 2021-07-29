@@ -10,11 +10,11 @@ export default class TowerHandler {
    */
   private static ExecuteTowerAttack = WrapperHandler.FuncWrapper(
     function ExecuteTowerAttack(str: StructureTower, job: Job): void {
-      const creep = UtilsHelper.GetObject(job.objId) as Creep;
+      const object = UtilsHelper.GetObject(job.objId) as Creep;
 
-      switch (str.attack(creep)) {
+      switch (str.attack(object)) {
         case ERR_INVALID_TARGET:
-          JobHandler.DeleteJob(job.id, str.room.name);
+          JobHandler.DeleteJob(str.room.name, job.id);
           break;
         default:
           break;
@@ -31,7 +31,7 @@ export default class TowerHandler {
 
       switch (str.heal(creep)) {
         case ERR_INVALID_TARGET:
-          JobHandler.DeleteJob(job.id, str.room.name);
+          JobHandler.DeleteJob(str.room.name, job.id);
           break;
         default:
           break;
@@ -47,13 +47,12 @@ export default class TowerHandler {
       const targetStructure = UtilsHelper.GetObject(job.objId) as Structure;
 
       if (!StructureHelper.IsStructureDamaged(targetStructure)) {
-        JobHandler.DeleteJob(job.id, job.roomName);
-        return;
+        return JobHandler.DeleteJob(job.roomName, job.id);
       }
 
       switch (str.repair(targetStructure)) {
         case ERR_INVALID_TARGET:
-          JobHandler.DeleteJob(job.id, str.room.name);
+          JobHandler.DeleteJob(str.room.name, job.id);
           break;
         default:
           break;
@@ -62,8 +61,8 @@ export default class TowerHandler {
   );
 
   private static GetNewTowerJob = WrapperHandler.FuncWrapper(
-    function GetNewTowerJob(str: StructureTower): void {
-      JobHandler.AssignNewJobForStructure(str);
+    function GetNewTowerJob(str: StructureTower): Job {
+      return JobHandler.AssignNewJobForStructure(str) as Job;
     }
   );
 
@@ -73,25 +72,23 @@ export default class TowerHandler {
   public static ExecuteTower = WrapperHandler.FuncWrapper(function ExecuteTower(
     str: StructureTower
   ): void {
-    if (
-      StructureHelper.IsStructureDamaged(str) &&
-      JobHandler.GetJob(
-        JobHandler.CreateJob.GetRepairJobId(str),
-        str.room.name
-      ) === null
-    )
-      JobHandler.CreateJob.CreateRepairJob(str);
-    StructureHelper.KeepStructureFullEnough(str, 100, RESOURCE_ENERGY, true);
+    StructureHelper.ControlDamagedStructures(str, true);
+    StructureHelper.KeepStructureFullEnough(
+      str,
+      100,
+      RESOURCE_ENERGY,
+      "transfer",
+      true
+    );
 
     const structureMemory = StructureHelper.GetStructureMemory(str.id);
     if (structureMemory.jobId) {
-      const job = JobHandler.GetJob(
+      let job = JobHandler.GetJob(
         structureMemory.jobId as Id<Job>,
         str.room.name
       );
       if (job === null) {
-        TowerHandler.GetNewTowerJob(str);
-        return;
+        job = TowerHandler.GetNewTowerJob(str);
       }
       switch (job.action) {
         case "attack":

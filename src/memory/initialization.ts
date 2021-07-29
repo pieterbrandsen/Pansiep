@@ -127,6 +127,7 @@ export default class MemoryInitializationHandler {
       };
 
       StatsHandler.ResetStats();
+      StatsHandler.ResetPreProcessingStats();
       UpdateCacheHandler.UpdateAll();
 
       LoggerHandler.Log(
@@ -144,6 +145,7 @@ export default class MemoryInitializationHandler {
         spawnQueue: [],
         sourceCount: 0,
       };
+      StatsHandler.ResetPreProcessingRoomStats(roomName);
       const room = RoomHelper.GetRoom(roomName);
 
       const csSites: ConstructionSite[] = room.find(FIND_CONSTRUCTION_SITES);

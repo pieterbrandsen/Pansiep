@@ -4,7 +4,7 @@ import UtilsHelper from "../../utils/helper";
 import WrapperHandler from "../../utils/wrapper";
 
 import CreepHelper from "../helper";
-import CreepActions from "./actions";
+import CreepActions from "./actionsGroup";
 
 // eslint-disable-next-line
 export default WrapperHandler.FuncWrapper(function ExecuteHarvest(
@@ -38,7 +38,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteHarvest(
       break;
     case ERR_INVALID_TARGET:
     case ERR_NOT_ENOUGH_RESOURCES:
-      JobHandler.DeleteJob(job.id, job.roomName);
+      JobHandler.DeleteJob(job.roomName, job.id);
       break;
     case ERR_NOT_IN_RANGE:
       CreepActions.Move(creep, job);

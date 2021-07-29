@@ -87,12 +87,14 @@ interface StatsMemory {
   cpu: GlobalCpuUsage;
 }
 
+type JobTowerActionTypes = "attack" | "heal" | "repair";
+type JobTransferActionTypes = "transfer" | "transferSource";
+type JobWithdrawActionTypes = "withdraw" | "withdrawController";
 type JobActionTypes =
   | "move"
-  | "transfer"
-  | "transferSource"
-  | "withdraw"
-  | "withdrawController"
+  | JobTowerActionTypes
+  | JobTransferActionTypes
+  | JobWithdrawActionTypes
   | "harvest"
   | "build"
   | "repair"
