@@ -49,4 +49,15 @@ describe("StructureManager", () => {
     StructureManager.RunStructure("a" as Id<Structure>);
     expect(UtilsHelper.GetObject).toHaveBeenCalledWith("a");
   });
+  it("should not run structure if its not found", () => {
+    jest.clearAllMocks();
+    StructureHelper.GetAllStructureIds = jest.fn().mockReturnValue(["1"]);
+    StructureHelper.GetStructure = jest.fn().mockReturnValue(undefined);
+    MemoryInitializationHandler.IsStructureMemoryInitialized = jest
+      .fn()
+      .mockReturnValue(true);
+
+      StructureManager.Run(roomName);
+      expect(StatsHandler.StructureStatsPreProcessing).toHaveBeenCalledTimes(0);
+  })
 });

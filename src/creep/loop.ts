@@ -10,6 +10,8 @@ export default class CreepManager {
     name: string
   ): void {
     const creep = CreepHelper.GetCreep(name);
+    if(creep === undefined) return;
+
     const creepMem = CreepHelper.GetCreepMemory(name);
     if (isUndefined(creepMem.jobId)) {
       JobHandler.AssignNewJobForCreep(creep);
@@ -17,15 +19,8 @@ export default class CreepManager {
       CreepHelper.ExecuteJob(creep, creepMem);
     }
 
-    if (
-      CreepHelper.IsCreepDamaged(creep) &&
-      JobHandler.GetJob(
-        JobHandler.CreateJob.GetHealJobId(creep.name),
-        creep.room.name
-      ) === null
-    )
-      JobHandler.CreateJob.CreateHealJob(creep);
-    StatsHandler.CreepStatsPreProcessing(creep.name);
+    CreepHelper.ControlCreepHealing(creep);
+    StatsHandler.CreepStatsPreProcessing(creep.room.name);
   });
 
   public static Run = WrapperHandler.FuncWrapper(function RunCreeps(

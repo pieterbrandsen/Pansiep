@@ -323,7 +323,7 @@ export default class StructureHelper {
         requiredPercentageFull,
         resourceType
       );
-      if (!isStructureFullEnough.hasOverflow) {
+      if (!isStructureFullEnough.hasOverflow && JobHandler.GetJob(JobHandler.CreateJob.GetTransferJobId(jobType,str.pos,resourceType),str.room.name) === null) {
         JobHandler.CreateJob.CreateTransferJob(
           str,
           isStructureFullEnough.overflowAmount,
@@ -351,7 +351,7 @@ export default class StructureHelper {
         requiredPercentageEmpty,
         resourceType
       );
-      if (isStructureFullEnough.hasOverflow) {
+      if (isStructureFullEnough.hasOverflow && JobHandler.GetJob(JobHandler.CreateJob.GetWithdrawJobId(jobType,str.pos,resourceType),str.room.name) === null) {
         JobHandler.CreateJob.CreateTransferJob(
           str,
           isStructureFullEnough.overflowAmount,

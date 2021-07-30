@@ -12,7 +12,9 @@ export default class StructureManager {
   public static RunStructure = WrapperHandler.FuncWrapper(function RunStructure(
     id: Id<Structure>
   ): void {
-    const structure = UtilsHelper.GetObject(id) as Structure;
+    const structure = StructureHelper.GetStructure(id);
+    if(structure === undefined) return;
+    
     StatsHandler.StructureStatsPreProcessing(structure);
     StructureHelper.ExecuteStructure(structure);
   });

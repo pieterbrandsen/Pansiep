@@ -203,9 +203,10 @@ export default class CreateJobHandler {
   public static GetWithdrawJobId = WrapperHandler.FuncWrapper(
     function GetWithdrawJobId(
       action: JobActionTypes,
-      pos: RoomPosition
+      pos: RoomPosition,
+      resourceType:ResourceConstant
     ): Id<Job> {
-      const jobId: Id<Job> = `${action}-${pos.x}/${pos.y}` as Id<Job>;
+      const jobId: Id<Job> = `${action}-${pos.x}/${pos.y}-${resourceType}` as Id<Job>;
       return jobId;
     }
   );
@@ -221,7 +222,7 @@ export default class CreateJobHandler {
       action: JobActionTypes,
       hasPriority = false
     ): Job {
-      const jobId: Id<Job> = CreateJobHandler.GetWithdrawJobId(action, str.pos);
+      const jobId: Id<Job> = CreateJobHandler.GetWithdrawJobId(action, str.pos,resourceType);
       const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
         str.room,
         str.pos,

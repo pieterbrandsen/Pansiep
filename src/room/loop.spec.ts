@@ -39,7 +39,7 @@ describe("RoomManager", () => {
       .fn()
       .mockReturnValueOnce(true)
       .mockReturnValue(false);
-    RoomManager.Run();
+      RoomManager.Run();
 
     expect(RoomHelper.GetRoomIds).toHaveBeenCalledTimes(1);
 
@@ -53,4 +53,15 @@ describe("RoomManager", () => {
     expect(RoomVisualHandler.DrawRoomVisuals).toHaveBeenCalledWith(room);
     expect(StatsHandler.RoomStats).toHaveBeenCalledWith(room);
   });
+  it("should not execute room if its not found", () => {
+    jest.clearAllMocks();
+    RoomHelper.GetRoomIds = jest.fn().mockReturnValue([roomName]);
+    RoomHelper.GetRoom = jest.fn().mockReturnValue(undefined);
+    MemoryInitializationHandler.IsRoomMemoryInitialized = jest
+      .fn()
+      .mockReturnValue(true);
+
+      RoomManager.Run();
+      expect(RoomVisualHandler.DrawRoomVisuals).toHaveBeenCalledTimes(0);
+  })
 });

@@ -13,6 +13,7 @@ const position = new RoomPosition(1, 1, roomName);
 const room = mockInstanceOf<Room>({
   name: roomName,
   find: jest.fn().mockReturnValue([]),
+  lookForAtArea: jest.fn().mockReturnValue([]),
 });
 const tower = mockInstanceOf<StructureTower>({
   id: towerId,
@@ -83,6 +84,8 @@ describe("TowerHandler", () => {
         roomName,
         tower.id
       );
+      position.getRangeTo = jest.fn().mockReturnValue(1);
+      attackJob.position = position;
       Game.getObjectById = jest.fn().mockReturnValue(tower);
       StructureActions.TowerHandler.ExecuteTower(tower);
       JobHandler.DeleteJob(roomName, attackJob.id);

@@ -143,4 +143,15 @@ export default class CreepHelper {
 
     return "none";
   });
+
+  public static ControlCreepHealing = WrapperHandler.FuncWrapper(function ControlCreepHealing(creep:Creep):void {
+    if (
+      CreepHelper.IsCreepDamaged(creep) &&
+      JobHandler.GetJob(
+        JobHandler.CreateJob.GetHealJobId(creep.name),
+        creep.room.name
+      ) === null
+    )
+      JobHandler.CreateJob.CreateHealJob(creep);
+  })
 }

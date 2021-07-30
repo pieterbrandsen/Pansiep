@@ -202,9 +202,10 @@ export default class RoomPlannerHandler {
       let usedPositions: RoomPosition[] = [];
       const mem = RoomHelper.GetRoomMemory(room.name);
 
-      const spawns = RoomHelper.Reader.GetStructures(room.name, [
-        STRUCTURE_SPAWN,
-      ]) as StructureSpawn[];
+      const spawns = room.find(FIND_STRUCTURES, {filter:(s)=>s.structureType === "spawn"}) as StructureSpawn[];
+      //  RoomHelper.Reader.GetStructures(room.name, [
+      //   STRUCTURE_SPAWN,
+      // ]) as StructureSpawn[];
 
       if (isUndefined(mem.base)) mem.base = { extension: [] };
       if (spawns.length > 0)

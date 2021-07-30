@@ -238,7 +238,8 @@ describe("CreateJobHandler", () => {
   it("Should create an withdraw job with acces points higher then 1", () => {
     const withdrawJobId = JobHandler.CreateJob.GetWithdrawJobId(
       jobActionType,
-      jobPos
+      jobPos,
+      resourceType
     );
     const withdrawJob = JobHandler.CreateJob.CreateWithdrawJob(
       structure,
@@ -266,7 +267,8 @@ describe("CreateJobHandler", () => {
       .mockReturnValue(1);
     const withdrawJobId = JobHandler.CreateJob.GetWithdrawJobId(
       jobActionType,
-      jobPos
+      jobPos,
+      resourceType
     );
     const withdrawJob = JobHandler.CreateJob.CreateWithdrawJob(
       structure,

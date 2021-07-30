@@ -86,7 +86,7 @@ export default class StatsHandler {
 
   public static RoomStatsPreProcessing = WrapperHandler.FuncWrapper(
     function RoomStatsPreProcessing(roomName: string): void {
-      StatsHandler.ResetPreProcessingRoomStats(roomName);
+    StatsHandler.ResetPreProcessingRoomStats(roomName);
     }
   );
 

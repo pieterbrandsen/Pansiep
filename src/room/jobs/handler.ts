@@ -6,6 +6,7 @@ import CreepHelper from "../../creep/helper";
 import StructureHelper from "../../structure/helper";
 import RoomConstants from "../../utils/constants/room";
 import WrapperHandler from "../../utils/wrapper";
+import UtilsHelper from "../../utils/helper";
 
 export default class JobHandler {
   public static CreateJob = CreateJobHandler;
@@ -52,18 +53,19 @@ export default class JobHandler {
    * Return closest job based on @param pos
    */
   public static GetClosestJob = WrapperHandler.FuncWrapper(
-    function GetClosestJob(jobs: Job[], pos: RoomPosition): Job {
-      // jobs
-      // .filter((job) => job.position)
-      // .forEach((job: Job) => {
+    function GetClosestJob(jobs: Job[], pos: RoomPosition): Job | null {
+      const jobsWithPosition = jobs.filter((job) => job.position);
+      if (jobsWithPosition.length === 0) return null;
+      
+      jobsWithPosition.forEach((job: Job) => {
       // eslint-disable-next-line
-        // job.position = UtilsHelper.RehydratedRoomPosition(
-      //   job.position as RoomPosition
-      // );
-      // });
+        job.position = UtilsHelper.RehydrateRoomPosition(
+        job.position as RoomPosition
+      );
+      });
 
       const closestJob: Job = first(
-        jobs.sort(
+        jobsWithPosition.sort(
           (a: Job, b: Job) =>
             (a.position as RoomPosition).getRangeTo(pos) -
             (b.position as RoomPosition).getRangeTo(pos)
@@ -130,6 +132,7 @@ export default class JobHandler {
       if (jobs.length === 0) return null;
 
       const closestJob = JobHandler.GetClosestJob(jobs, str.pos);
+      if (closestJob === null) return null;
       closestJob.assignedStructuresIds.push(strId);
       strMem.jobId = closestJob.id;
       return closestJob;
@@ -253,6 +256,7 @@ export default class JobHandler {
         jobsGroupedByPrioritize[highestPriorityJobsNumber],
         creep.pos
       );
+      if (closestJob === null) return null;
       closestJob.assignedCreepsNames.push(creep.name);
       creepMem.jobId = closestJob.id;
       return closestJob;
