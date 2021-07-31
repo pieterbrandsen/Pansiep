@@ -57,7 +57,7 @@ describe("StructureManager", () => {
       .fn()
       .mockReturnValue(true);
 
-      StructureManager.Run(roomName);
-      expect(StatsHandler.StructureStatsPreProcessing).toHaveBeenCalledTimes(0);
-  })
+    StructureManager.Run(roomName);
+    expect(StatsHandler.StructureStatsPreProcessing).toHaveBeenCalledTimes(0);
+  });
 });

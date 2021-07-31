@@ -180,7 +180,7 @@ describe("JobHandler", () => {
       const job3 = JobHandler.CreateJob.CreateMoveJob(roomName, jobPos3);
       job3.position = position;
 
-        UtilsHelper.RehydrateRoomPosition = jest.fn().mockReturnValue(position)
+      UtilsHelper.RehydrateRoomPosition = jest.fn().mockReturnValue(position);
       const jobs = JobHandler.GetAllJobs(roomName);
       const closestJob = JobHandler.GetClosestJob(jobs, jobPos2);
       expect(closestJob).not.toBe(null);
@@ -188,14 +188,14 @@ describe("JobHandler", () => {
       expect(closestJob.id).toBe(job2.id);
     });
     it("should not return an job back if no jobs has an position defined", () => {
-      JobHandler.CreateJob.CreateAttackJob(roomName,creep.id);
+      JobHandler.CreateJob.CreateAttackJob(roomName, creep.id);
       const jobs = JobHandler.GetAllJobs(roomName);
 
       const closestJob = JobHandler.GetClosestJob(jobs, jobPos2);
       expect(jobs.length).toBe(1);
       expect(jobs[0].position).toBeUndefined();
       expect(closestJob).toBe(null);
-    })
+    });
   });
   describe("SwitchCreepSavedJobIds", () => {
     it("should switch job ids", () => {
@@ -255,7 +255,7 @@ describe("JobHandler", () => {
         creep.room.name,
         creep.id
       );
-      job.position = position;      
+      job.position = position;
       UtilsHelper.RehydrateRoomPosition = jest.fn().mockReturnValue(position);
 
       const gotJob = JobHandler.AssignNewJobForStructure(structure);
@@ -266,14 +266,16 @@ describe("JobHandler", () => {
       expect(gotJob).toBe(job);
     });
     it("should not return an job back if no jobs has an position defined", () => {
-      JobHandler.CreateJob.CreateAttackJob(roomName,creep.id);
+      JobHandler.CreateJob.CreateAttackJob(roomName, creep.id);
       const jobs = JobHandler.GetAllJobs(roomName);
 
-      const closestJob = JobHandler.AssignNewJobForStructure(structure,["attack"]);
+      const closestJob = JobHandler.AssignNewJobForStructure(structure, [
+        "attack",
+      ]);
       expect(jobs.length).toBe(1);
       expect(jobs[0].position).toBeUndefined();
       expect(closestJob).toBe(null);
-    })
+    });
   });
   describe("AssignNewJobForCreep", () => {
     it("should return false because of no jobs available", () => {
@@ -317,23 +319,8 @@ describe("JobHandler", () => {
     it("should check all creep types", () => {
       const position = new RoomPosition(1, 1, roomName);
       position.getRangeTo = jest.fn().mockReturnValue(1);
-      let job = JobHandler.CreateJob.CreateAttackJob(room.name, controller.id)
-      job.position= position;
-
-      job = JobHandler.CreateJob.CreateTransferJob(
-        structure,
-        0,
-        resourceType,
-        "transfer"
-        );
-        job.position= position;
-      job = JobHandler.CreateJob.CreateTransferJob(
-        structure,
-        0,
-        resourceType,
-        "transfer"
-      );
-      job.position= position;
+      let job = JobHandler.CreateJob.CreateAttackJob(room.name, controller.id);
+      job.position = position;
 
       job = JobHandler.CreateJob.CreateTransferJob(
         structure,
@@ -341,19 +328,34 @@ describe("JobHandler", () => {
         resourceType,
         "transfer"
       );
-      job.position= position;
+      job.position = position;
       job = JobHandler.CreateJob.CreateTransferJob(
         structure,
         0,
         resourceType,
         "transfer"
       );
-      job.position= position;
+      job.position = position;
+
+      job = JobHandler.CreateJob.CreateTransferJob(
+        structure,
+        0,
+        resourceType,
+        "transfer"
+      );
+      job.position = position;
+      job = JobHandler.CreateJob.CreateTransferJob(
+        structure,
+        0,
+        resourceType,
+        "transfer"
+      );
+      job.position = position;
 
       job = JobHandler.CreateJob.CreateRepairJob(structure);
-      job.position= position;
+      job.position = position;
       job = JobHandler.CreateJob.CreateRepairJob(structure);
-      job.position= position;
+      job.position = position;
 
       const creep1Memory = CreepHelper.GetCreepMemory(creep.id);
       const creep2Memory = CreepHelper.GetCreepMemory(creep.id);
@@ -401,14 +403,14 @@ describe("JobHandler", () => {
       expect(newJob2).not.toBe(creepMemory.secondJobId);
     });
     it("should not return an job back if no jobs has an position defined", () => {
-      JobHandler.CreateJob.CreateAttackJob(roomName,creep.id);
+      JobHandler.CreateJob.CreateAttackJob(roomName, creep.id);
       const jobs = JobHandler.GetAllJobs(roomName);
 
-      const closestJob = JobHandler.AssignNewJobForCreep(creep,["attack"]);
+      const closestJob = JobHandler.AssignNewJobForCreep(creep, ["attack"]);
       expect(jobs.length).toBe(1);
       expect(jobs[0].position).toBeUndefined();
       expect(closestJob).toBe(null);
-    })
+    });
   });
   describe("GetJob", () => {
     it("should return null because of no jobs", () => {

@@ -202,7 +202,9 @@ export default class RoomPlannerHandler {
       let usedPositions: RoomPosition[] = [];
       const mem = RoomHelper.GetRoomMemory(room.name);
 
-      const spawns = room.find(FIND_STRUCTURES, {filter:(s)=>s.structureType === "spawn"}) as StructureSpawn[];
+      const spawns = room.find(FIND_STRUCTURES, {
+        filter: (s) => s.structureType === "spawn",
+      }) as StructureSpawn[];
       //  RoomHelper.Reader.GetStructures(room.name, [
       //   STRUCTURE_SPAWN,
       // ]) as StructureSpawn[];
@@ -344,7 +346,7 @@ export default class RoomPlannerHandler {
           mem.base.hearth
         );
         forEach(hearthBaseStructures, (str: BaseStructure) => {
-          StructureHelper.BuildStructure(room, str.pos, str.type);
+          StructureHelper.BuildStructure(room, str.pos, str.type, false);
         });
       }
       const controllerLevel = room.controller.level;
@@ -401,25 +403,24 @@ export default class RoomPlannerHandler {
         RoomPlannerHandler.PlanSources(room);
       }
       if (RoomHelper.IsMyOwnedRoom(room) && room.controller) {
-        if (
-          UtilsHelper.ExecuteEachTick(
-            RoomConstants.RoomControllerPlannerDelay,
-            forceExecute
-          )
-        ) {
-          RoomPlannerHandler.PlanController(room);
-        }
         const mem = RoomHelper.GetRoomMemory(room.name);
-
         const controllerLevel = room.controller.level;
         const lastControllerLevel = mem.lastControllerLevelAtRoomPlanner
           ? mem.lastControllerLevelAtRoomPlanner
           : 0;
         if (
           UtilsHelper.ExecuteEachTick(
+            RoomConstants.RoomControllerPlannerDelay,
+            forceExecute
+          ) && controllerLevel >= 2
+        ) {
+          RoomPlannerHandler.PlanController(room);
+        }
+        if (
+          UtilsHelper.ExecuteEachTick(
             RoomConstants.RoomBasePlannerDelay,
             lastControllerLevel < controllerLevel
-          )
+          ) && controllerLevel >= 2
         ) {
           RoomPlannerHandler.ExecuteBasePlanner(room);
         }

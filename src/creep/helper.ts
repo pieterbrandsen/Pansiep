@@ -27,8 +27,7 @@ export default class CreepHelper {
       creepMem.commandRoom
     );
     if (job === null) {
-      const mem = creepMem;
-      delete mem.jobId;
+      delete creepMem.jobId;
       return;
     }
 
@@ -88,8 +87,8 @@ export default class CreepHelper {
   );
 
   public static GetAllCreepsMemory = WrapperHandler.FuncWrapper(
-    function GetAllCreepMemory(
-      id: string,
+    function GetAllCreepsMemory(
+      roomName: string,
       filterOnType?: CreepTypes[]
     ): CreepMemory[] {
       const creepsMemory: CreepMemory[] = [];
@@ -97,7 +96,7 @@ export default class CreepHelper {
       forOwn(Memory.creeps, (mem: CreepMemory) => {
         if (
           isUndefined(mem.isNotSeenSince) &&
-          mem.commandRoom === id &&
+          mem.commandRoom === roomName &&
           (filterOnType ? filterOnType.includes(mem.type) : true)
         )
           creepsMemory.push(mem);
@@ -108,8 +107,8 @@ export default class CreepHelper {
   );
 
   public static GetCachedCreepIds = WrapperHandler.FuncWrapper(
-    function GetAllCreepIds(id: string): string[] {
-      const creepsCache: CreepCache[] = Memory.cache.creeps.data[id];
+    function GetCachedCreepIds(roomName: string): string[] {
+      const creepsCache: CreepCache[] = Memory.cache.creeps.data[roomName];
       const creepIds = creepsCache.map((c) => c.id);
       return creepIds;
     }
@@ -144,14 +143,17 @@ export default class CreepHelper {
     return "none";
   });
 
-  public static ControlCreepHealing = WrapperHandler.FuncWrapper(function ControlCreepHealing(creep:Creep):void {
-    if (
-      CreepHelper.IsCreepDamaged(creep) &&
-      JobHandler.GetJob(
-        JobHandler.CreateJob.GetHealJobId(creep.name),
-        creep.room.name
-      ) === null
-    )
-      JobHandler.CreateJob.CreateHealJob(creep);
-  })
+  public static ControlCreepHealing = WrapperHandler.FuncWrapper(
+    function ControlCreepHealing(creep: Creep): void {
+      if (
+        CreepHelper.IsCreepDamaged(creep) &&
+        JobHandler.GetJob(
+          JobHandler.CreateJob.GetHealJobId(creep.name),
+          creep.room.name
+        ) === null
+      ) {
+        JobHandler.CreateJob.CreateHealJob(creep);
+      }
+    }
+  );
 }

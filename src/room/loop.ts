@@ -16,7 +16,7 @@ export default class RoomManager {
     roomName: string
   ): void {
     const room = RoomHelper.GetRoom(roomName);
-    if(room === undefined) return;
+    if (room === undefined) return;
 
     StatsHandler.RoomStatsPreProcessing(roomName);
     StructureManager.Run(roomName);

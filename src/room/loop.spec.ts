@@ -39,7 +39,7 @@ describe("RoomManager", () => {
       .fn()
       .mockReturnValueOnce(true)
       .mockReturnValue(false);
-      RoomManager.Run();
+    RoomManager.Run();
 
     expect(RoomHelper.GetRoomIds).toHaveBeenCalledTimes(1);
 
@@ -61,7 +61,7 @@ describe("RoomManager", () => {
       .fn()
       .mockReturnValue(true);
 
-      RoomManager.Run();
-      expect(RoomVisualHandler.DrawRoomVisuals).toHaveBeenCalledTimes(0);
-  })
+    RoomManager.Run();
+    expect(RoomVisualHandler.DrawRoomVisuals).toHaveBeenCalledTimes(0);
+  });
 });

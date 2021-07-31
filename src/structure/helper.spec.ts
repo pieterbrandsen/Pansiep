@@ -492,7 +492,7 @@ describe("StructureHelper", () => {
     beforeEach(() => {
       MemoryInitializationHandler.InitializeRoomMemory(roomName);
     });
-    it("should add an upgrade job with priority", () => {
+    it("should add an upgrade job with priority when current job has no priority", () => {
       const controller = mockInstanceOf<StructureController>({
         room,
         id: "a",
@@ -500,7 +500,21 @@ describe("StructureHelper", () => {
         pos: new RoomPosition(2, 1, "roomName"),
       });
 
+      JobHandler.CreateJob.CreateUpgradeJob(controller,false);
       StructureHelper.ControlUpgradingOfController(controller);
+      expect(Memory.rooms[roomName].jobs.length).toBe(1);
+      expect(Memory.rooms[roomName].jobs[0].action).toBe("upgrade");
+      expect(Memory.rooms[roomName].jobs[0].hasPriority).toBe(true);
+      StructureHelper.ControlUpgradingOfController(controller);
+    });
+    it("should add an upgrade job with priority when no job exists", () => {
+      const controller = mockInstanceOf<StructureController>({
+        room,
+        id: "a",
+        ticksToDowngrade: 1,
+        pos: new RoomPosition(2, 1, "roomName"),
+      });
+
       StructureHelper.ControlUpgradingOfController(controller);
       expect(Memory.rooms[roomName].jobs.length).toBe(1);
       expect(Memory.rooms[roomName].jobs[0].action).toBe("upgrade");

@@ -136,7 +136,7 @@ export default class StructureHelper {
       room: Room,
       pos: RoomPosition,
       structureType: StructureConstant,
-      hasPriority = false
+      hasPriority :boolean= false
     ): boolean {
       switch (room.createConstructionSite(pos, structureType)) {
         case OK:
@@ -323,7 +323,13 @@ export default class StructureHelper {
         requiredPercentageFull,
         resourceType
       );
-      if (!isStructureFullEnough.hasOverflow && JobHandler.GetJob(JobHandler.CreateJob.GetTransferJobId(jobType,str.pos,resourceType),str.room.name) === null) {
+      if (
+        !isStructureFullEnough.hasOverflow &&
+        JobHandler.GetJob(
+          JobHandler.CreateJob.GetTransferJobId(jobType, str.pos, resourceType),
+          str.room.name
+        ) === null
+      ) {
         JobHandler.CreateJob.CreateTransferJob(
           str,
           isStructureFullEnough.overflowAmount,
@@ -351,7 +357,13 @@ export default class StructureHelper {
         requiredPercentageEmpty,
         resourceType
       );
-      if (isStructureFullEnough.hasOverflow && JobHandler.GetJob(JobHandler.CreateJob.GetWithdrawJobId(jobType,str.pos,resourceType),str.room.name) === null) {
+      if (
+        isStructureFullEnough.hasOverflow &&
+        JobHandler.GetJob(
+          JobHandler.CreateJob.GetWithdrawJobId(jobType, str.pos, resourceType),
+          str.room.name
+        ) === null
+      ) {
         JobHandler.CreateJob.CreateTransferJob(
           str,
           isStructureFullEnough.overflowAmount,
@@ -384,13 +396,16 @@ export default class StructureHelper {
       const jobId = JobHandler.CreateJob.GetUpgradeJobId(controller.pos);
       const job = JobHandler.GetJob(jobId, controller.room.name);
 
-      if (controller.ticksToDowngrade < 5 * 1000) {
-        if (job)
+      if (controller.ticksToDowngrade < 10 * 1000) {
+        if (job && job.hasPriority === false) {
           JobHandler.DeleteJob(
             controller.room.name,
             JobHandler.CreateJob.GetUpgradeJobId(controller.pos)
           );
-        JobHandler.CreateJob.CreateUpgradeJob(controller, true);
+          JobHandler.CreateJob.CreateUpgradeJob(controller, true);
+        } else if (!job) {
+          JobHandler.CreateJob.CreateUpgradeJob(controller, true);
+        }
       } else if (energyLeftToSpend > 50 * 1000) {
         return JobHandler.DeleteJob(controller.room.name, jobId);
       } else if (!job) {

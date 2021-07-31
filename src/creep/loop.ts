@@ -6,11 +6,11 @@ import CreepHelper from "./helper";
 import WrapperHandler from "../utils/wrapper";
 
 export default class CreepManager {
-  private static RunCreep = WrapperHandler.FuncWrapper(function RunCreep(
+  public static RunCreep = WrapperHandler.FuncWrapper(function RunCreep(
     name: string
   ): void {
     const creep = CreepHelper.GetCreep(name);
-    if(creep === undefined) return;
+    if (creep === undefined) return;
 
     const creepMem = CreepHelper.GetCreepMemory(name);
     if (isUndefined(creepMem.jobId)) {

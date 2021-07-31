@@ -56,12 +56,12 @@ export default class JobHandler {
     function GetClosestJob(jobs: Job[], pos: RoomPosition): Job | null {
       const jobsWithPosition = jobs.filter((job) => job.position);
       if (jobsWithPosition.length === 0) return null;
-      
+
       jobsWithPosition.forEach((job: Job) => {
-      // eslint-disable-next-line
+        // eslint-disable-next-line
         job.position = UtilsHelper.RehydrateRoomPosition(
-        job.position as RoomPosition
-      );
+          job.position as RoomPosition
+        );
       });
 
       const closestJob: Job = first(

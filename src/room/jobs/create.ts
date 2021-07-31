@@ -170,7 +170,7 @@ export default class CreateJobHandler {
       room: Room,
       pos: RoomPosition,
       structureType: StructureConstant,
-      hasPriority = false
+      hasPriority :boolean= false
     ): Job {
       const jobId: Id<Job> = CreateJobHandler.GetBuildJobId(pos);
       const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
@@ -204,7 +204,7 @@ export default class CreateJobHandler {
     function GetWithdrawJobId(
       action: JobActionTypes,
       pos: RoomPosition,
-      resourceType:ResourceConstant
+      resourceType: ResourceConstant
     ): Id<Job> {
       const jobId: Id<Job> = `${action}-${pos.x}/${pos.y}-${resourceType}` as Id<Job>;
       return jobId;
@@ -222,7 +222,11 @@ export default class CreateJobHandler {
       action: JobActionTypes,
       hasPriority = false
     ): Job {
-      const jobId: Id<Job> = CreateJobHandler.GetWithdrawJobId(action, str.pos,resourceType);
+      const jobId: Id<Job> = CreateJobHandler.GetWithdrawJobId(
+        action,
+        str.pos,
+        resourceType
+      );
       const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(
         str.room,
         str.pos,

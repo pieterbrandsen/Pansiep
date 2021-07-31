@@ -1,5 +1,4 @@
 import { forEach } from "lodash";
-import UtilsHelper from "../utils/helper";
 import StructureHelper from "./helper";
 import MemoryInitializationHandler from "../memory/initialization";
 import StatsHandler from "../memory/stats";
@@ -13,8 +12,8 @@ export default class StructureManager {
     id: Id<Structure>
   ): void {
     const structure = StructureHelper.GetStructure(id);
-    if(structure === undefined) return;
-    
+    if (structure === undefined) return;
+
     StatsHandler.StructureStatsPreProcessing(structure);
     StructureHelper.ExecuteStructure(structure);
   });
