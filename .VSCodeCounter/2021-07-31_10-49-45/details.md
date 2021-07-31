@@ -1,10 +1,10 @@
 # Details
 
-Date : 2021-07-29 20:20:17
+Date : 2021-07-31 10:49:45
 
 Directory c:\Users\piete\Source\repos\Pansiep\src
 
-Total : 95 files,  9311 codes, 831 comments, 966 blanks, all 11108 lines
+Total : 99 files,  10058 codes, 855 comments, 1015 blanks, all 11928 lines
 
 [summary](results.md)
 
@@ -12,7 +12,8 @@ Total : 95 files,  9311 codes, 831 comments, 966 blanks, all 11108 lines
 | filename | language | code | comment | blank | total |
 | :--- | :--- | ---: | ---: | ---: | ---: |
 | [src/creep/actions/actionsGroup.ts](/src/creep/actions/actionsGroup.ts) | TypeScript | 24 | 0 | 12 | 36 |
-| [src/creep/actions/attack.ts](/src/creep/actions/attack.ts) | TypeScript | 23 | 1 | 4 | 28 |
+| [src/creep/actions/attack.spec.ts](/src/creep/actions/attack.spec.ts) | TypeScript | 80 | 0 | 10 | 90 |
+| [src/creep/actions/attack.ts](/src/creep/actions/attack.ts) | TypeScript | 24 | 0 | 4 | 28 |
 | [src/creep/actions/build.ts](/src/creep/actions/build.ts) | TypeScript | 41 | 1 | 4 | 46 |
 | [src/creep/actions/claim.ts](/src/creep/actions/claim.ts) | TypeScript | 27 | 1 | 4 | 32 |
 | [src/creep/actions/dismantle.ts](/src/creep/actions/dismantle.ts) | TypeScript | 30 | 1 | 4 | 35 |
@@ -23,10 +24,13 @@ Total : 95 files,  9311 codes, 831 comments, 966 blanks, all 11108 lines
 | [src/creep/actions/transfer.ts](/src/creep/actions/transfer.ts) | TypeScript | 67 | 1 | 7 | 75 |
 | [src/creep/actions/upgrade.ts](/src/creep/actions/upgrade.ts) | TypeScript | 51 | 1 | 4 | 56 |
 | [src/creep/actions/withdraw.ts](/src/creep/actions/withdraw.ts) | TypeScript | 52 | 1 | 5 | 58 |
-| [src/creep/communications.ts](/src/creep/communications.ts) | TypeScript | 37 | 0 | 4 | 41 |
-| [src/creep/helper.ts](/src/creep/helper.ts) | TypeScript | 127 | 7 | 13 | 147 |
-| [src/creep/loop.ts](/src/creep/loop.ts) | TypeScript | 39 | 0 | 4 | 43 |
-| [src/main.ts](/src/main.ts) | TypeScript | 23 | 2 | 5 | 30 |
+| [src/creep/communications.ts](/src/creep/communications.ts) | TypeScript | 0 | 37 | 4 | 41 |
+| [src/creep/helper.spec.ts](/src/creep/helper.spec.ts) | TypeScript | 242 | 0 | 8 | 250 |
+| [src/creep/helper.ts](/src/creep/helper.ts) | TypeScript | 139 | 7 | 14 | 160 |
+| [src/creep/loop.spec.ts](/src/creep/loop.spec.ts) | TypeScript | 69 | 0 | 8 | 77 |
+| [src/creep/loop.ts](/src/creep/loop.ts) | TypeScript | 33 | 0 | 5 | 38 |
+| [src/main.spec.ts](/src/main.spec.ts) | TypeScript | 135 | 0 | 8 | 143 |
+| [src/main.ts](/src/main.ts) | TypeScript | 23 | 1 | 5 | 29 |
 | [src/memory/garbageCollection.spec.ts](/src/memory/garbageCollection.spec.ts) | TypeScript | 152 | 2 | 15 | 169 |
 | [src/memory/garbageCollection.ts](/src/memory/garbageCollection.ts) | TypeScript | 72 | 0 | 12 | 84 |
 | [src/memory/initialization.spec.ts](/src/memory/initialization.spec.ts) | TypeScript | 182 | 0 | 8 | 190 |
@@ -37,29 +41,29 @@ Total : 95 files,  9311 codes, 831 comments, 966 blanks, all 11108 lines
 | [src/memory/updateCache.ts](/src/memory/updateCache.ts) | TypeScript | 263 | 27 | 34 | 324 |
 | [src/room/helper.spec.ts](/src/room/helper.spec.ts) | TypeScript | 125 | 0 | 11 | 136 |
 | [src/room/helper.ts](/src/room/helper.ts) | TypeScript | 58 | 31 | 12 | 101 |
-| [src/room/jobs/create.spec.ts](/src/room/jobs/create.spec.ts) | TypeScript | 293 | 0 | 24 | 317 |
-| [src/room/jobs/create.ts](/src/room/jobs/create.ts) | TypeScript | 345 | 60 | 22 | 427 |
-| [src/room/jobs/handler.spec.ts](/src/room/jobs/handler.spec.ts) | TypeScript | 446 | 0 | 24 | 470 |
-| [src/room/jobs/handler.ts](/src/room/jobs/handler.ts) | TypeScript | 296 | 40 | 29 | 365 |
-| [src/room/loop.spec.ts](/src/room/loop.spec.ts) | TypeScript | 50 | 0 | 7 | 57 |
-| [src/room/loop.ts](/src/room/loop.ts) | TypeScript | 29 | 13 | 7 | 49 |
+| [src/room/jobs/create.spec.ts](/src/room/jobs/create.spec.ts) | TypeScript | 295 | 0 | 24 | 319 |
+| [src/room/jobs/create.ts](/src/room/jobs/create.ts) | TypeScript | 350 | 60 | 22 | 432 |
+| [src/room/jobs/handler.spec.ts](/src/room/jobs/handler.spec.ts) | TypeScript | 490 | 0 | 29 | 519 |
+| [src/room/jobs/handler.ts](/src/room/jobs/handler.ts) | TypeScript | 306 | 33 | 30 | 369 |
+| [src/room/loop.spec.ts](/src/room/loop.spec.ts) | TypeScript | 60 | 0 | 8 | 68 |
+| [src/room/loop.ts](/src/room/loop.ts) | TypeScript | 30 | 6 | 7 | 43 |
 | [src/room/planner/partGenerators.ts](/src/room/planner/partGenerators.ts) | TypeScript | 389 | 9 | 15 | 413 |
-| [src/room/planner/planner.ts](/src/room/planner/planner.ts) | TypeScript | 364 | 32 | 34 | 430 |
+| [src/room/planner/planner.ts](/src/room/planner/planner.ts) | TypeScript | 364 | 35 | 33 | 432 |
 | [src/room/reading.ts](/src/room/reading.ts) | TypeScript | 304 | 69 | 30 | 403 |
-| [src/room/visuals/drawVisual.spec.ts](/src/room/visuals/drawVisual.spec.ts) | TypeScript | 136 | 0 | 16 | 152 |
+| [src/room/visuals/drawVisual.spec.ts](/src/room/visuals/drawVisual.spec.ts) | TypeScript | 162 | 0 | 16 | 178 |
 | [src/room/visuals/drawVisual.ts](/src/room/visuals/drawVisual.ts) | TypeScript | 96 | 30 | 11 | 137 |
-| [src/room/visuals/handler.spec.ts](/src/room/visuals/handler.spec.ts) | TypeScript | 38 | 0 | 7 | 45 |
+| [src/room/visuals/handler.spec.ts](/src/room/visuals/handler.spec.ts) | TypeScript | 42 | 0 | 8 | 50 |
 | [src/room/visuals/handler.ts](/src/room/visuals/handler.ts) | TypeScript | 15 | 3 | 3 | 21 |
-| [src/room/visuals/incomeAndExpenses.spec.ts](/src/room/visuals/incomeAndExpenses.spec.ts) | TypeScript | 53 | 0 | 10 | 63 |
-| [src/room/visuals/incomeAndExpenses.ts](/src/room/visuals/incomeAndExpenses.ts) | TypeScript | 161 | 18 | 12 | 191 |
-| [src/room/visuals/job.spec.ts](/src/room/visuals/job.spec.ts) | TypeScript | 57 | 0 | 11 | 68 |
-| [src/room/visuals/job.ts](/src/room/visuals/job.ts) | TypeScript | 141 | 9 | 10 | 160 |
-| [src/room/visuals/main.spec.ts](/src/room/visuals/main.spec.ts) | TypeScript | 62 | 0 | 9 | 71 |
-| [src/room/visuals/main.ts](/src/room/visuals/main.ts) | TypeScript | 147 | 5 | 6 | 158 |
-| [src/structure/helper.spec.ts](/src/structure/helper.spec.ts) | TypeScript | 555 | 0 | 27 | 582 |
-| [src/structure/helper.ts](/src/structure/helper.ts) | TypeScript | 330 | 62 | 26 | 418 |
-| [src/structure/loop.spec.ts](/src/structure/loop.spec.ts) | TypeScript | 47 | 0 | 6 | 53 |
-| [src/structure/loop.ts](/src/structure/loop.ts) | TypeScript | 24 | 6 | 3 | 33 |
+| [src/room/visuals/incomeAndExpenses.spec.ts](/src/room/visuals/incomeAndExpenses.spec.ts) | TypeScript | 72 | 0 | 11 | 83 |
+| [src/room/visuals/incomeAndExpenses.ts](/src/room/visuals/incomeAndExpenses.ts) | TypeScript | 180 | 18 | 12 | 210 |
+| [src/room/visuals/job.spec.ts](/src/room/visuals/job.spec.ts) | TypeScript | 71 | 0 | 12 | 83 |
+| [src/room/visuals/job.ts](/src/room/visuals/job.ts) | TypeScript | 161 | 9 | 10 | 180 |
+| [src/room/visuals/main.spec.ts](/src/room/visuals/main.spec.ts) | TypeScript | 81 | 0 | 10 | 91 |
+| [src/room/visuals/main.ts](/src/room/visuals/main.ts) | TypeScript | 164 | 5 | 6 | 175 |
+| [src/structure/helper.spec.ts](/src/structure/helper.spec.ts) | TypeScript | 568 | 0 | 28 | 596 |
+| [src/structure/helper.ts](/src/structure/helper.ts) | TypeScript | 345 | 62 | 26 | 433 |
+| [src/structure/loop.spec.ts](/src/structure/loop.spec.ts) | TypeScript | 57 | 0 | 7 | 64 |
+| [src/structure/loop.ts](/src/structure/loop.ts) | TypeScript | 24 | 6 | 4 | 34 |
 | [src/structure/types/actionsGroup.ts](/src/structure/types/actionsGroup.ts) | TypeScript | 28 | 0 | 14 | 42 |
 | [src/structure/types/container.spec.ts](/src/structure/types/container.spec.ts) | TypeScript | 28 | 0 | 5 | 33 |
 | [src/structure/types/container.ts](/src/structure/types/container.ts) | TypeScript | 8 | 3 | 2 | 13 |
@@ -85,7 +89,7 @@ Total : 95 files,  9311 codes, 831 comments, 966 blanks, all 11108 lines
 | [src/structure/types/storage.ts](/src/structure/types/storage.ts) | TypeScript | 8 | 3 | 3 | 14 |
 | [src/structure/types/terminal.spec.ts](/src/structure/types/terminal.spec.ts) | TypeScript | 29 | 0 | 5 | 34 |
 | [src/structure/types/terminal.ts](/src/structure/types/terminal.ts) | TypeScript | 8 | 3 | 3 | 14 |
-| [src/structure/types/tower.spec.ts](/src/structure/types/tower.spec.ts) | TypeScript | 202 | 0 | 17 | 219 |
+| [src/structure/types/tower.spec.ts](/src/structure/types/tower.spec.ts) | TypeScript | 205 | 0 | 17 | 222 |
 | [src/structure/types/tower.ts](/src/structure/types/tower.ts) | TypeScript | 87 | 12 | 12 | 111 |
 | [src/types.d.ts](/src/types.d.ts) | TypeScript | 187 | 5 | 34 | 226 |
 | [src/utils/config/global.ts](/src/utils/config/global.ts) | TypeScript | 5 | 3 | 3 | 11 |

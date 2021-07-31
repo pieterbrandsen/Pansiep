@@ -1,28 +1,28 @@
-Date : 2021-07-29 20:20:17
+Date : 2021-07-31 10:49:45
 Directory : c:\Users\piete\Source\repos\Pansiep\src
-Total : 95 files,  9311 codes, 831 comments, 966 blanks, all 11108 lines
+Total : 99 files,  10058 codes, 855 comments, 1015 blanks, all 11928 lines
 
 Languages
 +------------+------------+------------+------------+------------+------------+
 | language   | files      | code       | comment    | blank      | total      |
 +------------+------------+------------+------------+------------+------------+
-| TypeScript |         95 |      9,311 |        831 |        966 |     11,108 |
+| TypeScript |         99 |     10,058 |        855 |      1,015 |     11,928 |
 +------------+------------+------------+------------+------------+------------+
 
 Directories
 +--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
 | path                                                                           | files      | code       | comment    | blank      | total      |
 +--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
-| .                                                                              |         95 |      9,311 |        831 |        966 |     11,108 |
-| creep                                                                          |         15 |        665 |         23 |         86 |        774 |
-| creep\actions                                                                  |         12 |        462 |         16 |         65 |        543 |
+| .                                                                              |         99 |     10,058 |        855 |      1,015 |     11,928 |
+| creep                                                                          |         18 |      1,026 |         59 |        114 |      1,199 |
+| creep\actions                                                                  |         13 |        543 |         15 |         75 |        633 |
 | memory                                                                         |          8 |      1,727 |         38 |        163 |      1,928 |
-| room                                                                           |         21 |      3,605 |        319 |        310 |      4,234 |
-| room\jobs                                                                      |          4 |      1,380 |        100 |         99 |      1,579 |
-| room\planner                                                                   |          2 |        753 |         41 |         49 |        843 |
-| room\visuals                                                                   |         10 |        906 |         65 |         95 |      1,066 |
-| structure                                                                      |         31 |      2,175 |        137 |        233 |      2,545 |
-| structure\types                                                                |         27 |      1,219 |         69 |        171 |      1,459 |
+| room                                                                           |         21 |      3,815 |        308 |        320 |      4,443 |
+| room\jobs                                                                      |          4 |      1,441 |         93 |        105 |      1,639 |
+| room\planner                                                                   |          2 |        753 |         44 |         48 |        845 |
+| room\visuals                                                                   |         10 |      1,044 |         65 |         99 |      1,208 |
+| structure                                                                      |         31 |      2,216 |        137 |        236 |      2,589 |
+| structure\types                                                                |         27 |      1,222 |         69 |        171 |      1,462 |
 | utils                                                                          |         18 |        929 |        307 |        135 |      1,371 |
 | utils\config                                                                   |          2 |          9 |          6 |          5 |         20 |
 | utils\constants                                                                |          4 |        129 |         52 |         24 |        205 |
@@ -34,7 +34,8 @@ Files
 | filename                                                                       | language   | code       | comment    | blank      | total      |
 +--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
 | c:\Users\piete\Source\repos\Pansiep\src\creep\actions\actionsGroup.ts          | TypeScript |         24 |          0 |         12 |         36 |
-| c:\Users\piete\Source\repos\Pansiep\src\creep\actions\attack.ts                | TypeScript |         23 |          1 |          4 |         28 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\actions\attack.spec.ts           | TypeScript |         80 |          0 |         10 |         90 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\actions\attack.ts                | TypeScript |         24 |          0 |          4 |         28 |
 | c:\Users\piete\Source\repos\Pansiep\src\creep\actions\build.ts                 | TypeScript |         41 |          1 |          4 |         46 |
 | c:\Users\piete\Source\repos\Pansiep\src\creep\actions\claim.ts                 | TypeScript |         27 |          1 |          4 |         32 |
 | c:\Users\piete\Source\repos\Pansiep\src\creep\actions\dismantle.ts             | TypeScript |         30 |          1 |          4 |         35 |
@@ -45,10 +46,13 @@ Files
 | c:\Users\piete\Source\repos\Pansiep\src\creep\actions\transfer.ts              | TypeScript |         67 |          1 |          7 |         75 |
 | c:\Users\piete\Source\repos\Pansiep\src\creep\actions\upgrade.ts               | TypeScript |         51 |          1 |          4 |         56 |
 | c:\Users\piete\Source\repos\Pansiep\src\creep\actions\withdraw.ts              | TypeScript |         52 |          1 |          5 |         58 |
-| c:\Users\piete\Source\repos\Pansiep\src\creep\communications.ts                | TypeScript |         37 |          0 |          4 |         41 |
-| c:\Users\piete\Source\repos\Pansiep\src\creep\helper.ts                        | TypeScript |        127 |          7 |         13 |        147 |
-| c:\Users\piete\Source\repos\Pansiep\src\creep\loop.ts                          | TypeScript |         39 |          0 |          4 |         43 |
-| c:\Users\piete\Source\repos\Pansiep\src\main.ts                                | TypeScript |         23 |          2 |          5 |         30 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\communications.ts                | TypeScript |          0 |         37 |          4 |         41 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\helper.spec.ts                   | TypeScript |        242 |          0 |          8 |        250 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\helper.ts                        | TypeScript |        139 |          7 |         14 |        160 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\loop.spec.ts                     | TypeScript |         69 |          0 |          8 |         77 |
+| c:\Users\piete\Source\repos\Pansiep\src\creep\loop.ts                          | TypeScript |         33 |          0 |          5 |         38 |
+| c:\Users\piete\Source\repos\Pansiep\src\main.spec.ts                           | TypeScript |        135 |          0 |          8 |        143 |
+| c:\Users\piete\Source\repos\Pansiep\src\main.ts                                | TypeScript |         23 |          1 |          5 |         29 |
 | c:\Users\piete\Source\repos\Pansiep\src\memory\garbageCollection.spec.ts       | TypeScript |        152 |          2 |         15 |        169 |
 | c:\Users\piete\Source\repos\Pansiep\src\memory\garbageCollection.ts            | TypeScript |         72 |          0 |         12 |         84 |
 | c:\Users\piete\Source\repos\Pansiep\src\memory\initialization.spec.ts          | TypeScript |        182 |          0 |          8 |        190 |
@@ -59,29 +63,29 @@ Files
 | c:\Users\piete\Source\repos\Pansiep\src\memory\updateCache.ts                  | TypeScript |        263 |         27 |         34 |        324 |
 | c:\Users\piete\Source\repos\Pansiep\src\room\helper.spec.ts                    | TypeScript |        125 |          0 |         11 |        136 |
 | c:\Users\piete\Source\repos\Pansiep\src\room\helper.ts                         | TypeScript |         58 |         31 |         12 |        101 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\create.spec.ts               | TypeScript |        293 |          0 |         24 |        317 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\create.ts                    | TypeScript |        345 |         60 |         22 |        427 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\handler.spec.ts              | TypeScript |        446 |          0 |         24 |        470 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\handler.ts                   | TypeScript |        296 |         40 |         29 |        365 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\loop.spec.ts                      | TypeScript |         50 |          0 |          7 |         57 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\loop.ts                           | TypeScript |         29 |         13 |          7 |         49 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\create.spec.ts               | TypeScript |        295 |          0 |         24 |        319 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\create.ts                    | TypeScript |        350 |         60 |         22 |        432 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\handler.spec.ts              | TypeScript |        490 |          0 |         29 |        519 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\jobs\handler.ts                   | TypeScript |        306 |         33 |         30 |        369 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\loop.spec.ts                      | TypeScript |         60 |          0 |          8 |         68 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\loop.ts                           | TypeScript |         30 |          6 |          7 |         43 |
 | c:\Users\piete\Source\repos\Pansiep\src\room\planner\partGenerators.ts         | TypeScript |        389 |          9 |         15 |        413 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\planner\planner.ts                | TypeScript |        364 |         32 |         34 |        430 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\planner\planner.ts                | TypeScript |        364 |         35 |         33 |        432 |
 | c:\Users\piete\Source\repos\Pansiep\src\room\reading.ts                        | TypeScript |        304 |         69 |         30 |        403 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\drawVisual.spec.ts        | TypeScript |        136 |          0 |         16 |        152 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\drawVisual.spec.ts        | TypeScript |        162 |          0 |         16 |        178 |
 | c:\Users\piete\Source\repos\Pansiep\src\room\visuals\drawVisual.ts             | TypeScript |         96 |         30 |         11 |        137 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\handler.spec.ts           | TypeScript |         38 |          0 |          7 |         45 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\handler.spec.ts           | TypeScript |         42 |          0 |          8 |         50 |
 | c:\Users\piete\Source\repos\Pansiep\src\room\visuals\handler.ts                | TypeScript |         15 |          3 |          3 |         21 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\incomeAndExpenses.spec.ts | TypeScript |         53 |          0 |         10 |         63 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\incomeAndExpenses.ts      | TypeScript |        161 |         18 |         12 |        191 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\job.spec.ts               | TypeScript |         57 |          0 |         11 |         68 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\job.ts                    | TypeScript |        141 |          9 |         10 |        160 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\main.spec.ts              | TypeScript |         62 |          0 |          9 |         71 |
-| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\main.ts                   | TypeScript |        147 |          5 |          6 |        158 |
-| c:\Users\piete\Source\repos\Pansiep\src\structure\helper.spec.ts               | TypeScript |        555 |          0 |         27 |        582 |
-| c:\Users\piete\Source\repos\Pansiep\src\structure\helper.ts                    | TypeScript |        330 |         62 |         26 |        418 |
-| c:\Users\piete\Source\repos\Pansiep\src\structure\loop.spec.ts                 | TypeScript |         47 |          0 |          6 |         53 |
-| c:\Users\piete\Source\repos\Pansiep\src\structure\loop.ts                      | TypeScript |         24 |          6 |          3 |         33 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\incomeAndExpenses.spec.ts | TypeScript |         72 |          0 |         11 |         83 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\incomeAndExpenses.ts      | TypeScript |        180 |         18 |         12 |        210 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\job.spec.ts               | TypeScript |         71 |          0 |         12 |         83 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\job.ts                    | TypeScript |        161 |          9 |         10 |        180 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\main.spec.ts              | TypeScript |         81 |          0 |         10 |         91 |
+| c:\Users\piete\Source\repos\Pansiep\src\room\visuals\main.ts                   | TypeScript |        164 |          5 |          6 |        175 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\helper.spec.ts               | TypeScript |        568 |          0 |         28 |        596 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\helper.ts                    | TypeScript |        345 |         62 |         26 |        433 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\loop.spec.ts                 | TypeScript |         57 |          0 |          7 |         64 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\loop.ts                      | TypeScript |         24 |          6 |          4 |         34 |
 | c:\Users\piete\Source\repos\Pansiep\src\structure\types\actionsGroup.ts        | TypeScript |         28 |          0 |         14 |         42 |
 | c:\Users\piete\Source\repos\Pansiep\src\structure\types\container.spec.ts      | TypeScript |         28 |          0 |          5 |         33 |
 | c:\Users\piete\Source\repos\Pansiep\src\structure\types\container.ts           | TypeScript |          8 |          3 |          2 |         13 |
@@ -107,7 +111,7 @@ Files
 | c:\Users\piete\Source\repos\Pansiep\src\structure\types\storage.ts             | TypeScript |          8 |          3 |          3 |         14 |
 | c:\Users\piete\Source\repos\Pansiep\src\structure\types\terminal.spec.ts       | TypeScript |         29 |          0 |          5 |         34 |
 | c:\Users\piete\Source\repos\Pansiep\src\structure\types\terminal.ts            | TypeScript |          8 |          3 |          3 |         14 |
-| c:\Users\piete\Source\repos\Pansiep\src\structure\types\tower.spec.ts          | TypeScript |        202 |          0 |         17 |        219 |
+| c:\Users\piete\Source\repos\Pansiep\src\structure\types\tower.spec.ts          | TypeScript |        205 |          0 |         17 |        222 |
 | c:\Users\piete\Source\repos\Pansiep\src\structure\types\tower.ts               | TypeScript |         87 |         12 |         12 |        111 |
 | c:\Users\piete\Source\repos\Pansiep\src\types.d.ts                             | TypeScript |        187 |          5 |         34 |        226 |
 | c:\Users\piete\Source\repos\Pansiep\src\utils\config\global.ts                 | TypeScript |          5 |          3 |          3 |         11 |
@@ -128,5 +132,5 @@ Files
 | c:\Users\piete\Source\repos\Pansiep\src\utils\logger.ts                        | TypeScript |         52 |          9 |          6 |         67 |
 | c:\Users\piete\Source\repos\Pansiep\src\utils\wrapper.spec.ts                  | TypeScript |         57 |          0 |          4 |         61 |
 | c:\Users\piete\Source\repos\Pansiep\src\utils\wrapper.ts                       | TypeScript |         49 |         22 |          9 |         80 |
-| Total                                                                          |            |      9,311 |        831 |        966 |     11,108 |
+| Total                                                                          |            |     10,058 |        855 |      1,015 |     11,928 |
 +--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
