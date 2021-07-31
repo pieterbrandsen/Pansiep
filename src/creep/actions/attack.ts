@@ -4,7 +4,6 @@ import WrapperHandler from "../../utils/wrapper";
 
 import CreepActions from "./actionsGroup";
 
-// eslint-disable-next-line
 export default WrapperHandler.FuncWrapper(function ExecuteAttack(
   creep: Creep,
   job: Job
@@ -19,7 +18,8 @@ export default WrapperHandler.FuncWrapper(function ExecuteAttack(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.roomName, job.id);
+      if (creep.room.name === job.roomName) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep,job);
       break;
     default:
       break;
