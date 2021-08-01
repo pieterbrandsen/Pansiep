@@ -40,7 +40,7 @@
     "@types/jest": "^26.0.22",
     "@types/lodash": "^4.14.168",
     "@types/node": "^14.14.27",
-    "@types/screeps": "^3.2.1",
+    "@types/screeps": "^3.2.3",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
     "codecov": "^3.8.1",
@@ -61,11 +61,11 @@
     "rollup-plugin-screeps": "^1.0.1",
     "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^26.5.4",
-    "typescript": "^4.2.3"
+    "typescript": "^4.3.5"
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "screeps-jest": "github:eduter/screeps-jest",
+    "screeps-jest": "eduter/screeps-jest#1.3.1",
     "source-map": "~0.6.1"
   }
 }
