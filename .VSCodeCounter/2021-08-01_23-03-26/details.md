@@ -1,10 +1,10 @@
 # Details
 
-Date : 2021-07-31 10:49:45
+Date : 2021-08-01 23:03:26
 
-Directory c:\Users\piete\Source\repos\Pansiep\src
+Directory c:\Users\piete\source\repos\Pansiep\src
 
-Total : 99 files,  10058 codes, 855 comments, 1015 blanks, all 11928 lines
+Total : 102 files,  10460 codes, 855 comments, 1052 blanks, all 12367 lines
 
 [summary](results.md)
 
@@ -12,11 +12,14 @@ Total : 99 files,  10058 codes, 855 comments, 1015 blanks, all 11928 lines
 | filename | language | code | comment | blank | total |
 | :--- | :--- | ---: | ---: | ---: | ---: |
 | [src/creep/actions/actionsGroup.ts](/src/creep/actions/actionsGroup.ts) | TypeScript | 24 | 0 | 12 | 36 |
-| [src/creep/actions/attack.spec.ts](/src/creep/actions/attack.spec.ts) | TypeScript | 80 | 0 | 10 | 90 |
+| [src/creep/actions/attack.spec.ts](/src/creep/actions/attack.spec.ts) | TypeScript | 87 | 0 | 11 | 98 |
 | [src/creep/actions/attack.ts](/src/creep/actions/attack.ts) | TypeScript | 24 | 0 | 4 | 28 |
-| [src/creep/actions/build.ts](/src/creep/actions/build.ts) | TypeScript | 41 | 1 | 4 | 46 |
-| [src/creep/actions/claim.ts](/src/creep/actions/claim.ts) | TypeScript | 27 | 1 | 4 | 32 |
-| [src/creep/actions/dismantle.ts](/src/creep/actions/dismantle.ts) | TypeScript | 30 | 1 | 4 | 35 |
+| [src/creep/actions/build.spec.ts](/src/creep/actions/build.spec.ts) | TypeScript | 169 | 0 | 13 | 182 |
+| [src/creep/actions/build.ts](/src/creep/actions/build.ts) | TypeScript | 42 | 1 | 4 | 47 |
+| [src/creep/actions/claim.spec.ts](/src/creep/actions/claim.spec.ts) | TypeScript | 106 | 0 | 12 | 118 |
+| [src/creep/actions/claim.ts](/src/creep/actions/claim.ts) | TypeScript | 28 | 1 | 4 | 33 |
+| [src/creep/actions/dismantle.spec.ts](/src/creep/actions/dismantle.spec.ts) | TypeScript | 110 | 0 | 11 | 121 |
+| [src/creep/actions/dismantle.ts](/src/creep/actions/dismantle.ts) | TypeScript | 31 | 1 | 4 | 36 |
 | [src/creep/actions/harvest.ts](/src/creep/actions/harvest.ts) | TypeScript | 42 | 1 | 7 | 50 |
 | [src/creep/actions/heal.ts](/src/creep/actions/heal.ts) | TypeScript | 28 | 1 | 5 | 34 |
 | [src/creep/actions/move.ts](/src/creep/actions/move.ts) | TypeScript | 31 | 6 | 5 | 42 |
@@ -44,11 +47,11 @@ Total : 99 files,  10058 codes, 855 comments, 1015 blanks, all 11928 lines
 | [src/room/jobs/create.spec.ts](/src/room/jobs/create.spec.ts) | TypeScript | 295 | 0 | 24 | 319 |
 | [src/room/jobs/create.ts](/src/room/jobs/create.ts) | TypeScript | 350 | 60 | 22 | 432 |
 | [src/room/jobs/handler.spec.ts](/src/room/jobs/handler.spec.ts) | TypeScript | 490 | 0 | 29 | 519 |
-| [src/room/jobs/handler.ts](/src/room/jobs/handler.ts) | TypeScript | 306 | 33 | 30 | 369 |
+| [src/room/jobs/handler.ts](/src/room/jobs/handler.ts) | TypeScript | 311 | 33 | 30 | 374 |
 | [src/room/loop.spec.ts](/src/room/loop.spec.ts) | TypeScript | 60 | 0 | 8 | 68 |
 | [src/room/loop.ts](/src/room/loop.ts) | TypeScript | 30 | 6 | 7 | 43 |
 | [src/room/planner/partGenerators.ts](/src/room/planner/partGenerators.ts) | TypeScript | 389 | 9 | 15 | 413 |
-| [src/room/planner/planner.ts](/src/room/planner/planner.ts) | TypeScript | 364 | 35 | 33 | 432 |
+| [src/room/planner/planner.ts](/src/room/planner/planner.ts) | TypeScript | 366 | 35 | 33 | 434 |
 | [src/room/reading.ts](/src/room/reading.ts) | TypeScript | 304 | 69 | 30 | 403 |
 | [src/room/visuals/drawVisual.spec.ts](/src/room/visuals/drawVisual.spec.ts) | TypeScript | 162 | 0 | 16 | 178 |
 | [src/room/visuals/drawVisual.ts](/src/room/visuals/drawVisual.ts) | TypeScript | 96 | 30 | 11 | 137 |

@@ -1,28 +1,28 @@
 # Summary
 
-Date : 2021-07-31 10:49:45
+Date : 2021-08-01 23:03:26
 
-Directory c:\Users\piete\Source\repos\Pansiep\src
+Directory c:\Users\piete\source\repos\Pansiep\src
 
-Total : 99 files,  10058 codes, 855 comments, 1015 blanks, all 11928 lines
+Total : 102 files,  10460 codes, 855 comments, 1052 blanks, all 12367 lines
 
 [details](details.md)
 
 ## Languages
 | language | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| TypeScript | 99 | 10,058 | 855 | 1,015 | 11,928 |
+| TypeScript | 102 | 10,460 | 855 | 1,052 | 12,367 |
 
 ## Directories
 | path | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| . | 99 | 10,058 | 855 | 1,015 | 11,928 |
-| creep | 18 | 1,026 | 59 | 114 | 1,199 |
-| creep\actions | 13 | 543 | 15 | 75 | 633 |
+| . | 102 | 10,460 | 855 | 1,052 | 12,367 |
+| creep | 21 | 1,421 | 59 | 151 | 1,631 |
+| creep\actions | 16 | 938 | 15 | 112 | 1,065 |
 | memory | 8 | 1,727 | 38 | 163 | 1,928 |
-| room | 21 | 3,815 | 308 | 320 | 4,443 |
-| room\jobs | 4 | 1,441 | 93 | 105 | 1,639 |
-| room\planner | 2 | 753 | 44 | 48 | 845 |
+| room | 21 | 3,822 | 308 | 320 | 4,450 |
+| room\jobs | 4 | 1,446 | 93 | 105 | 1,644 |
+| room\planner | 2 | 755 | 44 | 48 | 847 |
 | room\visuals | 10 | 1,044 | 65 | 99 | 1,208 |
 | structure | 31 | 2,216 | 137 | 236 | 2,589 |
 | structure\types | 27 | 1,222 | 69 | 171 | 1,462 |
