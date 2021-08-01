@@ -170,7 +170,7 @@ export default class CreateJobHandler {
       room: Room,
       pos: RoomPosition,
       structureType: StructureConstant,
-      hasPriority :boolean= false
+      hasPriority = false
     ): Job {
       const jobId: Id<Job> = CreateJobHandler.GetBuildJobId(pos);
       const openSpots = RoomHelper.Reader.GetAccesSpotsAroundPosition(

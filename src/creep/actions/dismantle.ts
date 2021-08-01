@@ -26,7 +26,8 @@ export default WrapperHandler.FuncWrapper(function ExecuteDismantle(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.roomName, job.id);
+      if (structure.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
       break;
     default:
       break;

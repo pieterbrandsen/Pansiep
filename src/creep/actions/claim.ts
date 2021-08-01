@@ -19,7 +19,8 @@ export default WrapperHandler.FuncWrapper(function ExecuteClaim(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.roomName, job.id);
+      if (controller.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
       break;
     case ERR_GCL_NOT_ENOUGH:
       Game.notify("CLAIMING CONTROLLER WHILE GCL IS TOO LOW LEVEL!");

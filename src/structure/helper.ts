@@ -136,7 +136,7 @@ export default class StructureHelper {
       room: Room,
       pos: RoomPosition,
       structureType: StructureConstant,
-      hasPriority :boolean= false
+      hasPriority = false
     ): boolean {
       switch (room.createConstructionSite(pos, structureType)) {
         case OK:

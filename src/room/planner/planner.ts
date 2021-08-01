@@ -412,7 +412,8 @@ export default class RoomPlannerHandler {
           UtilsHelper.ExecuteEachTick(
             RoomConstants.RoomControllerPlannerDelay,
             forceExecute
-          ) && controllerLevel >= 2
+          ) &&
+          controllerLevel >= 2
         ) {
           RoomPlannerHandler.PlanController(room);
         }
@@ -420,7 +421,8 @@ export default class RoomPlannerHandler {
           UtilsHelper.ExecuteEachTick(
             RoomConstants.RoomBasePlannerDelay,
             lastControllerLevel < controllerLevel
-          ) && controllerLevel >= 2
+          ) &&
+          controllerLevel >= 2
         ) {
           RoomPlannerHandler.ExecuteBasePlanner(room);
         }

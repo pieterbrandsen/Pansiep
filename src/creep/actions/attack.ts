@@ -18,8 +18,8 @@ export default WrapperHandler.FuncWrapper(function ExecuteAttack(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      if (creep.room.name === job.roomName) JobHandler.DeleteJob(job.roomName, job.id);
-      else CreepActions.Move(creep,job);
+      if (target.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
       break;
     default:
       break;

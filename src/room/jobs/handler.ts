@@ -163,6 +163,11 @@ export default class JobHandler {
         if (creepMem.jobId !== creepMem.secondJobId) {
           JobHandler.SwitchCreepSavedJobIds(creepMem, true);
         } else {
+          JobHandler.UnassignJob(
+            creepMem.secondJobId,
+            creep.id,
+            creep.room.name
+          );
           creepMem.secondJobId = undefined;
         }
 

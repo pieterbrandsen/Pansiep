@@ -26,7 +26,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteBuild(
       if (
         JobHandler.AssignNewJobForCreep(
           creep,
-          creepMemory.type === "work" || creepMemory.type === "pioneer"
+          ["work", "pioneer"].includes(creepMemory.type)
             ? ["withdraw", "harvest"]
             : ["withdraw"]
         )
@@ -37,7 +37,8 @@ export default WrapperHandler.FuncWrapper(function ExecuteBuild(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.roomName, job.id);
+      if (csSite.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
       break;
     default:
       break;

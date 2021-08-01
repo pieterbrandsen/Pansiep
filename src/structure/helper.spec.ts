@@ -500,7 +500,7 @@ describe("StructureHelper", () => {
         pos: new RoomPosition(2, 1, "roomName"),
       });
 
-      JobHandler.CreateJob.CreateUpgradeJob(controller,false);
+      JobHandler.CreateJob.CreateUpgradeJob(controller, false);
       StructureHelper.ControlUpgradingOfController(controller);
       expect(Memory.rooms[roomName].jobs.length).toBe(1);
       expect(Memory.rooms[roomName].jobs[0].action).toBe("upgrade");
