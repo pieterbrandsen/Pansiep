@@ -31,23 +31,22 @@ export default WrapperHandler.FuncWrapper(function ExecuteUpgrade(
         creepMemory.parts[WORK];
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
-      if (JobHandler.AssignNewJobForCreep(creep, ["withdrawController"])) {
-        JobHandler.UnassignJob(job.id, creep.name, job.roomName);
+      if (!JobHandler.AssignNewJobForCreep(creep, ["withdrawController"])) {
         JobHandler.AssignNewJobForCreep(
           creep,
-          creepMemory.type === "work" || creepMemory.type === "pioneer"
+          ["work", "pioneer"].includes(creepMemory.type)
             ? ["withdraw", "harvest"]
             : ["withdraw"]
         );
-      } else {
-        creepMemory.secondJobId = job.id;
       }
+      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
       break;
     case ERR_NOT_IN_RANGE:
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.roomName, job.id);
+      if (controller.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
       break;
     default:
       break;

@@ -28,7 +28,6 @@ export default WrapperHandler.FuncWrapper(function ExecuteMove(
     })
   ) {
     case OK:
-      creep.say("move");
       break;
     case ERR_NO_PATH:
       JobHandler.UnassignJob(job.id, creep.name, job.roomName);

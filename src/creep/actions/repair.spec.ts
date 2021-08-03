@@ -15,15 +15,13 @@ const room = mockInstanceOf<Room>({
   lookForAtArea: jest.fn().mockReturnValue([]),
   controller: undefined,
 });
-const csSite = mockInstanceOf<ConstructionSite>({
-  pos: position,
-  structureType: "container",
+const structure = mockInstanceOf<Structure>({
+  id: "structure",
   room,
-});
-const csSiteWithoutVision = mockInstanceOf<ConstructionSite>({
   pos: position,
-  structureType: "container",
-  room: undefined,
+  structureType: STRUCTURE_CONTAINER,
+  hitsMax: 1,
+  hits: 0,
 });
 const creep = mockInstanceOf<Creep>({
   id: creepName,
@@ -32,6 +30,7 @@ const creep = mockInstanceOf<Creep>({
   pos: new RoomPosition(0, 0, roomName),
   getActiveBodyparts: jest.fn().mockReturnValue(1),
   say: jest.fn(),
+  repair: jest.fn(),
 });
 
 beforeAll(() => {
@@ -54,114 +53,105 @@ beforeAll(() => {
 
 jest.mock("../../utils/logger");
 
-describe("CreepBuildAction", () => {
+describe("CreepRepairAction", () => {
   beforeEach(() => {
     MemoryInitializationHandler.InitializeRoomMemory(roomName);
     MemoryInitializationHandler.InitializeCreepMemory(roomName, creepName);
-    creep.build = jest.fn().mockReturnValue(0);
-    UtilsHelper.GetObject = jest.fn().mockReturnValue(csSite);
+    creep.repair = jest.fn().mockReturnValue(0);
+    UtilsHelper.GetObject = jest.fn().mockReturnValue(structure);
   });
   it("should define work part in parts if its undefined", () => {
-    const buildJob = JobHandler.CreateJob.CreateBuildJob(
-      room,
-      position,
-      "container"
-    );
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
     const creepMemory = CreepHelper.GetCreepMemory(creepName);
     expect(creepMemory.parts[WORK]).toBeUndefined();
-    CreepActions.Build(creep, buildJob);
+    CreepActions.Repair(creep, job);
     expect(creepMemory.parts[WORK]).toBeDefined();
     expect(
-      global.preProcessingStats.rooms[creep.room.name].energyExpenses.build
-    ).toEqual(5);
+      global.preProcessingStats.rooms[creep.room.name].energyExpenses.repair
+    ).toEqual(1);
   });
   it("should not override work part count in parts if its defined", () => {
-    const buildJob = JobHandler.CreateJob.CreateBuildJob(
-      room,
-      position,
-      "container"
-    );
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
     const creepMemory = CreepHelper.GetCreepMemory(creepName);
     creepMemory.parts[WORK] = 1;
     creep.getActiveBodyparts = jest.fn().mockClear();
-    CreepActions.Build(creep, buildJob);
+    CreepActions.Repair(creep, job);
 
     expect(creepMemory.parts[WORK]).toBeDefined();
     expect(
-      global.preProcessingStats.rooms[creep.room.name].energyExpenses.build
-    ).toEqual(5);
+      global.preProcessingStats.rooms[creep.room.name].energyExpenses.repair
+    ).toEqual(1);
   });
   it("should unassign job if an new one was found", () => {
-    const buildJob = JobHandler.CreateJob.CreateBuildJob(
-      room,
-      position,
-      "container"
-    );
-    buildJob.assignedCreepsNames.push(creepName);
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
+    job.assignedCreepsNames.push(creepName);
     const creepMemory = CreepHelper.GetCreepMemory(creepName);
     creepMemory.type = "pioneer";
 
-    creep.build = jest.fn().mockReturnValue(-6);
+    creep.repair = jest.fn().mockReturnValue(-6);
     JobHandler.AssignNewJobForCreep = jest.fn().mockReturnValue(true);
-    CreepActions.Build(creep, buildJob);
+    CreepActions.Repair(creep, job);
     creepMemory.type = "heal";
-    CreepActions.Build(creep, buildJob);
-    expect(creep.build).toHaveBeenCalledTimes(2);
-    expect(buildJob.assignedCreepsNames.length).toBe(0);
+    CreepActions.Repair(creep, job);
+    expect(creep.repair).toHaveBeenCalledTimes(2);
+    expect(job.assignedCreepsNames.length).toBe(0);
     expect(creepMemory.jobId).toBeUndefined();
   });
   it("should move if not in range", () => {
-    const buildJob = JobHandler.CreateJob.CreateBuildJob(
-      room,
-      position,
-      "container"
-    );
-    buildJob.assignedCreepsNames.push(creepName);
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
+    job.assignedCreepsNames.push(creepName);
 
-    creep.build = jest.fn().mockReturnValue(-9);
+    creep.repair = jest.fn().mockReturnValue(-9);
     CreepActions.Move = jest.fn().mockReturnValue(jest.fn());
-    CreepActions.Build(creep, buildJob);
-    expect(creep.build).toHaveBeenCalledTimes(1);
-    expect(CreepActions.Move).toBeCalledWith(creep, buildJob);
+    CreepActions.Repair(creep, job);
+    expect(creep.repair).toHaveBeenCalledTimes(1);
+    expect(CreepActions.Move).toBeCalledWith(creep, job);
   });
   it("should delete job if invalid target and has vision in room", () => {
-    const buildJob = JobHandler.CreateJob.CreateBuildJob(
-      room,
-      position,
-      "container"
-    );
-    buildJob.assignedCreepsNames.push(creepName);
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
+    job.assignedCreepsNames.push(creepName);
     const creepMemory = CreepHelper.GetCreepMemory(creepName);
 
-    creep.build = jest.fn().mockReturnValue(-7);
-    CreepActions.Build(creep, buildJob);
-    expect(creep.build).toHaveBeenCalledTimes(1);
+    creep.repair = jest.fn().mockReturnValue(-7);
+    CreepActions.Repair(creep, job);
+    expect(creep.repair).toHaveBeenCalledTimes(1);
     expect(Memory.rooms[roomName].jobs.length).toEqual(0);
     expect(creepMemory.jobId).toBeUndefined();
   });
   it("should move to targetRoom if invalid target and has no vision in room", () => {
-    UtilsHelper.GetObject = jest.fn().mockReturnValue(csSiteWithoutVision);
-    const buildJob = JobHandler.CreateJob.CreateBuildJob(
-      room,
-      position,
-      "container"
+    UtilsHelper.GetObject = jest.fn().mockReturnValue(
+      mockInstanceOf<Structure>({
+        room: undefined,
+        hits: 0,
+        hitsMax: 1,
+        pos: position,
+        structureType: "constructedWall",
+      })
     );
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
     CreepActions.Move = jest.fn().mockReturnValue(0);
-    creep.build = jest.fn().mockReturnValue(-7);
+    creep.repair = jest.fn().mockReturnValue(-7);
 
-    CreepActions.Build(creep, buildJob);
-    expect(creep.build).toHaveBeenCalledTimes(1);
+    CreepActions.Repair(creep, job);
+    expect(creep.repair).toHaveBeenCalledTimes(1);
     expect(CreepActions.Move).toHaveBeenCalledTimes(1);
   });
   it("should default break", () => {
-    const buildJob = JobHandler.CreateJob.CreateBuildJob(
-      room,
-      position,
-      "container"
-    );
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
 
-    creep.build = jest.fn().mockReturnValue(99);
-    CreepActions.Build(creep, buildJob);
-    expect(creep.build).toHaveBeenCalledTimes(1);
+    creep.repair = jest.fn().mockReturnValue(99);
+    CreepActions.Repair(creep, job);
+    expect(creep.repair).toHaveBeenCalledTimes(1);
+  });
+  it("should delete job if structure is not damaged anymore", () => {
+    const job = JobHandler.CreateJob.CreateRepairJob(structure);
+    job.assignedCreepsNames.push(creepName);
+    const creepMemory = CreepHelper.GetCreepMemory(creepName);
+    structure.hits = structure.hitsMax;
+
+    CreepActions.Repair(creep, job);
+    expect(creep.repair).toHaveBeenCalledTimes(0);
+    expect(Memory.rooms[roomName].jobs.length).toEqual(0);
+    expect(creepMemory.jobId).toBeUndefined();
   });
 });

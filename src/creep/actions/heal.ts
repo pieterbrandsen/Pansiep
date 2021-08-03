@@ -12,7 +12,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteHeal(
 ): void {
   const targetCreep = UtilsHelper.GetObject(job.objId) as Creep;
 
-  if (job.stopHealingAtMaxHits && !CreepHelper.IsCreepDamaged(creep)) {
+  if (!job.stopHealingAtMaxHits && !CreepHelper.IsCreepDamaged(targetCreep)) {
     JobHandler.DeleteJob(job.roomName, job.id);
     return;
   }
@@ -25,7 +25,8 @@ export default WrapperHandler.FuncWrapper(function ExecuteHeal(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      JobHandler.DeleteJob(job.roomName, job.id);
+      if (targetCreep.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
       break;
     default:
       break;

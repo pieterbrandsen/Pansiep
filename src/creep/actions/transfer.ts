@@ -1,3 +1,4 @@
+import { min } from "lodash";
 import UtilsHelper from "../../utils/helper";
 
 import JobHandler from "../../room/jobs/handler";
@@ -13,21 +14,17 @@ export default WrapperHandler.FuncWrapper(function ExecuteTransfer(
 ): void {
   const creepMemory = CreepHelper.GetCreepMemory(creep.name);
 
-  if (
-    creep.store.getUsedCapacity(job.resourceType) <
-    creep.store.getCapacity(job.resourceType) / 10
-  ) {
+  if (creep.store.getUsedCapacity(job.resourceType) === 0) {
     if (job.action === "transferSource") {
       JobHandler.SwitchCreepSavedJobIds(creepMemory);
       JobHandler.UnassignJob(job.id, creep.name, job.roomName);
-    } else if (
+    } else {
       JobHandler.AssignNewJobForCreep(
         creep,
-        creepMemory.type === "work" || creepMemory.type === "pioneer"
+        ["work", "pioneer"].includes(creepMemory.type)
           ? ["withdraw", "harvest"]
           : ["withdraw"]
-      )
-    ) {
+      );
       JobHandler.UnassignJob(job.id, creep.name, job.roomName);
     }
     return;
@@ -43,28 +40,31 @@ export default WrapperHandler.FuncWrapper(function ExecuteTransfer(
 
   const strFreeCapacity = StructureHelper.GetFreeCapacity(str, resourceType);
   const creepUsedCapacity = creep.store.getUsedCapacity(resourceType);
-  const transferAmount: number =
-    strFreeCapacity > creepUsedCapacity ? creepUsedCapacity : strFreeCapacity;
+  const transferAmount: number = min([
+    creepUsedCapacity,
+    strFreeCapacity,
+  ]) as number;
   switch (creep.transfer(str, resourceType, transferAmount)) {
     case OK:
       creep.say("transfer");
       job.energyRequired -= transferAmount;
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
-      if (
         JobHandler.AssignNewJobForCreep(
           creep,
           creepMemory.type === "work" || creepMemory.type === "pioneer"
             ? ["withdraw", "harvest"]
             : ["withdraw"]
         )
-      )
         JobHandler.UnassignJob(job.id, creep.name, job.roomName);
       break;
     case ERR_NOT_IN_RANGE:
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
+      if (str.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
+      break;
     case ERR_FULL:
       JobHandler.DeleteJob(job.roomName, job.id);
       break;

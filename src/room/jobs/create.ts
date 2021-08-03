@@ -58,7 +58,7 @@ export default class CreateJobHandler {
    * Creates an heal job
    */
   public static CreateHealJob = WrapperHandler.FuncWrapper(
-    function CreateHealJob(creep: Creep): Job {
+    function CreateHealJob(creep: Creep, stopAtMaxHealth = false): Job {
       const jobId: Id<Job> = CreateJobHandler.GetHealJobId(creep.name);
       const job: Job = {
         id: jobId,
@@ -72,6 +72,7 @@ export default class CreateJobHandler {
         objId: creep.id,
         hasPriority: false,
         position: creep.pos,
+        stopHealingAtMaxHits: stopAtMaxHealth,
       };
       JobHandler.SetJob(job, true);
       return job;
@@ -219,7 +220,7 @@ export default class CreateJobHandler {
       str: Structure,
       energyRequired: number,
       resourceType: ResourceConstant,
-      action: JobActionTypes,
+      action: JobWithdrawActionTypes,
       hasPriority = false
     ): Job {
       const jobId: Id<Job> = CreateJobHandler.GetWithdrawJobId(
@@ -274,7 +275,7 @@ export default class CreateJobHandler {
       str: Structure,
       energyRequired: number,
       resourceType: ResourceConstant,
-      action: JobActionTypes,
+      action: JobTransferActionTypes,
       hasPriority = false
     ): Job {
       const jobId: Id<Job> = CreateJobHandler.GetTransferJobId(
@@ -299,7 +300,7 @@ export default class CreateJobHandler {
         objId: str.id,
         hasPriority,
         position: str.pos,
-        energyRequired: energyRequired * -1,
+        energyRequired,
         resourceType,
       };
       JobHandler.SetJob(job, true);

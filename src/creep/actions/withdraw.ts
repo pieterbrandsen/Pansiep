@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash";
+import { isUndefined, min } from "lodash";
 
 import UtilsHelper from "../../utils/helper";
 import JobHandler from "../../room/jobs/handler";
@@ -13,6 +13,23 @@ export default WrapperHandler.FuncWrapper(function ExecuteWithdraw(
   job: Job
 ): void {
   const creepMemory = CreepHelper.GetCreepMemory(creep.name);
+
+  if (creep.store.getFreeCapacity(job.resourceType) === 0) {
+    if (job.action === "withdrawController") {
+      JobHandler.SwitchCreepSavedJobIds(creepMemory);
+      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
+    } else {
+      JobHandler.AssignNewJobForCreep(
+        creep,
+        ["work", "pioneer"].includes(creepMemory.type)
+          ? ["withdraw", "harvest"]
+          : ["withdraw"]
+      );
+      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
+    }
+    return;
+  }
+
   if (job.energyRequired === undefined || job.energyRequired <= 0) {
     JobHandler.DeleteJob(job.roomName, job.id);
     return;
@@ -25,8 +42,10 @@ export default WrapperHandler.FuncWrapper(function ExecuteWithdraw(
     resourceType
   );
   const creepFreeCapacity = creep.store.getFreeCapacity(resourceType);
-  const withdrawAmount: number =
-    strUsedCapacity > creepFreeCapacity ? creepFreeCapacity : strUsedCapacity;
+  const withdrawAmount: number = min([
+    creepFreeCapacity,
+    strUsedCapacity,
+  ]) as number;
 
   switch (creep.withdraw(structure, resourceType, withdrawAmount)) {
     case OK:
@@ -47,8 +66,11 @@ export default WrapperHandler.FuncWrapper(function ExecuteWithdraw(
     case ERR_NOT_IN_RANGE:
       CreepActions.Move(creep, job);
       break;
-    case ERR_NOT_ENOUGH_RESOURCES:
     case ERR_INVALID_TARGET:
+      if (structure.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
+      break;
+    case ERR_NOT_ENOUGH_RESOURCES:
       JobHandler.DeleteJob(job.roomName, job.id);
       break;
     default:

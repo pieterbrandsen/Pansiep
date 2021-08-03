@@ -14,15 +14,15 @@ export default WrapperHandler.FuncWrapper(function ExecuteHarvest(
   const creepMemory = CreepHelper.GetCreepMemory(creep.name);
 
   if (creep.store.getFreeCapacity(job.resourceType) === 0) {
-    const assignNewJobForCreepCode = JobHandler.AssignNewJobForCreep(creep, [
+    const newJobResult = JobHandler.AssignNewJobForCreep(creep, [
       "transferSource",
     ]);
 
-    if (assignNewJobForCreepCode) {
+    if (newJobResult) {
+      creepMemory.secondJobId = job.id;
+    } else {
       JobHandler.UnassignJob(job.id, creep.name, job.roomName);
       JobHandler.AssignNewJobForCreep(creep);
-    } else {
-      creepMemory.secondJobId = job.id;
     }
   }
 
@@ -38,7 +38,8 @@ export default WrapperHandler.FuncWrapper(function ExecuteHarvest(
       break;
     case ERR_INVALID_TARGET:
     case ERR_NOT_ENOUGH_RESOURCES:
-      JobHandler.DeleteJob(job.roomName, job.id);
+      if (source.room) JobHandler.DeleteJob(job.roomName, job.id);
+      else CreepActions.Move(creep, job);
       break;
     case ERR_NOT_IN_RANGE:
       CreepActions.Move(creep, job);
