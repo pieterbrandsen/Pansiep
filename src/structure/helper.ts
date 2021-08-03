@@ -364,7 +364,7 @@ export default class StructureHelper {
           str.room.name
         ) === null
       ) {
-        JobHandler.CreateJob.CreateTransferJob(
+        JobHandler.CreateJob.CreateWithdrawJob(
           str,
           isStructureFullEnough.overflowAmount,
           RESOURCE_ENERGY,

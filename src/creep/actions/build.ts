@@ -23,13 +23,13 @@ export default WrapperHandler.FuncWrapper(function ExecuteBuild(
         creepMemory.parts[WORK] * 5;
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
-        JobHandler.AssignNewJobForCreep(
-          creep,
-          ["work", "pioneer"].includes(creepMemory.type)
-            ? ["withdraw", "harvest"]
-            : ["withdraw"]
-        )
-        JobHandler.UnassignJob(job.id, creep.name, job.roomName);
+      JobHandler.AssignNewJobForCreep(
+        creep,
+        ["work", "pioneer"].includes(creepMemory.type)
+          ? ["withdraw", "harvest"]
+          : ["withdraw"]
+      );
+      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
       break;
     case ERR_NOT_IN_RANGE:
       CreepActions.Move(creep, job);
