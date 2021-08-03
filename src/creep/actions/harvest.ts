@@ -24,10 +24,10 @@ export default WrapperHandler.FuncWrapper(function ExecuteHarvest(
       JobHandler.UnassignJob(job.id, creep.name, job.roomName);
       JobHandler.AssignNewJobForCreep(creep);
     }
+    return;
   }
 
   const source = UtilsHelper.GetObject(job.objId) as Source;
-
   switch (creep.harvest(source)) {
     case OK:
       creep.say("harvest");
@@ -38,7 +38,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteHarvest(
       break;
     case ERR_INVALID_TARGET:
     case ERR_NOT_ENOUGH_RESOURCES:
-      if (source.room) JobHandler.DeleteJob(job.roomName, job.id);
+      if (source === null ||source.room) JobHandler.DeleteJob(job.roomName, job.id);
       else CreepActions.Move(creep, job);
       break;
     case ERR_NOT_IN_RANGE:

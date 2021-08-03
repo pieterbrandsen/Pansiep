@@ -203,7 +203,7 @@ export default class CreateJobHandler {
    */
   public static GetWithdrawJobId = WrapperHandler.FuncWrapper(
     function GetWithdrawJobId(
-      action: JobActionTypes,
+      action: JobWithdrawActionTypes,
       pos: RoomPosition,
       resourceType: ResourceConstant
     ): Id<Job> {
@@ -258,7 +258,7 @@ export default class CreateJobHandler {
    */
   public static GetTransferJobId = WrapperHandler.FuncWrapper(
     function GetTransferJobId(
-      action: JobActionTypes,
+      action: JobTransferActionTypes,
       pos: RoomPosition,
       resourceType: ResourceConstant
     ): Id<Job> {

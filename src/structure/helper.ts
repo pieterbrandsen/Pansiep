@@ -82,8 +82,8 @@ export default class StructureHelper {
       );
       const capacity: number = StructureHelper.GetCapacity(str, resourceType);
       const percentageFull = (resourceCount / capacity) * 100;
-      const overflowAmount =
-        (percentageFull - requiredPercentageFull) * (capacity / 100);
+      const overflowAmount =Math.abs(
+        (percentageFull - requiredPercentageFull) * (capacity / 100));
       return {
         hasOverflow:
           percentageFull < 100

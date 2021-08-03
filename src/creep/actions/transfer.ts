@@ -31,7 +31,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteTransfer(
   }
 
   if (job.energyRequired === undefined || job.energyRequired <= 0) {
-    JobHandler.DeleteJob(job.roomName, job.id);
+  JobHandler.DeleteJob(job.roomName, job.id);
     return;
   }
 
@@ -62,7 +62,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteTransfer(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      if (str.room) JobHandler.DeleteJob(job.roomName, job.id);
+      if (str === null || str.room) JobHandler.DeleteJob(job.roomName, job.id);
       else CreepActions.Move(creep, job);
       break;
     case ERR_FULL:

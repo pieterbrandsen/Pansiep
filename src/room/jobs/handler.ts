@@ -197,7 +197,7 @@ export default class JobHandler {
             jobs = JobHandler.GetAvailableJobs(
               creep.room.name,
               true,
-              creep.store.getUsedCapacity() < creep.store.getCapacity()
+              creep.store.getUsedCapacity() > 0
                 ? [
                     "harvest",
                     "transfer",

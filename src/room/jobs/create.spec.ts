@@ -14,7 +14,6 @@ const structureId = "structure0" as Id<Structure>;
 const structureType = STRUCTURE_EXTENSION;
 const jobPos = new RoomPosition(25, 25, roomName);
 const jobActionType: JobActionTypes = "transfer";
-const jobActionType2: JobActionTypes = "withdraw";
 const resourceType = RESOURCE_ENERGY;
 
 const room = mockInstanceOf<Room>({
@@ -237,8 +236,9 @@ describe("CreateJobHandler", () => {
     });
   });
   it("Should create an withdraw job with acces points higher then 1", () => {
+    const withdrawActionType: JobWithdrawActionTypes = "withdraw";
     const withdrawJobId = JobHandler.CreateJob.GetWithdrawJobId(
-      jobActionType,
+      withdrawActionType,
       jobPos,
       resourceType
     );
@@ -246,7 +246,7 @@ describe("CreateJobHandler", () => {
       structure,
       100,
       resourceType,
-      jobActionType2
+      withdrawActionType
     );
     expect(withdrawJob.id).toBe(withdrawJobId);
     expect(withdrawJob.maxCreeps).toBeGreaterThan(1);
@@ -263,11 +263,12 @@ describe("CreateJobHandler", () => {
   });
   it("Should create an withdraw job with acces points equals 1", () => {
     const funcBackup = RoomHelper.Reader.GetAccesSpotsAroundPosition;
+    const withdrawActionType: JobWithdrawActionTypes = "withdraw";
     RoomHelper.Reader.GetAccesSpotsAroundPosition = jest
       .fn()
       .mockReturnValue(1);
     const withdrawJobId = JobHandler.CreateJob.GetWithdrawJobId(
-      jobActionType,
+      withdrawActionType,
       jobPos,
       resourceType
     );
@@ -275,7 +276,7 @@ describe("CreateJobHandler", () => {
       structure,
       100,
       resourceType,
-      jobActionType2
+      withdrawActionType
     );
     expect(withdrawJob.id).toBe(withdrawJobId);
     expect(withdrawJob.maxCreeps).toBe(1);

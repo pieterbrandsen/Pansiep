@@ -67,7 +67,7 @@ export default WrapperHandler.FuncWrapper(function ExecuteWithdraw(
       CreepActions.Move(creep, job);
       break;
     case ERR_INVALID_TARGET:
-      if (structure.room) JobHandler.DeleteJob(job.roomName, job.id);
+      if (structure === null || structure.room) JobHandler.DeleteJob(job.roomName, job.id);
       else CreepActions.Move(creep, job);
       break;
     case ERR_NOT_ENOUGH_RESOURCES:
