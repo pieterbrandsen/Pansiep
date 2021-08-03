@@ -1,0 +1,1212 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 3903,
+  "iteration": 1628017400012,
+  "links": [],
+  "panels": [
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.4.5",
+      "targets": [
+        {
+          "refId": "A",
+          "target": "aliasByMetric(screeps.pandamaster.ticksStatsCollecting)"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Stat collecting time",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 9,
+      "title": "Intents",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": 3,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sort": "avg",
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.4.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "aliasByNode(screeps.pandamaster.intentCalls.$intentCalls.callCount, 3)"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Intent call count",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:949",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:950",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": 3,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "hiddenSeries": false,
+      "id": 11,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sort": "avg",
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.4.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "aliasByNode(screeps.pandamaster.intentCalls.$intentCalls.cpuUsed, 3)"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Intent cpu used",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1034",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1035",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 7,
+      "title": "Functions",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": 3,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sort": "avg",
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.4.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "aliasByNode(screeps.pandamaster.funcCalls.$funcCalls.callCount, 3)"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Function call count",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:949",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:950",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": 3,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sort": "avg",
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.4.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "aliasByNode(screeps.pandamaster.funcCalls.$funcCalls.cpuUsed, 3)"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Function cpu used",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1034",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1035",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": null,
+        "definition": "screeps.pandamaster.funcCalls.*",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": "FuncCalls",
+        "multi": true,
+        "name": "funcCalls",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "AddLineWCoords",
+            "value": "AddLineWCoords"
+          },
+          {
+            "selected": false,
+            "text": "AddRectWCoords",
+            "value": "AddRectWCoords"
+          },
+          {
+            "selected": false,
+            "text": "AddTextWCoords",
+            "value": "AddTextWCoords"
+          },
+          {
+            "selected": false,
+            "text": "AssignNewJobForCreep",
+            "value": "AssignNewJobForCreep"
+          },
+          {
+            "selected": false,
+            "text": "Base",
+            "value": "Base"
+          },
+          {
+            "selected": false,
+            "text": "BuildStructure",
+            "value": "BuildStructure"
+          },
+          {
+            "selected": false,
+            "text": "Controller",
+            "value": "Controller"
+          },
+          {
+            "selected": false,
+            "text": "CreateBuildJob",
+            "value": "CreateBuildJob"
+          },
+          {
+            "selected": false,
+            "text": "CreateRepairJob",
+            "value": "CreateRepairJob"
+          },
+          {
+            "selected": false,
+            "text": "CreateRoomPosition",
+            "value": "CreateRoomPosition"
+          },
+          {
+            "selected": false,
+            "text": "CreateTransferJob",
+            "value": "CreateTransferJob"
+          },
+          {
+            "selected": false,
+            "text": "CreateUpgradeJob",
+            "value": "CreateUpgradeJob"
+          },
+          {
+            "selected": false,
+            "text": "CreateWithdrawJob",
+            "value": "CreateWithdrawJob"
+          },
+          {
+            "selected": false,
+            "text": "CreepStatsPreProcessing",
+            "value": "CreepStatsPreProcessing"
+          },
+          {
+            "selected": false,
+            "text": "DeleteJobById",
+            "value": "DeleteJobById"
+          },
+          {
+            "selected": false,
+            "text": "DoesPositionsOfBaseFit",
+            "value": "DoesPositionsOfBaseFit"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteBuild",
+            "value": "ExecuteBuild"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteContainer",
+            "value": "ExecuteContainer"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteController",
+            "value": "ExecuteController"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteEachTick",
+            "value": "ExecuteEachTick"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteHarvest",
+            "value": "ExecuteHarvest"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteJob",
+            "value": "ExecuteJob"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteMove",
+            "value": "ExecuteMove"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteRepair",
+            "value": "ExecuteRepair"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteRoad",
+            "value": "ExecuteRoad"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteRoomPlanner",
+            "value": "ExecuteRoomPlanner"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteSpawn",
+            "value": "ExecuteSpawn"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteStructure",
+            "value": "ExecuteStructure"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteTransfer",
+            "value": "ExecuteTransfer"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteUpgrade",
+            "value": "ExecuteUpgrade"
+          },
+          {
+            "selected": false,
+            "text": "ExecuteWithdraw",
+            "value": "ExecuteWithdraw"
+          },
+          {
+            "selected": false,
+            "text": "GetAccesSpotsAroundPosition",
+            "value": "GetAccesSpotsAroundPosition"
+          },
+          {
+            "selected": false,
+            "text": "GetAllCreepIds",
+            "value": "GetAllCreepIds"
+          },
+          {
+            "selected": false,
+            "text": "GetAllCreepMemory",
+            "value": "GetAllCreepMemory"
+          },
+          {
+            "selected": false,
+            "text": "GetAllJobs",
+            "value": "GetAllJobs"
+          },
+          {
+            "selected": false,
+            "text": "GetAllStructureIds",
+            "value": "GetAllStructureIds"
+          },
+          {
+            "selected": false,
+            "text": "GetAvailableJobs",
+            "value": "GetAvailableJobs"
+          },
+          {
+            "selected": false,
+            "text": "GetAveragedValue",
+            "value": "GetAveragedValue"
+          },
+          {
+            "selected": false,
+            "text": "GetBaseBuild",
+            "value": "GetBaseBuild"
+          },
+          {
+            "selected": false,
+            "text": "GetBestEnergyStructurePosAroundPosition",
+            "value": "GetBestEnergyStructurePosAroundPosition"
+          },
+          {
+            "selected": false,
+            "text": "GetBodyParts",
+            "value": "GetBodyParts"
+          },
+          {
+            "selected": false,
+            "text": "GetCapacity",
+            "value": "GetCapacity"
+          },
+          {
+            "selected": false,
+            "text": "GetClosestJob",
+            "value": "GetClosestJob"
+          },
+          {
+            "selected": false,
+            "text": "GetCompleteBasePlanned",
+            "value": "GetCompleteBasePlanned"
+          },
+          {
+            "selected": false,
+            "text": "GetCreep",
+            "value": "GetCreep"
+          },
+          {
+            "selected": false,
+            "text": "GetCreepMemory",
+            "value": "GetCreepMemory"
+          },
+          {
+            "selected": false,
+            "text": "GetDiagonalExtensionRoomPositions",
+            "value": "GetDiagonalExtensionRoomPositions"
+          },
+          {
+            "selected": false,
+            "text": "GetExtensionPartOfBase",
+            "value": "GetExtensionPartOfBase"
+          },
+          {
+            "selected": false,
+            "text": "GetFreeCapacity",
+            "value": "GetFreeCapacity"
+          },
+          {
+            "selected": false,
+            "text": "GetHearthOfBase",
+            "value": "GetHearthOfBase"
+          },
+          {
+            "selected": false,
+            "text": "GetJobById",
+            "value": "GetJobById"
+          },
+          {
+            "selected": false,
+            "text": "GetLabPartOfBase",
+            "value": "GetLabPartOfBase"
+          },
+          {
+            "selected": false,
+            "text": "GetNextCreepType",
+            "value": "GetNextCreepType"
+          },
+          {
+            "selected": false,
+            "text": "GetObject",
+            "value": "GetObject"
+          },
+          {
+            "selected": false,
+            "text": "GetObjectsFromIDs",
+            "value": "GetObjectsFromIDs"
+          },
+          {
+            "selected": false,
+            "text": "GetRoom",
+            "value": "GetRoom"
+          },
+          {
+            "selected": false,
+            "text": "GetRoomIds",
+            "value": "GetRoomIds"
+          },
+          {
+            "selected": false,
+            "text": "GetRoomMemoryUsingName",
+            "value": "GetRoomMemoryUsingName"
+          },
+          {
+            "selected": false,
+            "text": "GetSources",
+            "value": "GetSources"
+          },
+          {
+            "selected": false,
+            "text": "GetSourcesInRange",
+            "value": "GetSourcesInRange"
+          },
+          {
+            "selected": false,
+            "text": "GetStructures",
+            "value": "GetStructures"
+          },
+          {
+            "selected": false,
+            "text": "GetStructuresInRange",
+            "value": "GetStructuresInRange"
+          },
+          {
+            "selected": false,
+            "text": "GetSurroundingRoomPositions",
+            "value": "GetSurroundingRoomPositions"
+          },
+          {
+            "selected": false,
+            "text": "GetTerrainInRange",
+            "value": "GetTerrainInRange"
+          },
+          {
+            "selected": false,
+            "text": "GetUniqueName",
+            "value": "GetUniqueName"
+          },
+          {
+            "selected": false,
+            "text": "GetUsedCapacity",
+            "value": "GetUsedCapacity"
+          },
+          {
+            "selected": false,
+            "text": "GlobalStats",
+            "value": "GlobalStats"
+          },
+          {
+            "selected": false,
+            "text": "HasPositionEnergyStructures",
+            "value": "HasPositionEnergyStructures"
+          },
+          {
+            "selected": false,
+            "text": "IncomeAndExpensesVisuals",
+            "value": "IncomeAndExpensesVisuals"
+          },
+          {
+            "selected": false,
+            "text": "InitializeCreepMemory",
+            "value": "InitializeCreepMemory"
+          },
+          {
+            "selected": false,
+            "text": "IsCreepDamaged",
+            "value": "IsCreepDamaged"
+          },
+          {
+            "selected": false,
+            "text": "IsCreepMemoryInitialized",
+            "value": "IsCreepMemoryInitialized"
+          },
+          {
+            "selected": false,
+            "text": "IsMyOwnedRoom",
+            "value": "IsMyOwnedRoom"
+          },
+          {
+            "selected": false,
+            "text": "IsRoomMemoryInitialized",
+            "value": "IsRoomMemoryInitialized"
+          },
+          {
+            "selected": false,
+            "text": "IsStructureDamaged",
+            "value": "IsStructureDamaged"
+          },
+          {
+            "selected": false,
+            "text": "IsStructureFullEnough",
+            "value": "IsStructureFullEnough"
+          },
+          {
+            "selected": false,
+            "text": "IsStructureMemoryInitialized",
+            "value": "IsStructureMemoryInitialized"
+          },
+          {
+            "selected": false,
+            "text": "JobVisuals",
+            "value": "JobVisuals"
+          },
+          {
+            "selected": false,
+            "text": "ResetPreProcessingRoomStats",
+            "value": "ResetPreProcessingRoomStats"
+          },
+          {
+            "selected": false,
+            "text": "ResetRoomStats",
+            "value": "ResetRoomStats"
+          },
+          {
+            "selected": false,
+            "text": "RoomMainVisuals",
+            "value": "RoomMainVisuals"
+          },
+          {
+            "selected": false,
+            "text": "RoomStats",
+            "value": "RoomStats"
+          },
+          {
+            "selected": false,
+            "text": "RoomStatsPreProcessing",
+            "value": "RoomStatsPreProcessing"
+          },
+          {
+            "selected": false,
+            "text": "RoomVisuals",
+            "value": "RoomVisuals"
+          },
+          {
+            "selected": false,
+            "text": "RunCreep",
+            "value": "RunCreep"
+          },
+          {
+            "selected": false,
+            "text": "RunCreeps",
+            "value": "RunCreeps"
+          },
+          {
+            "selected": false,
+            "text": "RunRoom",
+            "value": "RunRoom"
+          },
+          {
+            "selected": false,
+            "text": "RunRooms",
+            "value": "RunRooms"
+          },
+          {
+            "selected": false,
+            "text": "RunStructure",
+            "value": "RunStructure"
+          },
+          {
+            "selected": false,
+            "text": "RunStructures",
+            "value": "RunStructures"
+          },
+          {
+            "selected": false,
+            "text": "ShouldVisualsBeDisplayed",
+            "value": "ShouldVisualsBeDisplayed"
+          },
+          {
+            "selected": false,
+            "text": "Sources",
+            "value": "Sources"
+          },
+          {
+            "selected": false,
+            "text": "SpawnCreep",
+            "value": "SpawnCreep"
+          },
+          {
+            "selected": false,
+            "text": "StructureStatsPreProcessing",
+            "value": "StructureStatsPreProcessing"
+          },
+          {
+            "selected": false,
+            "text": "SwitchCreepSavedJobIds",
+            "value": "SwitchCreepSavedJobIds"
+          },
+          {
+            "selected": false,
+            "text": "TryToCreateHealJob",
+            "value": "TryToCreateHealJob"
+          },
+          {
+            "selected": false,
+            "text": "TryToCreateRepairJob",
+            "value": "TryToCreateRepairJob"
+          },
+          {
+            "selected": false,
+            "text": "TryToCreateTransferJob",
+            "value": "TryToCreateTransferJob"
+          },
+          {
+            "selected": false,
+            "text": "TryToCreateUpgradeJob",
+            "value": "TryToCreateUpgradeJob"
+          },
+          {
+            "selected": false,
+            "text": "TryToCreateWithdrawJob",
+            "value": "TryToCreateWithdrawJob"
+          },
+          {
+            "selected": false,
+            "text": "TryToExecuteRoomPlanner",
+            "value": "TryToExecuteRoomPlanner"
+          },
+          {
+            "selected": false,
+            "text": "TryToSpawnCreep",
+            "value": "TryToSpawnCreep"
+          },
+          {
+            "selected": false,
+            "text": "UnassignJob",
+            "value": "UnassignJob"
+          },
+          {
+            "selected": false,
+            "text": "UpdateCreepMemory",
+            "value": "UpdateCreepMemory"
+          },
+          {
+            "selected": false,
+            "text": "UpdateJobById",
+            "value": "UpdateJobById"
+          },
+          {
+            "selected": false,
+            "text": "UpdateJobList",
+            "value": "UpdateJobList"
+          },
+          {
+            "selected": false,
+            "text": "UpdateRoomMemory",
+            "value": "UpdateRoomMemory"
+          }
+        ],
+        "query": "screeps.pandamaster.funcCalls.*",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": null,
+        "definition": "screeps.pandamaster.intentCalls.*",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": "IntentCalls",
+        "multi": true,
+        "name": "intentCalls",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "build",
+            "value": "build"
+          },
+          {
+            "selected": false,
+            "text": "createConstructionSite",
+            "value": "createConstructionSite"
+          },
+          {
+            "selected": false,
+            "text": "find",
+            "value": "find"
+          },
+          {
+            "selected": false,
+            "text": "findPath",
+            "value": "findPath"
+          },
+          {
+            "selected": false,
+            "text": "getActiveBodyparts",
+            "value": "getActiveBodyparts"
+          },
+          {
+            "selected": false,
+            "text": "harvest",
+            "value": "harvest"
+          },
+          {
+            "selected": false,
+            "text": "lookForAtArea",
+            "value": "lookForAtArea"
+          },
+          {
+            "selected": false,
+            "text": "move",
+            "value": "move"
+          },
+          {
+            "selected": false,
+            "text": "moveByPath",
+            "value": "moveByPath"
+          },
+          {
+            "selected": false,
+            "text": "moveTo",
+            "value": "moveTo"
+          },
+          {
+            "selected": false,
+            "text": "repair",
+            "value": "repair"
+          },
+          {
+            "selected": false,
+            "text": "say",
+            "value": "say"
+          },
+          {
+            "selected": false,
+            "text": "transfer",
+            "value": "transfer"
+          },
+          {
+            "selected": false,
+            "text": "upgradeController",
+            "value": "upgradeController"
+          },
+          {
+            "selected": false,
+            "text": "withdraw",
+            "value": "withdraw"
+          }
+        ],
+        "query": "screeps.pandamaster.intentCalls.*",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "CPU",
+  "uid": "6iBqLEqMk",
+  "version": 6
+}
