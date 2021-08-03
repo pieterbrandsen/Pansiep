@@ -41,9 +41,9 @@ export default class JobHandler {
         roomName,
         filterOnTypes
       ).filter((j: Job) =>
-        requesterIsCreep
+        (requesterIsCreep
           ? j.assignedCreepsNames.length < j.maxCreeps
-          : j.assignedStructuresIds.length < j.maxStructures
+          : j.assignedStructuresIds.length < j.maxStructures) && (j.energyRequired !== undefined ? j.energyRequired > 0:true)
       );
       return jobs;
     }
@@ -197,7 +197,7 @@ export default class JobHandler {
             jobs = JobHandler.GetAvailableJobs(
               creep.room.name,
               true,
-              creep.store.getUsedCapacity() > 0
+              creep.store.getUsedCapacity() === 0
                 ? [
                     "harvest",
                     "transfer",
@@ -225,7 +225,7 @@ export default class JobHandler {
             jobs = JobHandler.GetAvailableJobs(
               creep.room.name,
               true,
-              creep.store.getUsedCapacity() < creep.store.getCapacity()
+              creep.store.getUsedCapacity() === 0
                 ? [
                     "harvest",
                     "dismantle",
@@ -242,7 +242,10 @@ export default class JobHandler {
         }
       }
 
+      // console.log(creep.name,creep.store.energy,jobs.map((job) => job.action));
       if (jobs.length === 0) return null;
+      const priorityJobs = jobs.filter((job) => job.hasPriority);
+      if (priorityJobs.length > 0) jobs = priorityJobs;
 
       const jobsGroupedByPrioritize: StringMap<Job[]> = {};
       let highestPriorityJobsNumber = 99;

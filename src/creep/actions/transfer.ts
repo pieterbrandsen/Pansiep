@@ -22,16 +22,16 @@ export default WrapperHandler.FuncWrapper(function ExecuteTransfer(
       JobHandler.AssignNewJobForCreep(
         creep,
         ["work", "pioneer"].includes(creepMemory.type)
-          ? ["withdraw", "harvest"]
-          : ["withdraw"]
-      );
-      JobHandler.UnassignJob(job.id, creep.name, job.roomName);
+        ? ["withdraw", "harvest"]
+        : ["withdraw"]
+        );
+        JobHandler.UnassignJob(job.id, creep.name, job.roomName);
     }
     return;
   }
 
   if (job.energyRequired === undefined || job.energyRequired <= 0) {
-  JobHandler.DeleteJob(job.roomName, job.id);
+    JobHandler.DeleteJob(job.roomName, job.id);
     return;
   }
 
