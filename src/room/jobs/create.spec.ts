@@ -13,7 +13,8 @@ const creepId = "creep0";
 const structureId = "structure0" as Id<Structure>;
 const structureType = STRUCTURE_EXTENSION;
 const jobPos = new RoomPosition(25, 25, roomName);
-const jobActionType: JobActionTypes = "dismantle";
+const jobActionType: JobActionTypes = "transfer";
+const jobActionType2: JobActionTypes = "withdraw";
 const resourceType = RESOURCE_ENERGY;
 
 const room = mockInstanceOf<Room>({
@@ -245,7 +246,7 @@ describe("CreateJobHandler", () => {
       structure,
       100,
       resourceType,
-      jobActionType
+      jobActionType2
     );
     expect(withdrawJob.id).toBe(withdrawJobId);
     expect(withdrawJob.maxCreeps).toBeGreaterThan(1);
@@ -274,7 +275,7 @@ describe("CreateJobHandler", () => {
       structure,
       100,
       resourceType,
-      jobActionType
+      jobActionType2
     );
     expect(withdrawJob.id).toBe(withdrawJobId);
     expect(withdrawJob.maxCreeps).toBe(1);
